@@ -9,8 +9,6 @@ namespace Rover {
   /** An argument generator that evaluates to a constant value. */
   template<typename T>
   class Constant : Noncopyable {
-    static_assert(!implements_concept_v<T, Generator>,
-      "Attempt to create Constant of another Generator");
 
     public:
 
@@ -36,7 +34,7 @@ namespace Rover {
 
   template<typename T>
   template<typename U, typename std::enable_if_t<!std::is_same_v<U,
-    Constant<T>>>*>
+      Constant<T>>>*>
   constexpr Constant<T>::Constant(U&& value)
     : m_value(std::forward<U>(value)) {}
 
@@ -54,7 +52,6 @@ namespace Rover {
 
   template<typename Type>
   struct ImplementsConcept<Constant<Type>, Generator> : std::true_type {};
-
 }
 
 #endif

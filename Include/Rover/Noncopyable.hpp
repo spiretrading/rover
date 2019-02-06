@@ -1,5 +1,5 @@
-#ifndef NONCOPYABLE_HPP
-#define NONCOPYABLE_HPP
+#ifndef ROVER_NONCOPYABLE_HPP
+#define ROVER_NONCOPYABLE_HPP
 
 namespace Rover {
 

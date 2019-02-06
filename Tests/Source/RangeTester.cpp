@@ -62,4 +62,3 @@ TEST_CASE("test_mixed_types", "[Range]") {
     REQUIRE(result <= 10.);
   }
 }
-

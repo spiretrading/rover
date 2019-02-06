@@ -1,6 +1,5 @@
-#ifndef UTILITIES_HPP
-#define UTILITIES_HPP
-
+#ifndef ROVER_UTILITIES_HPP
+#define ROVER_UTILITIES_HPP
 #include <limits>
 #include <variant>
 
@@ -11,21 +10,21 @@ namespace Rover {
     template<typename Tuple, typename Type, size_t I>
     struct contains {
       const static bool value = std::is_same_v<std::tuple_element_t<I, Tuple>,
-        Type> || contains<Tuple, Type, I - 1>::value;
+          Type> || contains<Tuple, Type, I - 1>::value;
     };
 
     template<typename Tuple, typename Type>
     struct contains<Tuple, Type, 0> {
       const static bool value = std::is_same_v<std::tuple_element_t<0, Tuple>,
-        Type>;
+          Type>;
     };
     
     template<typename Tuple, size_t I, size_t J = std::tuple_size_v<Tuple> - 1>
     struct remove {
       using type = decltype(std::tuple_cat(
-        std::declval<typename remove<Tuple, I, J - 1>::type>(),
-        std::make_tuple(std::declval<std::tuple_element_t<J,
-        Tuple>>())));
+          std::declval<typename remove<Tuple, I, J - 1>::type>(),
+          std::make_tuple(std::declval<std::tuple_element_t<J,
+          Tuple>>())));
     };
 
     template<typename Tuple, size_t I>
@@ -44,17 +43,16 @@ namespace Rover {
   template<typename Tuple, size_t I = std::tuple_size_v<Tuple> - 1>
   struct remove_duplicates {
     using type = std::conditional_t<
-      Details::contains<
-        Tuple,
-        std::tuple_element_t<I, Tuple>,
-        I - 1
-      >::value,
-      typename remove_duplicates<
-        typename Details::remove<Tuple, I>::type,
-        I - 1
-      >::type,
-      typename remove_duplicates<Tuple, I - 1>::type
-    >;
+        Details::contains<
+            Tuple,
+            std::tuple_element_t<I, Tuple>,
+            I - 1
+        >::value,
+        typename remove_duplicates<
+            typename Details::remove<Tuple, I>::type,
+            I - 1
+        >::type,
+        typename remove_duplicates<Tuple, I - 1>::type>;
   };
 
   template<size_t I>
@@ -80,7 +78,6 @@ namespace Rover {
 
   template<typename Tuple>
   using to_variant_t = typename to_variant<Tuple>::type;
-
 }
 
 #endif

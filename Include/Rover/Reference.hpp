@@ -26,9 +26,11 @@ namespace Rover {
       using Type = typename GeneratorType::Type;
 
       template<typename... ArgFwd, std::enable_if_t<
-        !std::is_same_v<typelist<std::decay_t<ArgFwd>...>, typelist<Reference>> &&
-        !std::is_same_v<typelist<std::decay_t<ArgFwd>...>, typelist<GeneratorType>>
-      >* = nullptr>
+          !std::is_same_v<typelist<std::decay_t<ArgFwd>...>,
+          typelist<Reference>> && 
+          !std::is_same_v<typelist<std::decay_t<ArgFwd>...>,
+          typelist<GeneratorType>>
+          >* = nullptr>
       Reference(ArgFwd&&... args);
 
       template<std::enable_if_t<!is_reference_v<GeneratorType>>* = nullptr>
@@ -41,7 +43,7 @@ namespace Rover {
       Type generate_impl(SessionType& s) const;
 
       template<typename OtherType, std::enable_if_t<
-        !std::is_same_v<GeneratorType, OtherType>>* = nullptr>
+          !std::is_same_v<GeneratorType, OtherType>>* = nullptr>
       bool constexpr is_same(const Reference<OtherType>& other) const;
 
       bool is_same(const Reference<GeneratorType>& other) const;
@@ -57,29 +59,29 @@ namespace Rover {
 
   template<typename GeneratorType>
   template<typename... ArgFwd, std::enable_if_t<
-    !std::is_same_v<typelist<std::decay_t<ArgFwd>...>,
-    typelist<Reference<GeneratorType>>> &&
-    !std::is_same_v<typelist<std::decay_t<ArgFwd>...>,
-    typelist<GeneratorType>>>*>
+      !std::is_same_v<typelist<std::decay_t<ArgFwd>...>,
+      typelist<Reference<GeneratorType>>> &&
+      !std::is_same_v<typelist<std::decay_t<ArgFwd>...>,
+      typelist<GeneratorType>>>*>
   Reference<GeneratorType>::Reference(ArgFwd&&... args)
-    : m_generator(new GeneratorType(std::forward<ArgFwd>(args)...)) {}
+      : m_generator(new GeneratorType(std::forward<ArgFwd>(args)...)) {}
 
   template<typename GeneratorType>
   template<std::enable_if_t<!is_reference_v<GeneratorType>>*>
   Reference<GeneratorType>::Reference(GeneratorType&& generator)
-    : m_generator(new GeneratorType(std::move(generator))) {}
+      : m_generator(new GeneratorType(std::move(generator))) {}
 
   template<typename GeneratorType>
   template<typename SessionType>
   typename Reference<GeneratorType>::Type
-  Reference<GeneratorType>::generate(SessionType& s) const {
-    return Session::Visitor<SessionType>()(s, *this);
+      Reference<GeneratorType>::generate(SessionType& s) const {
+    return SessionVisitor<SessionType>()(s, *this);
   }
 
   template<typename GeneratorType>
   template<typename SessionType>
   typename Reference<GeneratorType>::Type
-  Reference<GeneratorType>::generate_impl(SessionType& s) const {
+      Reference<GeneratorType>::generate_impl(SessionType& s) const {
     return m_generator->generate(s);
   }
 
@@ -90,7 +92,7 @@ namespace Rover {
 
   template<typename GeneratorType>
   template<typename OtherType, std::enable_if_t<
-    !std::is_same_v<GeneratorType, OtherType>>*>
+      !std::is_same_v<GeneratorType, OtherType>>*>
   bool constexpr Reference<GeneratorType>::is_same(
     const Reference<OtherType>& other) const {
     return false;
@@ -119,7 +121,6 @@ namespace Rover {
 
   template<typename Type>
   struct ImplementsConcept<Reference<Type>, Generator> : std::true_type {};
-
 }
 
 #endif
