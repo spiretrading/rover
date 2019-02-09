@@ -38,8 +38,8 @@ namespace Rover {
   template<typename T>
   using default_distribution_t = typename default_distribution_type<T>::type;
 
-  /** Type trait used to determine what default random engine to use for a given
-      type. */
+  /** Type trait used to determine what default random engine to use for a
+      given type. */
   template<typename T>
   struct default_engine_type {
     using type = std::mt19937;
@@ -68,7 +68,8 @@ namespace Rover {
   //! Generates an argument within a range of values determined by
   //! sub-generators.
   /*!
-    \tparam Begin The type of reference representing the beginning of the range.
+    \tparam Begin The type of reference representing the beginning of the
+            range.
     \tparam End The type of reference representing the end of the range.
     \tparam Distribution The type of distribution to produce.
     \tparam Engine The type of random engine to use.
@@ -86,7 +87,8 @@ namespace Rover {
 
     public:
 
-      using Type = std::common_type_t<typename Begin::Type, typename End::Type>;
+      using Type = std::common_type_t<typename Begin::Type,
+        typename End::Type>;
 
       //! Constructs a Range over an interval defined by its sub-generators.
       /*!
@@ -120,7 +122,8 @@ namespace Rover {
       Range<ensure_reference_t<std::decay_t<BeginFwd>>,
       ensure_reference_t<std::decay_t<EndFwd>>>;
 
-  template<typename Begin, typename End, typename Distribution, typename Engine>
+  template<typename Begin, typename End, typename Distribution,
+      typename Engine>
   template<typename BeginFwd, typename EndFwd>
   Range<Begin, End, Distribution, Engine>::Range
       (BeginFwd&& begin, EndFwd&& end, Interval interval)
@@ -129,14 +132,16 @@ namespace Rover {
         m_end(std::forward<EndFwd>(end)),
         m_interval(interval) {}
 
-  template<typename Begin, typename End, typename Distribution, typename Engine>
+  template<typename Begin, typename End, typename Distribution,
+      typename Engine>
   Range<Begin, End, Distribution, Engine>::Range
       (Range<Begin, End, Distribution, Engine>&& other)
       : m_begin(std::move(other.m_begin)),
         m_end(std::move(other.m_end)),
         m_interval(std::move(other.m_interval)) {}
 
-  template<typename Begin, typename End, typename Distribution, typename Engine>
+  template<typename Begin, typename End, typename Distribution,
+      typename Engine>
   template<typename Session>
   constexpr typename Range<Begin, End, Distribution, Engine>::Type
       Range<Begin, End, Distribution, Engine>::generate(Session& session) {
@@ -168,14 +173,16 @@ namespace Rover {
     }
   }
 
-  template<typename Begin, typename End, typename Distribution, typename Engine>
-      auto Range<Begin, End, Distribution, Engine>::build_session() const {
+  template<typename Begin, typename End, typename Distribution,
+      typename Engine>
+  auto Range<Begin, End, Distribution, Engine>::build_session() const {
     return std::tuple_cat(m_begin.build_session(), m_end.build_session());
   }
 
-  template<typename Begin, typename End, typename Distribution, typename Engine>
-  struct ImplementsConcept<Range<Begin, End, Distribution, Engine>, Generator> :
-      std::true_type {};
+  template<typename Begin, typename End, typename Distribution,
+      typename Engine>
+  struct ImplementsConcept<Range<Begin, End, Distribution, Engine>,
+      Generator> : std::true_type {};
 }
 
 #endif

@@ -62,7 +62,8 @@ namespace Rover {
     template<typename Generator>
     typename Generator::Type operator ()(SessionType& session,
         const Reference<Generator>& reference) {
-      auto var = Details::SessionVisitorImpl<SessionType>()(session, reference);
+      auto var = Details::SessionVisitorImpl<SessionType>()(session,
+          reference);
       auto result = std::get_if<typename Generator::Type>(&var);
       if(result == nullptr) {
         throw std::bad_variant_access();
