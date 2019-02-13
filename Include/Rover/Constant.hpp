@@ -14,8 +14,7 @@ namespace Rover {
       using Type = T;
 
       /** Constructs a constant generator from a value. */
-      template<typename U>
-      constexpr Constant(U&& value);
+      constexpr Constant(T value);
 
       constexpr Type generate(Evaluator& evaluator) const;
 
@@ -27,9 +26,8 @@ namespace Rover {
   Constant(U&&) -> Constant<std::decay_t<U>>;
 
   template<typename T>
-  template<typename U>
-  constexpr Constant<T>::Constant(U&& value)
-      : m_value(std::forward<U>(value)) {}
+  constexpr Constant<T>::Constant(T value)
+      : m_value(std::move(value)) {}
 
   template<typename T>
   constexpr typename Constant<T>::Type Constant<T>::generate(

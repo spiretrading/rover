@@ -2,11 +2,19 @@
 #include <catch.hpp>
 #include "Rover/Constant.hpp"
 #include "Rover/Generator.hpp"
+#include "Rover/Noncopyable.hpp"
 
 using namespace Rover;
 using namespace std::string_literals;
 
+struct X : Noncopyable {
+  X() = default;
+  X(X&&) = default;
+};
+
 TEST_CASE("test_fundamental_constants", "[Constant]") {
+//  auto x = X();
+//  auto y = std::move(x);
   SECTION("Boolean values.") {
     auto true_generator = Constant(true);
     REQUIRE(generate(true_generator));
