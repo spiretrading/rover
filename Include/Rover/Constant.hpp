@@ -1,29 +1,23 @@
 #ifndef ROVER_CONSTANT_HPP
 #define ROVER_CONSTANT_HPP
-#include <type_traits>
-#include "Generator.hpp"
-#include "Noncopyable.hpp"
+#include <utility>
+#include "Rover/Evaluator.hpp"
 
 namespace Rover {
 
   /** An argument generator that evaluates to a constant value. */
   template<typename T>
-  class Constant : Noncopyable {
-
+  class Constant {
     public:
 
       /** The type of constant to evaluate. */
       using Type = T;
 
-      /** Constructs a Constant generator from a value. */
-      template<typename U, typename std::enable_if_t<!std::is_same_v<U,
-        Constant<T>>>* = nullptr>
+      /** Constructs a constant generator from a value. */
+      template<typename U>
       constexpr Constant(U&& value);
 
-      template<typename Session>
-      constexpr Type generate(Session& session) const;
-
-      auto build_session() const;
+      constexpr Type generate(Evaluator& evaluator) const;
 
     private:
       Type m_value;
@@ -33,25 +27,15 @@ namespace Rover {
   Constant(U&&) -> Constant<std::decay_t<U>>;
 
   template<typename T>
-  template<typename U, typename std::enable_if_t<!std::is_same_v<U,
-      Constant<T>>>*>
+  template<typename U>
   constexpr Constant<T>::Constant(U&& value)
-    : m_value(std::forward<U>(value)) {}
+      : m_value(std::forward<U>(value)) {}
 
   template<typename T>
-  template<typename Session>
-  typename constexpr Constant<T>::Type Constant<T>::generate(
-    Session& session) const {
-    return m_value; 
+  constexpr typename Constant<T>::Type Constant<T>::generate(
+      Evaluator& evaluator) const {
+    return m_value;
   }
-
-  template<typename T>
-  auto Constant<T>::build_session() const {
-    return std::make_tuple();
-  }
-
-  template<typename Type>
-  struct ImplementsConcept<Constant<Type>, Generator> : std::true_type {};
 }
 
 #endif
