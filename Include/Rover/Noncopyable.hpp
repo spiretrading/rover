@@ -8,6 +8,7 @@ namespace {
   class Noncopyable {
     protected:
       constexpr Noncopyable() = default;
+      constexpr Noncopyable(Noncopyable&&) = default;
       Noncopyable(const Noncopyable&) = delete;
       Noncopyable& operator =(const Noncopyable&) = delete;
   };
