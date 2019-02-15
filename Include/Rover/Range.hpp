@@ -180,10 +180,13 @@ namespace Rover {
 
   template<typename B, typename E, typename G>
   typename Range<B, E, G>::Type Range<B, E, G>::pick_random(
-    const Type& lhs, const Type& rhs) {
+      const Type& lhs, const Type& rhs) {
     auto random_fraction = m_distribution(m_engine);
-    return random_fraction < 0.5 ?
-        lhs : rhs;
+    if(random_fraction < 0.5) {
+      return lhs;
+    } else {
+      return rhs;
+    }
   }
 }
 
