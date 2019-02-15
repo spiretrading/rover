@@ -1,5 +1,5 @@
-#ifndef ROVER_EVALUATION_HPP
-#define ROVER_EVALUATION_HPP
+#ifndef ROVER_EVALUATOR_HPP
+#define ROVER_EVALUATOR_HPP
 #include <memory>
 #include <utility>
 #include <vector>

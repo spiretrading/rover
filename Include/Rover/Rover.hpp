@@ -3,5 +3,6 @@
 #include "Rover/Constant.hpp"
 #include "Rover/Evaluator.hpp"
 #include "Rover/Generator.hpp"
+#include "Rover/Range.hpp"
 
 #endif
