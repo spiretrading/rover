@@ -78,6 +78,10 @@ namespace Rover {
       Type generate(Evaluator& evaluator);
 
     private:
+      Type calculate_random(const Type& begin, const Type& end);
+      Type pick_random(const Type& lhs, const Type& rhs);
+
+    private:
       Begin m_begin;
       End m_end;
       std::function<Type(const Type&)> m_round;
@@ -132,9 +136,13 @@ namespace Rover {
     auto begin = evaluator.evaluate(m_begin);
     auto end = evaluator.evaluate(m_end);
     while(true) {
-      auto random_fraction = m_distribution(m_engine);
-      auto distance = static_cast<Type>((end - begin) * random_fraction);
-      auto value = begin + distance;
+      auto value = calculate_random(begin, end);
+      auto alt_value = calculate_random(begin, end);
+      if(value == begin && alt_value == begin) {
+        continue;
+      } else if(value == begin || alt_value == begin) {
+        value = pick_random(begin, end);
+      }
       auto result = m_round(value);
       switch(m_interval) {
         case Interval::CLOSED:
@@ -159,6 +167,23 @@ namespace Rover {
           break;
       }
     }
+  }
+
+  template<typename B, typename E, typename G>
+  typename Range<B, E, G>::Type Range<B, E, G>::calculate_random(
+      const Type& begin, const Type& end) {
+    auto random_fraction = m_distribution(m_engine);
+    auto distance = static_cast<Type>(random_fraction * (end - begin));
+    auto value = begin + distance;
+    return value;
+  }
+
+  template<typename B, typename E, typename G>
+  typename Range<B, E, G>::Type Range<B, E, G>::pick_random(
+    const Type& lhs, const Type& rhs) {
+    auto random_fraction = m_distribution(m_engine);
+    return random_fraction < 0.5 ?
+        lhs : rhs;
   }
 }
 
