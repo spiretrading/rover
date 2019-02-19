@@ -2,6 +2,7 @@
 #include <catch.hpp>
 #include "Rover/Constant.hpp"
 #include "Rover/Generator.hpp"
+#include "Rover/Noncopyable.hpp"
 
 using namespace Rover;
 using namespace std::string_literals;
