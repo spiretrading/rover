@@ -22,9 +22,6 @@ namespace Rover {
       Type m_value;
   };
 
-  template<typename U>
-  Constant(U&&) -> Constant<std::decay_t<U>>;
-
   template<typename T>
   constexpr Constant<T>::Constant(T value)
       : m_value(std::move(value)) {}

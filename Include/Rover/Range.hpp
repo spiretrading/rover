@@ -1,5 +1,6 @@
 #ifndef ROVER_RANGE_HPP
 #define ROVER_RANGE_HPP
+#include <functional>
 #include <random>
 #include <type_traits>
 #include <utility>
@@ -75,11 +76,121 @@ namespace Rover {
         Interval interval = Interval::CLOSED);
 
       Type generate(Evaluator& evaluator);
+
+    private:
+      Type calculate_random(const Type& begin, const Type& end);
+      Type pick_random(const Type& lhs, const Type& rhs);
+
+    private:
+      Begin m_begin;
+      End m_end;
+      std::function<Type(const Type&)> m_round;
+      Interval m_interval;
+      std::mt19937 m_engine;
+      std::uniform_real_distribution<double> m_distribution;
   };
 
   template<typename BeginFwd, typename EndFwd>
   Range(BeginFwd&&, EndFwd&&, Interval = Interval::CLOSED) ->
     Range<std::decay_t<BeginFwd>, std::decay_t<EndFwd>, void>;
+
+  template<typename BeginFwd, typename EndFwd, typename GranularityFwd>
+  Range(BeginFwd&&, EndFwd&&, GranularityFwd&&, Interval = Interval::CLOSED) ->
+    Range<std::decay_t<BeginFwd>, std::decay_t<EndFwd>,
+    std::decay_t<GranularityFwd>>;
+
+  template<typename B, typename E, typename G>
+  template<typename BeginFwd, typename EndFwd>
+  Range<B, E, G>::Range(BeginFwd&& begin, EndFwd&& end,
+      Interval interval)
+      : m_begin(std::forward<BeginFwd>(begin)),
+        m_end(std::forward<EndFwd>(end)),
+        m_round([](const Type& value){
+          return value;
+        }),
+        m_interval(interval),
+        m_engine(std::random_device()()),
+        m_distribution(0., 1.) {}
+
+  template<typename B, typename E, typename G>
+  template<typename BeginFwd, typename EndFwd, typename GranularityFwd>
+  Range<B, E, G>::Range(BeginFwd&& begin, EndFwd&& end,
+      GranularityFwd&& granularity, Interval interval)
+      : m_begin(std::forward<BeginFwd>(begin)),
+        m_end(std::forward<EndFwd>(end)),
+        m_round([granularity = std::forward<GranularityFwd(granularity)](
+            const Type& value){
+          auto flr = granularity * static_cast<int64_t>(value / granularity);
+          auto ceil = granularity * (static_cast<int64_t>(value /
+              granularity) + 1);
+          if(std::abs(value - flr) <= std::abs(ceil - value)) {
+            return flr;
+          } else {
+            return ceil;
+          }
+        }),
+        m_interval(interval),
+        m_engine(std::random_device()()),
+        m_distribution(0., 1.) {}
+
+  template<typename B, typename E, typename G>
+  typename Range<B, E, G>::Type Range<B, E, G>::generate(
+      Evaluator& evaluator) {
+    auto begin = evaluator.evaluate(m_begin);
+    auto end = evaluator.evaluate(m_end);
+    while(true) {
+      auto value = calculate_random(begin, end);
+      auto alt_value = calculate_random(begin, end);
+      if(value == begin && alt_value == begin) {
+        continue;
+      } else if(value == begin || alt_value == begin) {
+        value = pick_random(begin, end);
+      }
+      auto result = m_round(value);
+      switch(m_interval) {
+        case Interval::CLOSED:
+          if(result >= begin && result <= end) {
+            return result;
+          }
+          break;
+        case Interval::LEFT_EXCLUSIVE:
+          if(result > begin && result <= end) {
+            return result;
+          }
+          break;
+        case Interval::RIGHT_EXCLUSIVE:
+          if(result >= begin && result < end) {
+            return result;
+          }
+          break;
+        case Interval::OPEN:
+          if(result > begin && result < end) {
+            return result;
+          }
+          break;
+      }
+    }
+  }
+
+  template<typename B, typename E, typename G>
+  typename Range<B, E, G>::Type Range<B, E, G>::calculate_random(
+      const Type& begin, const Type& end) {
+    auto random_fraction = m_distribution(m_engine);
+    auto distance = static_cast<Type>(random_fraction * (end - begin));
+    auto value = begin + distance;
+    return value;
+  }
+
+  template<typename B, typename E, typename G>
+  typename Range<B, E, G>::Type Range<B, E, G>::pick_random(
+      const Type& lhs, const Type& rhs) {
+    auto random_fraction = m_distribution(m_engine);
+    if(random_fraction < 0.5) {
+      return lhs;
+    } else {
+      return rhs;
+    }
+  }
 }
 
 #endif
