@@ -123,8 +123,11 @@ namespace Rover {
           auto flr = granularity * static_cast<int64_t>(value / granularity);
           auto ceil = granularity * (static_cast<int64_t>(value /
               granularity) + 1);
-          return std::abs(value - flr) <= std::abs(ceil - value) ?
-            flr : ceil;
+          if(std::abs(value - flr) <= std::abs(ceil - value)) {
+            return flr;
+          } else {
+            return ceil;
+          }
         }),
         m_interval(interval),
         m_engine(std::random_device()()),
