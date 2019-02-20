@@ -1,10 +1,10 @@
 cmake_minimum_required(VERSION 3.8)
 project(rover)
-
+if(WIN32)
+  execute_process(COMMAND cmd /c "CALL ${CMAKE_CURRENT_LIST_DIR}/setup.bat")
+endif()
 include_directories(./Include)
-
 set(CMAKE_LIBRARY_FLAGS "")
-
 if(MSVC)
   set(CMAKE_LIBRARY_FLAGS "/LTCG")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /WX /bigobj /std:c++17 /Wv:18")
@@ -28,19 +28,15 @@ endif()
 if(${CMAKE_SYSTEM_NAME} STREQUAL "SunOS")
   set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_RELEASE} -pthreads")
 endif()
-
 file(GLOB rover_header_files ./Include/Rover/*.hpp)
 source_group("Rover" FILES ${rover_header_files})
-
 file(GLOB header_files ${rover_header_files})
-
 if(MSVC)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
 endif()
-
 add_library(rover ${header_files})
 set_source_files_properties(${header_files} PROPERTIES HEADER_FILE_ONLY TRUE)
 set_target_properties(rover PROPERTIES STATIC_LIBRARY_FLAGS_RELEASE
   "${CMAKE_LIBRARY_FLAGS}" LINKER_LANGUAGE CXX OUTPUT_NAME rover)
-
+add_subdirectory(Python)
 add_subdirectory(Tests)
