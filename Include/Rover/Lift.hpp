@@ -1,6 +1,7 @@
 #ifndef ROVER_LIFT_HPP
 #define ROVER_LIFT_HPP
 #include <tuple>
+#include <type_traits>
 #include "Rover/Evaluator.hpp"
 
 namespace Rover {
@@ -42,7 +43,7 @@ namespace Rover {
   constexpr Lift<F, Generators...>::Lift(FunctionFwd&& func,
       GeneratorsFwd&&... generators)
       : m_func(std::forward<FunctionFwd>(func)),
-        m_generators(std::forward_as_tuple(generators...)) {}
+        m_generators(std::forward<GeneratorsFwd>(generators)...) {}
 
   template<typename F, typename... Generators>
   constexpr typename Lift<F, Generators...>::Type
