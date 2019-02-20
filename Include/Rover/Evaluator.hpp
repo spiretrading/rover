@@ -31,7 +31,7 @@ namespace Rover {
         Entry(U&& value);
       };
       struct Evaluation {
-        void* m_generator;
+        const void* m_generator;
         std::unique_ptr<BaseEntry> m_entry;
 
         template<typename Generator>
