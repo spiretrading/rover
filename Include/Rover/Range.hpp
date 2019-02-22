@@ -75,6 +75,14 @@ namespace Rover {
       Range(BeginFwd&& begin, EndFwd&& end, GranularityFwd&& granularity,
         Interval interval = Interval::CLOSED);
 
+      Range(const Range& other);
+
+      Range& operator=(const Range& other);
+
+      Range(Range&&) = default;
+
+      Range& operator=(Range&& other) = default;
+
       Type generate(Evaluator& evaluator);
 
     private:
@@ -132,6 +140,23 @@ namespace Rover {
         m_interval(interval),
         m_engine(std::random_device()()),
         m_distribution(0., 1.) {}
+
+  template<typename B, typename E, typename G>
+  Range<B, E, G>::Range(const Range& other)
+      : m_begin(other.m_begin),
+        m_end(other.m_end),
+        m_round(other.m_round),
+        m_interval(other.m_interval),
+        m_engine(std::random_device()()),
+        m_distribution(0., 1.) {}
+
+  template<typename B, typename E, typename G>
+  Range<B, E, G>& Range<B, E, G>::operator=(const Range& other) {
+    m_begin = other.m_begin;
+    m_end = other.m_end;
+    m_round = other.m_round;
+    m_interval = other.m_interval;
+  }
 
   template<typename B, typename E, typename G>
   typename Range<B, E, G>::Type Range<B, E, G>::generate(
