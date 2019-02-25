@@ -3,6 +3,7 @@
 #include <memory>
 #include <type_traits>
 #include "Rover/Evaluator.hpp"
+#include "Rover/Noncopyable.hpp"
 #include "Rover/Pointer.hpp"
 
 namespace Rover {
@@ -12,7 +13,7 @@ namespace Rover {
     \tparam T The type of value to generate.
   */
   template<typename T>
-  class Box {
+  class Box : Noncopyable {
     public:
 
       //! The type of value to generate.
@@ -44,7 +45,7 @@ namespace Rover {
       template<typename GeneratorFwd>
       PointerWrapper(GeneratorFwd&&)->PointerWrapper<std::decay_t<GeneratorFwd>>;
 
-      std::shared_ptr<WrapperBase> m_generator;
+      std::unique_ptr<WrapperBase> m_generator;
   };
 
   template<typename GeneratorFwd>
@@ -56,10 +57,10 @@ namespace Rover {
   Box<T>::Box(GeneratorFwd&& gen)
       : m_generator([&gen]() mutable {
           if constexpr(is_object_pointer_v<std::decay_t<GeneratorFwd>>) {
-            return std::make_shared<PointerWrapper<std::decay_t<GeneratorFwd>>>(
+            return std::make_unique<PointerWrapper<std::decay_t<GeneratorFwd>>>(
                 std::forward<GeneratorFwd>(gen));
           } else {
-            return std::make_shared<ValueWrapper<std::decay_t<GeneratorFwd>>>(
+            return std::make_unique<ValueWrapper<std::decay_t<GeneratorFwd>>>(
                 std::forward<GeneratorFwd>(gen));
           }
         }()) {}
