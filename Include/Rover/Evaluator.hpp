@@ -1,8 +1,43 @@
 #ifndef ROVER_EVALUATION_HPP
 #define ROVER_EVALUATION_HPP
 #include <memory>
+#include <typeindex>
+#include <typeinfo>
+#include <type_traits>
+#include <unordered_map>
 #include <utility>
 #include <vector>
+#include "Pointer.hpp"
+
+namespace Rover {
+namespace Details {
+
+  struct TypeErasingPtr {
+    template<typename PtrFwd, std::enable_if_t<!std::is_same_v<std::decay_t<
+        PtrFwd>, TypeErasingPtr>>* = nullptr>
+    TypeErasingPtr(PtrFwd&& ptr)
+        : m_ptr(std::forward<PtrFwd>(ptr)),
+          m_type(typeid(*std::declval<std::decay_t<PtrFwd>>())) {}
+
+    inline bool operator ==(const TypeErasingPtr& other) const {
+      return m_ptr == other.m_ptr && m_type == other.m_type;
+    }
+    const void* m_ptr;
+    std::type_index m_type;
+  };
+}
+}
+
+namespace std {
+
+  template<>
+  struct hash<Rover::Details::TypeErasingPtr> {
+    size_t operator()(const Rover::Details::TypeErasingPtr& ptr) const {
+      return hash<const void*>()(ptr.m_ptr) + 0x9e3779b9 +
+          (ptr.m_type.hash_code() << 6) + (ptr.m_type.hash_code() >> 2);
+    }
+  };
+}
 
 namespace Rover {
 
@@ -37,7 +72,8 @@ namespace Rover {
         template<typename Generator>
         Evaluation(Generator& generator, std::unique_ptr<BaseEntry> entry);
       };
-      std::vector<Evaluation> m_evaluations;
+      std::unordered_map<Details::TypeErasingPtr, std::unique_ptr<BaseEntry>>
+          m_evaluations;
   };
 
   template<typename T>
@@ -54,16 +90,13 @@ namespace Rover {
   template<typename Generator>
   typename Generator::Type Evaluator::evaluate(Generator& generator) {
     using Type = typename Generator::Type;
-    auto i = std::find_if(m_evaluations.begin(), m_evaluations.end(),
-      [&] (const auto& evaluation) {
-        return evaluation.m_generator == &generator;
-      });
+    auto type_erasing_ptr = Details::TypeErasingPtr(&generator);
+    auto i = m_evaluations.find(type_erasing_ptr);
     if(i == m_evaluations.end()) {
       auto entry = std::make_unique<Entry<Type>>(generator.generate(*this));
-      m_evaluations.emplace_back(generator, std::move(entry));
-      i = m_evaluations.end() - 1;
+      i = m_evaluations.emplace(type_erasing_ptr, std::move(entry)).first;
     }
-    return static_cast<Entry<Type>&>(*i->m_entry).m_value;
+    return static_cast<Entry<Type>&>(*i->second).m_value;
   }
 }
 
