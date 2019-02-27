@@ -48,15 +48,15 @@ namespace Rover {
   template<typename GeneratorFwd, std::enable_if_t<!std::is_same_v<
     std::decay_t<GeneratorFwd>, Box<T>>>*>
   Box<T>::Box(GeneratorFwd&& gen)
-      : m_generator([&gen]() mutable {
-          if constexpr(is_object_pointer_v<std::decay_t<GeneratorFwd>>) {
-            return std::make_unique<PointerWrapper<std::decay_t<GeneratorFwd>>>(
-                std::forward<GeneratorFwd>(gen));
-          } else {
-            return std::make_unique<ValueWrapper<std::decay_t<GeneratorFwd>>>(
-                std::forward<GeneratorFwd>(gen));
-          }
-        }()) {}
+    : m_generator([&gen]() mutable {
+        if constexpr(is_object_pointer_v<std::decay_t<GeneratorFwd>>) {
+          return std::make_unique<PointerWrapper<std::decay_t<GeneratorFwd>>>(
+              std::forward<GeneratorFwd>(gen));
+        } else {
+          return std::make_unique<ValueWrapper<std::decay_t<GeneratorFwd>>>(
+              std::forward<GeneratorFwd>(gen));
+        }
+      }()) {}
 
   template<typename T>
   T Box<T>::generate(Evaluator& evaluator) {
@@ -69,7 +69,7 @@ namespace Rover {
     template<typename GeneratorFwd, std::enable_if_t<!std::is_same_v<
       std::decay_t<GeneratorFwd>, ValueWrapper>>* = nullptr>
     ValueWrapper(GeneratorFwd&& gen)
-        : m_generator(std::forward<GeneratorFwd>(gen)) {}
+      : m_generator(std::forward<GeneratorFwd>(gen)) {}
 
     virtual T generate(Evaluator& evaluator) override final {
       return evaluator.evaluate(m_generator);
@@ -84,7 +84,7 @@ namespace Rover {
     template<typename GeneratorFwd, std::enable_if_t<!std::is_same_v<
       std::decay_t<GeneratorFwd>, PointerWrapper>>* = nullptr>
     PointerWrapper(GeneratorFwd&& gen)
-        : m_generator(std::forward<GeneratorFwd>(gen)) {}
+      : m_generator(std::forward<GeneratorFwd>(gen)) {}
 
     virtual T generate(Evaluator& evaluator) override final {
       return evaluator.evaluate(*m_generator);
