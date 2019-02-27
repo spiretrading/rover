@@ -11,12 +11,12 @@ namespace Rover {
 
   template<typename T>
   struct is_object_pointer<T, std::enable_if_t<std::is_pointer_v<T>>> :
-      std::true_type {};
+    std::true_type {};
 
   template<typename T>
   struct is_object_pointer<T, std::enable_if_t<decltype(*std::declval<T>(),
-      std::declval<T>().operator->(), std::true_type{})::value>> :
-      std::true_type {};
+    std::declval<T>().operator->(), std::true_type{})::value>> :
+    std::true_type {};
 
   /** Trait to check whether a type is a pointer to a C++ object or POD
       type. */
@@ -27,8 +27,8 @@ namespace Rover {
       pointer is passed. */
   template<typename Generator>
   using generator_type = std::conditional_t<is_object_pointer_v<
-      Generator>, typename std::pointer_traits<Generator>::element_type,
-      typename Generator>;
+    Generator>, typename std::pointer_traits<Generator>::element_type,
+    typename Generator>;
 
   /** Trait to retrieve the type of values produced by a generator even if a
       pointer is passed. */
