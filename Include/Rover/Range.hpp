@@ -111,44 +111,44 @@ namespace Rover {
   template<typename BeginFwd, typename EndFwd>
   Range<B, E, G>::Range(BeginFwd&& begin, EndFwd&& end,
       Interval interval)
-      : m_begin(std::forward<BeginFwd>(begin)),
-        m_end(std::forward<EndFwd>(end)),
-        m_round([](const Type& value){
-          return value;
-        }),
-        m_interval(interval),
-        m_engine(std::random_device()()),
-        m_distribution(0., 1.) {}
+    : m_begin(std::forward<BeginFwd>(begin)),
+      m_end(std::forward<EndFwd>(end)),
+      m_round([](const Type& value){
+        return value;
+      }),
+      m_interval(interval),
+      m_engine(std::random_device()()),
+      m_distribution(0., 1.) {}
 
   template<typename B, typename E, typename G>
   template<typename BeginFwd, typename EndFwd, typename GranularityFwd>
   Range<B, E, G>::Range(BeginFwd&& begin, EndFwd&& end,
       GranularityFwd&& granularity, Interval interval)
-      : m_begin(std::forward<BeginFwd>(begin)),
-        m_end(std::forward<EndFwd>(end)),
-        m_round([granularity = std::forward<GranularityFwd(granularity)](
-            const Type& value){
-          auto flr = granularity * static_cast<int64_t>(value / granularity);
-          auto ceil = granularity * (static_cast<int64_t>(value /
-              granularity) + 1);
-          if(std::abs(value - flr) <= std::abs(ceil - value)) {
-            return flr;
-          } else {
-            return ceil;
-          }
-        }),
-        m_interval(interval),
-        m_engine(std::random_device()()),
-        m_distribution(0., 1.) {}
+    : m_begin(std::forward<BeginFwd>(begin)),
+      m_end(std::forward<EndFwd>(end)),
+      m_round([granularity = std::forward<GranularityFwd(granularity)](
+          const Type& value){
+        auto flr = granularity * static_cast<int64_t>(value / granularity);
+        auto ceil = granularity * (static_cast<int64_t>(value /
+            granularity) + 1);
+        if(std::abs(value - flr) <= std::abs(ceil - value)) {
+          return flr;
+        } else {
+          return ceil;
+        }
+      }),
+      m_interval(interval),
+      m_engine(std::random_device()()),
+      m_distribution(0., 1.) {}
 
   template<typename B, typename E, typename G>
   Range<B, E, G>::Range(const Range& other)
-      : m_begin(other.m_begin),
-        m_end(other.m_end),
-        m_round(other.m_round),
-        m_interval(other.m_interval),
-        m_engine(std::random_device()()),
-        m_distribution(0., 1.) {}
+    : m_begin(other.m_begin),
+      m_end(other.m_end),
+      m_round(other.m_round),
+      m_interval(other.m_interval),
+      m_engine(std::random_device()()),
+      m_distribution(0., 1.) {}
 
   template<typename B, typename E, typename G>
   Range<B, E, G>& Range<B, E, G>::operator=(const Range& other) {
