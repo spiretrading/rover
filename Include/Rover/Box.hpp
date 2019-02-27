@@ -20,7 +20,7 @@ namespace Rover {
       using Type = T;
 
       //! Packs a generator or generator pointer into a Box
-      template<typename GeneratorFwd, std::enable_if_t<!std::is_same_v<
+      template<typename GeneratorFwd, std::enable_if_t<!std::is_convertible_v<
         std::decay_t<GeneratorFwd>, Box>>* = nullptr>
       explicit Box(GeneratorFwd&& gen);
 
@@ -46,7 +46,7 @@ namespace Rover {
   Box(GeneratorFwd&&) -> Box<generator_type_v<std::decay_t<GeneratorFwd>>>;
 
   template<typename T>
-  template<typename GeneratorFwd, std::enable_if_t<!std::is_same_v<
+  template<typename GeneratorFwd, std::enable_if_t<!std::is_convertible_v<
     std::decay_t<GeneratorFwd>, Box<T>>>*>
   Box<T>::Box(GeneratorFwd&& gen)
     : m_generator([&gen]() mutable {
@@ -67,10 +67,9 @@ namespace Rover {
   template<typename T>
   template<typename Generator>
   class Box<T>::ValueWrapper final : public WrapperBase {
-
     public:
 
-      template<typename GeneratorFwd, std::enable_if_t<!std::is_same_v<
+      template<typename GeneratorFwd, std::enable_if_t<!std::is_convertible_v<
         std::decay_t<GeneratorFwd>, ValueWrapper>>* = nullptr>
       ValueWrapper(GeneratorFwd&& gen)
         : m_generator(std::forward<GeneratorFwd>(gen)) {}
@@ -86,10 +85,9 @@ namespace Rover {
   template<typename T>
   template<typename Generator>
   class Box<T>::PointerWrapper final : public WrapperBase {
-
     public:
 
-      template<typename GeneratorFwd, std::enable_if_t<!std::is_same_v<
+      template<typename GeneratorFwd, std::enable_if_t<!std::is_convertible_v<
         std::decay_t<GeneratorFwd>, PointerWrapper>>* = nullptr>
       PointerWrapper(GeneratorFwd&& gen)
         : m_generator(std::forward<GeneratorFwd>(gen)) {}
