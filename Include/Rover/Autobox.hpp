@@ -24,7 +24,7 @@ namespace Rover {
             boxing is needed.
   */
   template<typename T>
-  auto make_autobox(T&& value);
+  decltype(auto) make_autobox(T&& value);
 }
 
 #endif
