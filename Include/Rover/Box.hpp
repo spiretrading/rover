@@ -13,7 +13,7 @@ namespace Rover {
     \tparam T The type of value to generate.
   */
   template<typename T>
-  class Box : Noncopyable {
+  class Box : private Noncopyable {
     public:
 
       //! The type of value to generate.
