@@ -78,20 +78,19 @@ namespace Rover {
       Type generate(Evaluator& evaluator);
 
     private:
-      Type calculate_random(const Type& begin, const Type& end);
-      Type pick_random(const Type& lhs, const Type& rhs);
-      template<typename TypeFwd>
-      Type round(Evaluator& evaluator, TypeFwd&& value);
       using GranularityPlaceholder = std::conditional_t<std::is_same_v<
         Granularity, void>, char, Granularity>;
-
-    private:
       Begin m_begin;
       End m_end;
       GranularityPlaceholder m_granularity;
       Interval m_interval;
       std::mt19937 m_engine;
       std::uniform_real_distribution<double> m_distribution;
+
+      Type calculate_random(const Type& begin, const Type& end);
+      Type pick_random(const Type& lhs, const Type& rhs);
+      template<typename TypeFwd>
+      Type round(Evaluator& evaluator, TypeFwd&& value);
   };
 
   template<typename BeginFwd, typename EndFwd>

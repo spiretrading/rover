@@ -3,24 +3,18 @@
 #include <catch.hpp>
 #include "Rover/Constant.hpp"
 #include "Rover/Generator.hpp"
+#include "Rover/Noncopyable.hpp"
 #include "Rover/Range.hpp"
+
 using namespace Rover;
 
 namespace {
 
   template<typename T>
-  class MoveOnlyConstant : public Constant<T> {
+  class MoveOnlyConstant : public Constant<T>, public Noncopyable {
     public:
 
-      template<typename TypeFwd, std::enable_if_t<!std::is_convertible_v<
-        std::decay_t<TypeFwd>, MoveOnlyConstant>>* = nullptr>
-      MoveOnlyConstant(TypeFwd&& value)
-        : Constant(std::forward<TypeFwd>(value)) {}
-
-      MoveOnlyConstant(const MoveOnlyConstant&) = delete;
-      MoveOnlyConstant& operator =(const MoveOnlyConstant&) = delete;
-      MoveOnlyConstant(MoveOnlyConstant&&) = default;
-      MoveOnlyConstant& operator =(MoveOnlyConstant&&) = default;
+      using Constant<T>::Constant;
   };
 
   template<typename TypeFwd>
@@ -106,7 +100,6 @@ TEST_CASE("test_granularity_copyable", "[Range]") {
 }
 
 TEST_CASE("test_granularity_move_only", "[Range]") {
-
   SECTION("Integer.") {
     auto range = Range(MoveOnlyConstant(1), MoveOnlyConstant(100),
       MoveOnlyConstant(5));
