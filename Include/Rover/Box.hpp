@@ -75,7 +75,7 @@ namespace Rover {
       ValueWrapper(GeneratorFwd&& gen)
         : m_generator(std::forward<GeneratorFwd>(gen)) {}
 
-      virtual T generate(Evaluator& evaluator) override final {
+      T generate(Evaluator& evaluator) override final {
         return evaluator.evaluate(m_generator);
       }
 
@@ -94,7 +94,7 @@ namespace Rover {
       PointerWrapper(GeneratorFwd&& gen)
         : m_generator(std::forward<GeneratorFwd>(gen)) {}
 
-      virtual T generate(Evaluator& evaluator) override final {
+      T generate(Evaluator& evaluator) override final {
         return evaluator.evaluate(*m_generator);
       }
 
