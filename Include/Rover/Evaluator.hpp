@@ -14,10 +14,10 @@ namespace Details {
 
   struct TypeErasingPtr {
     template<typename PtrFwd, std::enable_if_t<!std::is_same_v<std::decay_t<
-        PtrFwd>, TypeErasingPtr>>* = nullptr>
+      PtrFwd>, TypeErasingPtr>>* = nullptr>
     TypeErasingPtr(PtrFwd&& ptr)
-        : m_ptr(std::forward<PtrFwd>(ptr)),
-          m_type(typeid(*std::declval<std::decay_t<PtrFwd>>())) {}
+      : m_ptr(std::forward<PtrFwd>(ptr)),
+        m_type(typeid(*std::declval<std::decay_t<PtrFwd>>())) {}
 
     inline bool operator ==(const TypeErasingPtr& other) const {
       return m_ptr == other.m_ptr && m_type == other.m_type;
@@ -34,7 +34,7 @@ namespace std {
   struct hash<Rover::Details::TypeErasingPtr> {
     size_t operator()(const Rover::Details::TypeErasingPtr& ptr) const {
       return hash<const void*>()(ptr.m_ptr) + 0x9e3779b9 +
-          (ptr.m_type.hash_code() << 6) + (ptr.m_type.hash_code() >> 2);
+        (ptr.m_type.hash_code() << 6) + (ptr.m_type.hash_code() >> 2);
     }
   };
 }
@@ -73,19 +73,19 @@ namespace Rover {
         Evaluation(Generator& generator, std::unique_ptr<BaseEntry> entry);
       };
       std::unordered_map<Details::TypeErasingPtr, std::unique_ptr<BaseEntry>>
-          m_evaluations;
+        m_evaluations;
   };
 
   template<typename T>
   template<typename U>
   Evaluator::Entry<T>::Entry(U&& value)
-      : m_value(std::forward<U>(value)) {}
+    : m_value(std::forward<U>(value)) {}
 
   template<typename Generator>
   Evaluator::Evaluation::Evaluation(Generator& generator,
       std::unique_ptr<BaseEntry> entry)
-      : m_generator(&generator),
-        m_entry(std::move(entry)) {}
+    : m_generator(&generator),
+      m_entry(std::move(entry)) {}
 
   template<typename Generator>
   typename Generator::Type Evaluator::evaluate(Generator& generator) {
