@@ -7,7 +7,6 @@
 #include <unordered_map>
 #include <utility>
 #include <vector>
-#include "Pointer.hpp"
 
 namespace Rover {
 namespace Details {
