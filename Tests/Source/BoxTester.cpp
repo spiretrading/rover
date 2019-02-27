@@ -29,8 +29,8 @@ TEST_CASE("test_values", "[Box]") {
 
 TEST_CASE("test_raw_pointers", "[Box]") {
   SECTION("Constant.") {
-    auto c = std::make_unique<Constant<int>>(5);
-    auto b = Box(c.get());
+    auto c = Constant<int>(5);
+    auto b = Box(&c);
     static_assert(std::is_same_v<std::decay_t<decltype(b)>, Box<int>>);
     REQUIRE(generate(b) == 5);
   }
@@ -49,8 +49,8 @@ TEST_CASE("test_raw_pointers", "[Box]") {
 
 TEST_CASE("test_unique_pointers", "[Box]") {
   SECTION("Constant.") {
-    auto c = std::make_unique<Constant<int>>(5);
-    auto b = Box(std::move(c));
+    auto c = Constant<int>(5);
+    auto b = Box(&c);
     static_assert(std::is_same_v<std::decay_t<decltype(b)>, Box<int>>);
     REQUIRE(generate(b) == 5);
   }
