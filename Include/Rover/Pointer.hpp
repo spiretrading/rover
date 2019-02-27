@@ -23,16 +23,17 @@ namespace Rover {
   template<typename T>
   inline constexpr bool is_object_pointer_v = is_object_pointer<T>::value;
  
-  /** Trait to retrieve the type of a generator even if a pointer is passed. */
+  /** Trait to retrieve the type of values produced by a generator even if a
+      pointer is passed. */
   template<typename Generator>
-  using GeneratorType = std::conditional_t<is_object_pointer_v<
+  using generator_type = std::conditional_t<is_object_pointer_v<
       Generator>, typename std::pointer_traits<Generator>::element_type,
       typename Generator>;
 
   /** Trait to retrieve the type of values produced by a generator even if a
       pointer is passed. */
   template<typename Generator>
-  using GeneratorValueType = typename GeneratorType<Generator>::Type;
+  using generator_type_v = typename generator_type<Generator>::Type;
 }
 
 #endif

@@ -42,7 +42,7 @@ namespace Rover {
   };
 
   template<typename GeneratorFwd>
-  Box(GeneratorFwd&&) -> Box<GeneratorValueType<std::decay_t<GeneratorFwd>>>;
+  Box(GeneratorFwd&&) -> Box<generator_type_v<std::decay_t<GeneratorFwd>>>;
 
   template<typename T>
   template<typename GeneratorFwd, std::enable_if_t<!std::is_same_v<
