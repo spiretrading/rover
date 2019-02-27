@@ -28,15 +28,15 @@ namespace Rover {
 
     private:
       class WrapperBase {
-      public:
-        virtual ~WrapperBase() = default;
-        virtual Type generate(Evaluator& evaluator) = 0;
+        public:
+          virtual ~WrapperBase() = default;
+          virtual Type generate(Evaluator& evaluator) = 0;
       };
 
-      template<typename Generator>
+      template<typename>
       class ValueWrapper;
 
-      template<typename Generator>
+      template<typename>
       class PointerWrapper;
 
       std::unique_ptr<WrapperBase> m_generator;
