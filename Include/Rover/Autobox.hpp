@@ -1,5 +1,7 @@
 #ifndef ROVER_AUTOBOX_HPP
 #define ROVER_AUTOBOX_HPP
+#include "Box.hpp"
+#include "Pointer.hpp"
 
 namespace Rover {
 
@@ -25,6 +27,25 @@ namespace Rover {
   */
   template<typename T>
   decltype(auto) make_autobox(T&& value);
+
+  template<typename T>
+  struct autobox<T, std::enable_if_t<is_object_pointer_v<T>>> {
+    using type = Box<generator_type_t<T>>;
+  };
+
+  template<typename T>
+  struct autobox<T, std::enable_if_t<!is_object_pointer_v<T>>> {
+    using type = T;
+  };
+
+  template<typename T>
+  decltype(auto) make_autobox(T&& value) {
+    if constexpr(std::is_same_v<autobox_t<T>, T>) {
+      return std::forward<T>(value);
+    } else {
+      return autobox_t<T>(std::forward<T>(value));
+    }
+  }
 }
 
 #endif
