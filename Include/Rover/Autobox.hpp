@@ -1,7 +1,7 @@
 #ifndef ROVER_AUTOBOX_HPP
 #define ROVER_AUTOBOX_HPP
-#include "Box.hpp"
-#include "Pointer.hpp"
+#include "Rover/Box.hpp"
+#include "Rover/Pointer.hpp"
 
 namespace Rover {
 
