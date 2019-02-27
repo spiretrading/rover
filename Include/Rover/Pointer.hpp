@@ -33,7 +33,7 @@ namespace Rover {
   /** Trait to retrieve the type of values produced by a generator even if a
       pointer is passed. */
   template<typename Generator>
-  using generator_type_v = typename generator_type<Generator>::Type;
+  using generator_type_t = typename generator_type<Generator>::Type;
 }
 
 #endif
