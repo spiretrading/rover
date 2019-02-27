@@ -29,14 +29,15 @@ TEST_CASE("test_values", "[Box]") {
 
 TEST_CASE("test_raw_pointers", "[Box]") {
   SECTION("Constant.") {
-    auto c = new Constant(5);
-    auto b = Box(c);
+    auto c = std::make_unique<Constant<int>>(5);
+    auto b = Box(c.get());
     static_assert(std::is_same_v<std::decay_t<decltype(b)>, Box<int>>);
     REQUIRE(generate(b) == 5);
   }
   SECTION("Range.") {
-    auto r = new Range(Constant(5), Constant(10));
-    auto b = Box(r);
+    auto r = std::make_unique<Range<Constant<int>, Constant<int>, void>>(
+      Constant(5), Constant(10));
+    auto b = Box(r.get());
     static_assert(std::is_same_v<std::decay_t<decltype(b)>, Box<int>>);
     for(int i = 0; i < 100; ++i) {
       auto result = generate(b);
