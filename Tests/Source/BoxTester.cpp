@@ -19,7 +19,7 @@ TEST_CASE("test_values", "[Box]") {
     auto r = Range(Constant(5), Constant(10));
     auto b = Box(r);
     static_assert(std::is_same_v<std::decay_t<decltype(b)>, Box<int>>);
-    for(int i = 0; i < 100; ++i) {
+    for(auto i = 0; i < 100; ++i) {
       auto result = generate(b);
       REQUIRE(result >= 5);
       REQUIRE(result <= 10);
@@ -39,7 +39,7 @@ TEST_CASE("test_raw_pointers", "[Box]") {
       Constant(5), Constant(10));
     auto b = Box(r.get());
     static_assert(std::is_same_v<std::decay_t<decltype(b)>, Box<int>>);
-    for(int i = 0; i < 100; ++i) {
+    for(auto i = 0; i < 100; ++i) {
       auto result = generate(b);
       REQUIRE(result >= 5);
       REQUIRE(result <= 10);
@@ -59,7 +59,7 @@ TEST_CASE("test_unique_pointers", "[Box]") {
       10);
     auto b = Box(std::move(r));
     static_assert(std::is_same_v<std::decay_t<decltype(b)>, Box<int>>);
-    for(int i = 0; i < 100; ++i) {
+    for(auto i = 0; i < 100; ++i) {
       auto result = generate(b);
       REQUIRE(result >= 5);
       REQUIRE(result <= 10);
@@ -79,7 +79,7 @@ TEST_CASE("test_shared_pointers", "[Box]") {
       10);
     auto b = Box(r);
     static_assert(std::is_same_v<std::decay_t<decltype(b)>, Box<int>>);
-    for(int i = 0; i < 100; ++i) {
+    for(auto i = 0; i < 100; ++i) {
       auto result = generate(b);
       REQUIRE(result >= 5);
       REQUIRE(result <= 10);
