@@ -27,16 +27,17 @@ namespace Rover {
       Type generate(Evaluator& evaluator);
 
     private:
-      struct WrapperBase {
+      class WrapperBase {
+      public:
         virtual ~WrapperBase() = default;
         virtual Type generate(Evaluator& evaluator) = 0;
       };
 
       template<typename Generator>
-      struct ValueWrapper;
+      class ValueWrapper;
 
       template<typename Generator>
-      struct PointerWrapper;
+      class PointerWrapper;
 
       std::unique_ptr<WrapperBase> m_generator;
   };
@@ -51,10 +52,10 @@ namespace Rover {
     : m_generator([&gen]() mutable {
         if constexpr(is_object_pointer_v<std::decay_t<GeneratorFwd>>) {
           return std::make_unique<PointerWrapper<std::decay_t<GeneratorFwd>>>(
-              std::forward<GeneratorFwd>(gen));
+            std::forward<GeneratorFwd>(gen));
         } else {
           return std::make_unique<ValueWrapper<std::decay_t<GeneratorFwd>>>(
-              std::forward<GeneratorFwd>(gen));
+            std::forward<GeneratorFwd>(gen));
         }
       }()) {}
 
@@ -65,32 +66,40 @@ namespace Rover {
 
   template<typename T>
   template<typename Generator>
-  struct Box<T>::ValueWrapper : public WrapperBase {
-    template<typename GeneratorFwd, std::enable_if_t<!std::is_same_v<
-      std::decay_t<GeneratorFwd>, ValueWrapper>>* = nullptr>
-    ValueWrapper(GeneratorFwd&& gen)
-      : m_generator(std::forward<GeneratorFwd>(gen)) {}
+  class Box<T>::ValueWrapper : public WrapperBase {
 
-    virtual T generate(Evaluator& evaluator) override final {
-      return evaluator.evaluate(m_generator);
-    }
+    public:
 
-    Generator m_generator;
+      template<typename GeneratorFwd, std::enable_if_t<!std::is_same_v<
+        std::decay_t<GeneratorFwd>, ValueWrapper>>* = nullptr>
+      ValueWrapper(GeneratorFwd&& gen)
+        : m_generator(std::forward<GeneratorFwd>(gen)) {}
+
+      virtual T generate(Evaluator& evaluator) override final {
+        return evaluator.evaluate(m_generator);
+      }
+
+    private:
+      Generator m_generator;
   };
 
   template<typename T>
   template<typename Generator>
-  struct Box<T>::PointerWrapper : public WrapperBase {
-    template<typename GeneratorFwd, std::enable_if_t<!std::is_same_v<
-      std::decay_t<GeneratorFwd>, PointerWrapper>>* = nullptr>
-    PointerWrapper(GeneratorFwd&& gen)
-      : m_generator(std::forward<GeneratorFwd>(gen)) {}
+  class Box<T>::PointerWrapper : public WrapperBase {
 
-    virtual T generate(Evaluator& evaluator) override final {
-      return evaluator.evaluate(*m_generator);
-    }
+    public:
 
-    Generator m_generator;
+      template<typename GeneratorFwd, std::enable_if_t<!std::is_same_v<
+        std::decay_t<GeneratorFwd>, PointerWrapper>>* = nullptr>
+      PointerWrapper(GeneratorFwd&& gen)
+        : m_generator(std::forward<GeneratorFwd>(gen)) {}
+
+      virtual T generate(Evaluator& evaluator) override final {
+        return evaluator.evaluate(*m_generator);
+      }
+
+    private:
+      Generator m_generator;
   };
 }
 
