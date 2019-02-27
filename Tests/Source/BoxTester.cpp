@@ -1,10 +1,8 @@
 #include <memory>
-#include <string>
 #include <catch.hpp>
 #include "Rover/Box.hpp"
 #include "Rover/Constant.hpp"
 #include "Rover/Generator.hpp"
-#include "Rover/Lift.hpp"
 #include "Rover/Range.hpp"
 
 using namespace Rover;
