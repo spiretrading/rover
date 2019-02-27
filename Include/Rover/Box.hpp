@@ -36,14 +36,8 @@ namespace Rover {
       template<typename Generator>
       struct ValueWrapper;
 
-      template<typename GeneratorFwd>
-      ValueWrapper(GeneratorFwd&&) -> ValueWrapper<std::decay_t<GeneratorFwd>>;
-
       template<typename Generator>
       struct PointerWrapper;
-
-      template<typename GeneratorFwd>
-      PointerWrapper(GeneratorFwd&&)->PointerWrapper<std::decay_t<GeneratorFwd>>;
 
       std::unique_ptr<WrapperBase> m_generator;
   };
