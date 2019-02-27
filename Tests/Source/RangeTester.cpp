@@ -10,7 +10,7 @@ using namespace Rover;
 
 namespace {
   template<typename T>
-  class MoveOnlyConstant : public Constant<T>, public Noncopyable {
+  class MoveOnlyConstant : public Constant<T>, private Noncopyable {
     public:
       using Constant<T>::Constant;
   };
