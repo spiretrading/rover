@@ -13,7 +13,7 @@ namespace Rover {
     \tparam T The type of value to generate.
   */
   template<typename T>
-  class Box : private Noncopyable {
+  class Box final : private Noncopyable {
     public:
 
       //! The type of value to generate.
@@ -66,7 +66,7 @@ namespace Rover {
 
   template<typename T>
   template<typename Generator>
-  class Box<T>::ValueWrapper : public WrapperBase {
+  class Box<T>::ValueWrapper final : public WrapperBase {
 
     public:
 
@@ -75,7 +75,7 @@ namespace Rover {
       ValueWrapper(GeneratorFwd&& gen)
         : m_generator(std::forward<GeneratorFwd>(gen)) {}
 
-      T generate(Evaluator& evaluator) override final {
+      T generate(Evaluator& evaluator) override {
         return evaluator.evaluate(m_generator);
       }
 
@@ -85,7 +85,7 @@ namespace Rover {
 
   template<typename T>
   template<typename Generator>
-  class Box<T>::PointerWrapper : public WrapperBase {
+  class Box<T>::PointerWrapper final : public WrapperBase {
 
     public:
 
@@ -94,7 +94,7 @@ namespace Rover {
       PointerWrapper(GeneratorFwd&& gen)
         : m_generator(std::forward<GeneratorFwd>(gen)) {}
 
-      T generate(Evaluator& evaluator) override final {
+      T generate(Evaluator& evaluator) override {
         return evaluator.evaluate(*m_generator);
       }
 
