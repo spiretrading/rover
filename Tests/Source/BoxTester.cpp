@@ -57,7 +57,7 @@ TEST_CASE("test_unique_pointers", "[Box]") {
   }
   SECTION("Range.") {
     auto r = std::make_unique<Range<Constant<int>, Constant<int>, void>>(5,
-        10);
+      10);
     auto b = Box(std::move(r));
     static_assert(std::is_same_v<std::decay_t<decltype(b)>, Box<int>>);
     for(int i = 0; i < 100; ++i) {
@@ -77,7 +77,7 @@ TEST_CASE("test_shared_pointers", "[Box]") {
   }
   SECTION("Range.") {
     auto r = std::make_shared<Range<Constant<int>, Constant<int>, void>>(5,
-        10);
+      10);
     auto b = Box(r);
     static_assert(std::is_same_v<std::decay_t<decltype(b)>, Box<int>>);
     for(int i = 0; i < 100; ++i) {

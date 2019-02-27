@@ -21,13 +21,12 @@ namespace Rover {
 
       //! Packs a generator or generator pointer into a Box
       template<typename GeneratorFwd, std::enable_if_t<!std::is_same_v<
-          std::decay_t<GeneratorFwd>, Box>>* = nullptr>
+        std::decay_t<GeneratorFwd>, Box>>* = nullptr>
       explicit Box(GeneratorFwd&& gen);
 
       Type generate(Evaluator& evaluator);
 
     private:
-
       struct WrapperBase {
         virtual ~WrapperBase() = default;
         virtual Type generate(Evaluator& evaluator) = 0;
@@ -68,7 +67,7 @@ namespace Rover {
   template<typename Generator>
   struct Box<T>::ValueWrapper : public WrapperBase {
     template<typename GeneratorFwd, std::enable_if_t<!std::is_same_v<
-        std::decay_t<GeneratorFwd>, ValueWrapper>>* = nullptr>
+      std::decay_t<GeneratorFwd>, ValueWrapper>>* = nullptr>
     ValueWrapper(GeneratorFwd&& gen)
         : m_generator(std::forward<GeneratorFwd>(gen)) {}
 
@@ -83,7 +82,7 @@ namespace Rover {
   template<typename Generator>
   struct Box<T>::PointerWrapper : public WrapperBase {
     template<typename GeneratorFwd, std::enable_if_t<!std::is_same_v<
-        std::decay_t<GeneratorFwd>, PointerWrapper>>* = nullptr>
+      std::decay_t<GeneratorFwd>, PointerWrapper>>* = nullptr>
     PointerWrapper(GeneratorFwd&& gen)
         : m_generator(std::forward<GeneratorFwd>(gen)) {}
 
