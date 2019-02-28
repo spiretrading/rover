@@ -7,8 +7,7 @@
 #include <utility>
 #include <vector>
 
-namespace Rover {
-namespace Details {
+namespace Rover::Details {
 
   struct TypeErasingPtr {
     template<typename PtrFwd, std::enable_if_t<!std::is_same_v<std::decay_t<
@@ -22,7 +21,7 @@ namespace Details {
     const void* m_ptr;
     std::type_index m_type;
   };
-}}
+}
 
 namespace Rover {
 
