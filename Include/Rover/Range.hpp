@@ -33,7 +33,7 @@ namespace Rover {
     \tparam G The type of generator used to determine the granularity of the
               interval.
   */
-  template<typename B, typename E, typename G>
+  template<typename B, typename E, typename G = void>
   class Range {
     public:
 
@@ -78,16 +78,19 @@ namespace Rover {
       Type generate(Evaluator& evaluator);
 
     private:
-      Type calculate_random(const Type& begin, const Type& end);
-      Type pick_random(const Type& lhs, const Type& rhs);
-
-    private:
+      using GranularityPlaceholder = std::conditional_t<std::is_same_v<
+        Granularity, void>, char, Granularity>;
       Begin m_begin;
       End m_end;
-      std::function<Type(const Type&)> m_round;
+      GranularityPlaceholder m_granularity;
       Interval m_interval;
       std::mt19937 m_engine;
       std::uniform_real_distribution<double> m_distribution;
+
+      Type calculate_random(const Type& begin, const Type& end);
+      Type pick_random(const Type& lhs, const Type& rhs);
+      template<typename TypeFwd>
+      Type round(Evaluator& evaluator, TypeFwd&& value);
   };
 
   template<typename BeginFwd, typename EndFwd>
@@ -105,9 +108,6 @@ namespace Rover {
       Interval interval)
       : m_begin(std::forward<BeginFwd>(begin)),
         m_end(std::forward<EndFwd>(end)),
-        m_round([](const Type& value){
-          return value;
-        }),
         m_interval(interval),
         m_engine(std::random_device()()),
         m_distribution(0., 1.) {}
@@ -118,17 +118,7 @@ namespace Rover {
       GranularityFwd&& granularity, Interval interval)
       : m_begin(std::forward<BeginFwd>(begin)),
         m_end(std::forward<EndFwd>(end)),
-        m_round([granularity = std::forward<GranularityFwd(granularity)](
-            const Type& value){
-          auto flr = granularity * static_cast<int64_t>(value / granularity);
-          auto ceil = granularity * (static_cast<int64_t>(value /
-              granularity) + 1);
-          if(std::abs(value - flr) <= std::abs(ceil - value)) {
-            return flr;
-          } else {
-            return ceil;
-          }
-        }),
+        m_granularity(std::forward<GranularityFwd>(granularity)),
         m_interval(interval),
         m_engine(std::random_device()()),
         m_distribution(0., 1.) {}
@@ -146,7 +136,7 @@ namespace Rover {
       } else if(value == begin || alt_value == begin) {
         value = pick_random(begin, end);
       }
-      auto result = m_round(value);
+      auto result = round(evaluator, std::move(value));
       switch(m_interval) {
         case Interval::CLOSED:
           if(result >= begin && result <= end) {
@@ -189,6 +179,26 @@ namespace Rover {
       return lhs;
     } else {
       return rhs;
+    }
+  }
+
+  template<typename B, typename E, typename G>
+  template<typename TypeFwd>
+  typename Range<B, E, G>::Type Range<B, E, G>::round(
+      Evaluator& evaluator, TypeFwd&& value) {
+    if constexpr(std::is_same_v<G, void>) {
+      return std::forward<TypeFwd>(value);
+    } else {
+      auto granularity = evaluator.evaluate(m_granularity);
+      auto flr = static_cast<Type>(granularity * static_cast<int64_t>(value /
+        granularity));
+      auto ceil = static_cast<Type>(granularity * (static_cast<int64_t>(value /
+        granularity) + 1));
+      if(std::abs(value - flr) <= std::abs(ceil - value)) {
+        return flr;
+      } else {
+        return ceil;
+      }
     }
   }
 }
