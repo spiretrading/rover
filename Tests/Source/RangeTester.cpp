@@ -14,9 +14,6 @@ namespace {
     public:
       using Constant<T>::Constant;
   };
-
-  template<typename TypeFwd>
-  MoveOnlyConstant(TypeFwd&&) -> MoveOnlyConstant<std::decay_t<TypeFwd>>;
 }
 
 TEST_CASE("test_int_range", "[Range]") {
