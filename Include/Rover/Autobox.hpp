@@ -1,6 +1,8 @@
 #ifndef ROVER_AUTOBOX_HPP
 #define ROVER_AUTOBOX_HPP
 #include "Rover/Box.hpp"
+#include "Rover/Constant.hpp"
+#include "Rover/Generator.hpp"
 #include "Rover/Pointer.hpp"
 
 namespace Rover {
@@ -14,7 +16,7 @@ namespace Rover {
            Otherwise this evaluates to a Constant<T>.
   */
   template<typename T, typename = void>
-  struct autobox {};
+  struct autobox;
 
   template<typename T>
   using autobox_t = typename autobox<T>::type;
@@ -28,13 +30,18 @@ namespace Rover {
   template<typename T>
   decltype(auto) make_autobox(T&& value);
 
+  template<typename T, typename>
+  struct autobox {
+    using type = Constant<T>;
+  };
+
   template<typename T>
-  struct autobox<T, std::enable_if_t<is_object_pointer_v<T>>> {
+  struct autobox<T, std::enable_if_t<is_generator_pointer_v<T>>> {
     using type = Box<generator_type_t<T>>;
   };
 
   template<typename T>
-  struct autobox<T, std::enable_if_t<!is_object_pointer_v<T>>> {
+  struct autobox<T, std::enable_if_t<is_generator_v<T>>> {
     using type = T;
   };
 
