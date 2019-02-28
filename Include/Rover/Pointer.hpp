@@ -16,7 +16,7 @@ namespace Rover {
   inline constexpr bool is_object_pointer_v = is_object_pointer<T>::value;
 
   /** Trait to return a pointer-to type if tested type is a pointer */
-  template<typename>
+  template<typename, typename = void>
   struct dereference_if_pointer;
 
   /** Trait to return a pointer-to type if tested type is a pointer */
@@ -24,7 +24,7 @@ namespace Rover {
   using dereference_if_pointer_t = typename dereference_if_pointer<T>::type;
 
   /** Trait to check whether a type represent a (pointer to) Generator */
-  template<typename, typename>
+  template<typename, typename = void>
   struct is_generator_handle;
 
   /** Trait to check whether a type represent a (pointer to) Generator */
@@ -32,11 +32,11 @@ namespace Rover {
   inline constexpr bool is_generator_handle_v = is_generator_handle<T>::value;
 
   /** Trait to check whether a type represent a pointer to a Generator */
-  template<typename, typename>
+  template<typename, typename = void>
   struct is_generator_pointer;
 
   /** Trait to check whether a type represent a pointer to a Generator */
-  template<typename>
+  template<typename T>
   inline constexpr bool is_generator_pointer_v =
     is_generator_pointer<T>::value;
 
@@ -65,10 +65,14 @@ namespace Rover {
     std::declval<T>().operator->(), std::true_type{})::value>> :
     std::true_type {};
 
-  template<typename T>
+  template<typename T, typename>
   struct dereference_if_pointer {
-    using type = std::conditional_t<is_object_pointer_v<T>,
-      typename std::pointer_traits<T>::element_type, T>;
+    using type = T;
+  };
+
+  template<typename T>
+  struct dereference_if_pointer<T, std::enable_if_t<is_object_pointer_v<T>>> {
+    using type = typename std::pointer_traits<T>::element_type;
   };
 
   template<typename, typename>
