@@ -4,7 +4,6 @@
 #include <typeindex>
 #include <typeinfo>
 #include <type_traits>
-#include <unordered_map>
 #include <utility>
 #include <vector>
 
@@ -17,26 +16,13 @@ namespace Details {
     TypeErasingPtr(PtrFwd&& ptr)
       : m_ptr(std::forward<PtrFwd>(ptr)),
         m_type(typeid(*std::declval<std::decay_t<PtrFwd>>())) {}
-
     inline bool operator ==(const TypeErasingPtr& other) const {
       return m_ptr == other.m_ptr && m_type == other.m_type;
     }
     const void* m_ptr;
     std::type_index m_type;
   };
-}
-}
-
-namespace std {
-
-  template<>
-  struct hash<Rover::Details::TypeErasingPtr> {
-    size_t operator()(const Rover::Details::TypeErasingPtr& ptr) const {
-      return hash<const void*>()(ptr.m_ptr) + 0x9e3779b9 +
-        (ptr.m_type.hash_code() << 6) + (ptr.m_type.hash_code() >> 2);
-    }
-  };
-}
+}}
 
 namespace Rover {
 
@@ -65,14 +51,13 @@ namespace Rover {
         Entry(U&& value);
       };
       struct Evaluation {
-        const void* m_generator;
+        Details::TypeErasingPtr m_generator;
         std::unique_ptr<BaseEntry> m_entry;
 
         template<typename Generator>
         Evaluation(Generator& generator, std::unique_ptr<BaseEntry> entry);
       };
-      std::unordered_map<Details::TypeErasingPtr, std::unique_ptr<BaseEntry>>
-        m_evaluations;
+      std::vector<Evaluation> m_evaluations;
   };
 
   template<typename T>
@@ -90,12 +75,16 @@ namespace Rover {
   typename Generator::Type Evaluator::evaluate(Generator& generator) {
     using Type = typename Generator::Type;
     auto type_erasing_ptr = Details::TypeErasingPtr(&generator);
-    auto i = m_evaluations.find(type_erasing_ptr);
+    auto i = std::find_if(m_evaluations.begin(), m_evaluations.end(),
+      [&type_erasing_ptr](const auto& e) {
+        return type_erasing_ptr == e.m_generator;
+      });
     if(i == m_evaluations.end()) {
       auto entry = std::make_unique<Entry<Type>>(generator.generate(*this));
-      i = m_evaluations.emplace(type_erasing_ptr, std::move(entry)).first;
+      m_evaluations.emplace_back(type_erasing_ptr, std::move(entry));
+      i = m_evaluations.end() - 1;
     }
-    return static_cast<Entry<Type>&>(*i->second).m_value;
+    return static_cast<Entry<Type>&>(*i->m_entry).m_value;
   }
 }
 
