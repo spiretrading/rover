@@ -45,8 +45,7 @@ namespace Rover {
       using End = autobox_t<E>;
 
       //! The type used to determine the granularity of the interval.
-      using Granularity = std::conditional_t<std::is_same_v<G, void>, void,
-        autobox_t<G>>;
+      using Granularity = autobox_t<G>;
 
       using Type = std::common_type_t<typename Begin::Type, typename End::Type>;
 
