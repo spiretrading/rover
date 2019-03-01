@@ -116,3 +116,42 @@ TEST_CASE("test_granularity_move_only", "[Range]") {
     }
   }
 }
+
+TEST_CASE("test_pointer_arguments", "[Range]") {
+  SECTION("AllPointers.") {
+    auto begin = std::make_unique<Constant<int>>(1);
+    auto end = Constant<int>(100);
+    auto granularity = std::make_shared<Constant<int>>(5);
+    auto range = Range(std::move(begin), &end, granularity);
+    for(auto i = 0; i < 100; ++i) {
+      auto result = generate(range);
+      REQUIRE(result >= 1);
+      REQUIRE(result <= 100);
+      REQUIRE(result % 5 == 0);
+    }
+  }
+  SECTION("Mix.") {
+    auto begin = std::make_unique<Constant<int>>(1);
+    auto end = Constant<int>(100);
+    auto granularity = std::make_shared<Constant<int>>(5);
+    auto range = Range(std::move(begin), end, granularity);
+    for(auto i = 0; i < 100; ++i) {
+      auto result = generate(range);
+      REQUIRE(result >= 1);
+      REQUIRE(result <= 100);
+      REQUIRE(result % 5 == 0);
+    }
+  }
+  SECTION("MoveOnly.") {
+    auto begin = std::make_unique<MoveOnlyConstant<int>>(1);
+    auto end = MoveOnlyConstant<int>(100);
+    auto granularity = std::make_shared<MoveOnlyConstant<int>>(5);
+    auto range = Range(std::move(begin), std::move(end), granularity);
+    for(auto i = 0; i < 100; ++i) {
+      auto result = generate(range);
+      REQUIRE(result >= 1);
+      REQUIRE(result <= 100);
+      REQUIRE(result % 5 == 0);
+    }
+  }
+}
