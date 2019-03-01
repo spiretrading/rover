@@ -183,3 +183,24 @@ TEST_CASE("test_dangling", "[Lift]") {
     }
   }
 }
+
+TEST_CASE("test_pointers", "[Lift]") {
+  SECTION("AllPointers.") {
+    auto c1 = std::make_unique<Constant<int>>(5);
+    auto c2 = Constant(10);
+    auto c3 = std::make_shared<Constant<int>>(20);
+    auto generator = Lift([](int v1, int v2, int v3) {
+      return v1 + v2 + v3;
+    }, std::move(c1), &c2, c3);
+    REQUIRE(generate(generator) == 35);
+  }
+  SECTION("Mix.") {
+    auto c1 = std::make_unique<Constant<int>>(5);
+    auto c2 = Constant(10);
+    auto c3 = std::make_shared<Constant<int>>(20);
+    auto generator = Lift([](int v1, int v2, int v3) {
+      return v1 + v2 + v3;
+    }, std::move(c1), c2, c3);
+    REQUIRE(generate(generator) == 35);
+  }
+}

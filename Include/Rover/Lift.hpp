@@ -2,7 +2,9 @@
 #define ROVER_LIFT_HPP
 #include <tuple>
 #include <type_traits>
+#include "Rover/Autobox.hpp"
 #include "Rover/Evaluator.hpp"
+#include "Rover/Pointer.hpp"
 
 namespace Rover {
 
@@ -15,7 +17,8 @@ namespace Rover {
     using Function = F;
 
     /** The return type of generate. */
-    using Type = std::invoke_result_t<Function, typename Generators::Type...>;
+    using Type = std::invoke_result_t<Function,
+      generator_type_t<Generators>...>;
 
     //! Constructs a lift from a callable and sub-generators.
     /*!
@@ -31,7 +34,7 @@ namespace Rover {
 
   private:
     Function m_func;
-    std::tuple<Generators...> m_generators;
+    std::tuple<autobox_t<Generators>...> m_generators;
   };
 
   template<typename FunctionFwd, typename... GeneratorsFwd>
