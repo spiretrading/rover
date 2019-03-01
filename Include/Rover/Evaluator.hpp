@@ -8,14 +8,12 @@
 #include <vector>
 
 namespace Rover::Details {
-
   struct TypeErasingPtr {
-    template<typename PtrFwd, std::enable_if_t<!std::is_same_v<std::decay_t<
-      PtrFwd>, TypeErasingPtr>>* = nullptr>
-    TypeErasingPtr(PtrFwd&& ptr)
-      : m_ptr(std::forward<PtrFwd>(ptr)),
-        m_type(typeid(*std::declval<std::decay_t<PtrFwd>>())) {}
-    inline bool operator ==(const TypeErasingPtr& other) const {
+    template<typename Generator>
+    TypeErasingPtr(Generator* ptr)
+      : m_ptr(ptr),
+        m_type(typeid(Generator)) {}
+    bool operator ==(const TypeErasingPtr& other) const {
       return m_ptr == other.m_ptr && m_type == other.m_type;
     }
     const void* m_ptr;
@@ -75,7 +73,7 @@ namespace Rover {
     using Type = typename Generator::Type;
     auto type_erasing_ptr = Details::TypeErasingPtr(&generator);
     auto i = std::find_if(m_evaluations.begin(), m_evaluations.end(),
-      [&type_erasing_ptr](const auto& e) {
+      [&](const auto& e) {
         return type_erasing_ptr == e.m_generator;
       });
     if(i == m_evaluations.end()) {
