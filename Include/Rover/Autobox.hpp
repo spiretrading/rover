@@ -46,6 +46,11 @@ namespace Rover {
   };
 
   template<typename T>
+  struct autobox<void, T> {
+    using type = void;
+  };
+
+  template<typename T>
   decltype(auto) make_autobox(T&& value) {
     if constexpr(std::is_same_v<autobox_t<T>, T>) {
       return std::forward<T>(value);
