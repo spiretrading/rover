@@ -8,6 +8,6 @@ using namespace Rover;
 
 PYBIND11_MODULE(rover, module) {
   export_evaluator(module);
-  export_box<object>(module);
-  export_constant<object>(module);
+  export_box(module);
+  export_constant(module);
 }
