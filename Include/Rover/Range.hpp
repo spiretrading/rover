@@ -4,6 +4,7 @@
 #include <random>
 #include <type_traits>
 #include <utility>
+#include "Rover/Autobox.hpp"
 #include "Rover/Evaluator.hpp"
 
 namespace Rover {
@@ -38,13 +39,14 @@ namespace Rover {
     public:
 
       //! The type of generator evaluating to the beginning of the range.
-      using Begin = B;
+      using Begin = autobox_t<B>;
 
       //! The type of generator evaluating to the end of the range.
-      using End = E;
+      using End = autobox_t<E>;
 
       //! The type used to determine the granularity of the interval.
-      using Granularity = G;
+      using Granularity = std::conditional_t<std::is_same_v<G, void>, void,
+        autobox_t<G>>;
 
       using Type = std::common_type_t<typename Begin::Type, typename End::Type>;
 
