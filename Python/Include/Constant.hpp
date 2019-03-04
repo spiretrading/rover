@@ -12,10 +12,18 @@ namespace Rover {
     \param type_name The name of the type the Constant generates.
   */
   template<typename T>
-  void export_constant(pybind11::module& module, std::string_view type_name) {}
+  void export_constant(pybind11::module& module, std::string_view type_name);
 
   //! Exports a generic Constant for Python objects.
   void export_constant(pybind11::module& module);
+
+  template<typename T>
+  void export_constant(pybind11::module& module, std::string_view type_name) {
+    auto name = std::string("Constant").append(type_name);
+    pybind11::class_<Constant<T>>(module, name.c_str())
+      .def(pybind11::init<T>())
+      .def("generate", &Constant<T>::generate);
+  }
 }
 
 #endif
