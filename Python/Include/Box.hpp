@@ -21,7 +21,6 @@ namespace Rover {
   void export_box(pybind11::module& module, std::string_view type_name) {
     auto name = std::string("Box").append(type_name);
     pybind11::class_<Box<T>>(module, name.c_str())
-      .def(pybind11::init<Constant<T>>())
       .def("generate", &Box<T>::generate);
   }
 }
