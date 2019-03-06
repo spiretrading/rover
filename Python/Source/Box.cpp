@@ -1,5 +1,4 @@
 #include "Box.hpp"
-#include "Rover/Constant.hpp"
 
 using namespace pybind11;
 using namespace Rover;
