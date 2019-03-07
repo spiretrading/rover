@@ -1,65 +1,32 @@
 #ifndef ROVER_PYTHON_BOX_HPP
 #define ROVER_PYTHON_BOX_HPP
-#include <optional>
+#include <memory>
 #include <string_view>
 #include <pybind11/pybind11.h>
 #include "Rover/Constant.hpp"
 #include "Rover/Box.hpp"
+#include "Rover/Evaluator.hpp"
 
-namespace pybind11::detail {
-  template<>
-  struct type_caster<Rover::Box<object>> {
-    std::optional<Rover::Box<object>> value;
+namespace Rover::Details {
+  template<typename T>
+  class PythonBox {
+  public:
+    using Type = T;
 
-    static PYBIND11_DESCR name() {
-      return type_descr(_("Box"));
+    PythonBox(pybind11::object obj)
+      : m_obj(obj) {
     }
 
-    template<typename T_,
-      std::enable_if_t<std::is_same_v<Rover::Box<object>, std::remove_cv_t<T_>>,
-      int> = 0>
-    static handle cast(T_* src, return_value_policy policy, handle parent) {
-      if(!src) {
-        return none().release();
-      }
-      if(policy == return_value_policy::take_ownership) {
-        auto h = cast(std::move(*src), policy, parent);
-        delete src;
-        return h;
-      } else {
-        return cast(*src, policy, parent);
-      }
+    Type generate(Evaluator& e) {
+      auto wrapper = std::shared_ptr<Evaluator>(&e, [](auto ptr) {});
+      return m_obj.attr("generate")(std::move(wrapper)).cast<Type>();
     }
 
-    operator Rover::Box<object>* () {
-      return &*value;
-    }
-
-    operator Rover::Box<object>& () {
-      return *value;
-    }
-
-    operator Rover::Box<object>&& () && {
-      return std::move(*value);
-    }
-
-    template <typename T_> using cast_op_type =
-      pybind11::detail::movable_cast_op_type<T_>;
-
-    bool load(handle src, bool) {
-      auto source = src.ptr();
-      if(!isinstance<Rover::Constant<object>>(src)) {
-        return false;
-      }
-      value.reset();
-      value.emplace(src.cast<Rover::Constant<object>>());
-      return true;
-    }
-
-    static handle cast(Rover::Box<object> src, return_value_policy, handle) {
-      return Py_None;
-    }
+  private:
+    pybind11::object m_obj;
   };
+
+  bool is_python_generator(pybind11::object arg);
 }
 
 namespace Rover {
@@ -79,7 +46,18 @@ namespace Rover {
   void export_box(pybind11::module& module, std::string_view type_name) {
     auto name = std::string("Box").append(type_name);
     pybind11::class_<Box<T>>(module, name.c_str())
+      .def(init(
+        [](pybind11::object arg) {
+          if(Details::is_python_generator(arg)) {
+            return std::make_unique<Box<T>>(Details::PythonBox<T>(arg));
+          } else {
+            return std::make_unique<Box<T>>(Constant(arg.cast<T>()));
+          }
+        }))
       .def("generate", &Box<T>::generate);
+    if constexpr(!std::is_same_v<T, pybind11::object>) {
+      implicitly_convertible<Box<T>, Box<pybind11::object>>();
+    }
   }
 }
 
