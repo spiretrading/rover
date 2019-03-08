@@ -25,9 +25,9 @@ namespace Rover {
       .def(pybind11::init<T>())
       .def("generate", &Constant<T>::generate);
     pybind11::implicitly_convertible<Constant<T>, Box<T>>();
-    pybind11::implicitly_convertible<Constant<T>, Box<pybind11::object>>();
     if constexpr(!std::is_same_v<T, pybind11::object>) {
       pybind11::implicitly_convertible<Constant<T>, Constant<pybind11::object>>();
+      pybind11::implicitly_convertible<Constant<T>, Box<pybind11::object>>();
     }
   }
 }
