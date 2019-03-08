@@ -3,8 +3,8 @@
 #include <memory>
 #include <string_view>
 #include <pybind11/pybind11.h>
-#include "Rover/Constant.hpp"
 #include "Rover/Box.hpp"
+#include "Rover/Constant.hpp"
 #include "Rover/Evaluator.hpp"
 
 namespace Rover::Details {
