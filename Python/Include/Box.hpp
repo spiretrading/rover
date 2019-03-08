@@ -14,7 +14,7 @@ namespace Rover::Details {
       using Type = T;
 
       PythonBox(pybind11::object obj)
-        : m_obj(obj) {
+        : m_obj(std::move(obj)) {
       }
 
       Type generate(Evaluator& e) {
@@ -26,7 +26,7 @@ namespace Rover::Details {
       pybind11::object m_obj;
   };
 
-  bool is_python_generator(pybind11::object arg);
+  bool is_python_generator(const pybind11::object& arg);
 }
 
 namespace Rover {
@@ -49,7 +49,8 @@ namespace Rover {
       .def(init(
         [](pybind11::object arg) {
           if(Details::is_python_generator(arg)) {
-            return std::make_unique<Box<T>>(Details::PythonBox<T>(arg));
+            return std::make_unique<Box<T>>(Details::PythonBox<T>(std::move(
+              arg)));
           } else {
             return std::make_unique<Box<T>>(Constant(arg.cast<T>()));
           }
