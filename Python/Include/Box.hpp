@@ -58,7 +58,7 @@ namespace Rover {
         }))
       .def("generate", &Box<T>::generate);
     if constexpr(!std::is_same_v<T, pybind11::object>) {
-      implicitly_convertible<Box<T>, Box<pybind11::object>>();
+      pybind11::implicitly_convertible<Box<T>, Box<pybind11::object>>();
     }
   }
 }
