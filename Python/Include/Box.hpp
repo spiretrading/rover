@@ -6,10 +6,11 @@
 #include "Rover/Box.hpp"
 #include "Rover/Constant.hpp"
 #include "Rover/Evaluator.hpp"
+#include "Rover/Noncopyable.hpp"
 
 namespace Rover::Details {
   template<typename T>
-  class PythonBox {
+  class PythonBox : private Noncopyable {
     public:
       using Type = T;
 
