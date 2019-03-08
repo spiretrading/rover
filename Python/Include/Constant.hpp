@@ -2,6 +2,7 @@
 #define ROVER_PYTHON_CONSTANT_HPP
 #include <string_view>
 #include <pybind11/pybind11.h>
+#include "Rover/Box.hpp"
 #include "Rover/Constant.hpp"
 
 namespace Rover {
