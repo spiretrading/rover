@@ -10,20 +10,20 @@
 namespace Rover::Details {
   template<typename T>
   class PythonBox {
-  public:
-    using Type = T;
+    public:
+      using Type = T;
 
-    PythonBox(pybind11::object obj)
-      : m_obj(obj) {
-    }
+      PythonBox(pybind11::object obj)
+        : m_obj(obj) {
+      }
 
-    Type generate(Evaluator& e) {
-      auto wrapper = std::shared_ptr<Evaluator>(&e, [](auto ptr) {});
-      return m_obj.attr("generate")(std::move(wrapper)).cast<Type>();
-    }
+      Type generate(Evaluator& e) {
+        auto wrapper = std::shared_ptr<Evaluator>(&e, [](auto ptr) {});
+        return m_obj.attr("generate")(std::move(wrapper)).cast<Type>();
+      }
 
-  private:
-    pybind11::object m_obj;
+    private:
+      pybind11::object m_obj;
   };
 
   bool is_python_generator(pybind11::object arg);
