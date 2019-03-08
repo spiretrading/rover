@@ -2,6 +2,7 @@
 #define ROVER_PYTHON_CONSTANT_HPP
 #include <string_view>
 #include <pybind11/pybind11.h>
+#include "Rover/Box.hpp"
 #include "Rover/Constant.hpp"
 
 namespace Rover {
@@ -23,6 +24,11 @@ namespace Rover {
     pybind11::class_<Constant<T>>(module, name.c_str())
       .def(pybind11::init<T>())
       .def("generate", &Constant<T>::generate);
+    pybind11::implicitly_convertible<Constant<T>, Box<T>>();
+    if constexpr(!std::is_same_v<T, pybind11::object>) {
+      pybind11::implicitly_convertible<Constant<T>, Constant<pybind11::object>>();
+      pybind11::implicitly_convertible<Constant<T>, Box<pybind11::object>>();
+    }
   }
 }
 
