@@ -9,7 +9,6 @@ namespace {
   class PythonRange {
     public:
       using Type = Range<object, object>::Type;
-      static_assert(std::is_same_v<Type, Range<object, object, object>::Type>);
 
       PythonRange(object begin, object end)
         : m_impl(Range(std::move(begin), std::move(end))) {}
