@@ -60,10 +60,12 @@ namespace Rover {
     if constexpr(std::is_same_v<Granularity, void>) {
       pybind11::class_<Range<Begin, End>>(module, name.c_str())
         .def(pybind11::init<Begin, End>())
+        .def(pybind11::init<Begin, End, Interval>())
         .def("generate", &Range<Begin, End, Granularity>::generate);
     } else {
       pybind11::class_<Range<Begin, End, Granularity>>(module, name.c_str())
         .def(pybind11::init<Begin, End, Granularity>())
+        .def(pybind11::init<Begin, End, Granularity, Interval>())
         .def("generate", &Range<Begin, End, Granularity>::generate);
     }
     pybind11::implicitly_convertible<Range<Begin, End, Granularity>,
