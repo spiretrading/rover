@@ -13,6 +13,19 @@ namespace Rover {
     class PythonRange {
       public:
         using Type = Range<pybind11::object, pybind11::object>::Type;
+        using ContinuousRange = Range<pybind11::object, pybind11::object>;
+        using DiscreteRange = Range<pybind11::object, pybind11::object,
+          pybind11::object>;
+
+        template<typename ImplFwd, std::enable_if_t<std::is_convertible_v<
+          std::decay_t<ImplFwd>, ContinuousRange>>* = nullptr>
+        PythonRange(ImplFwd&& impl)
+          : m_impl(std::forward<ImplFwd>(impl)) {}
+
+        template<typename ImplFwd, std::enable_if_t<std::is_convertible_v<
+          std::decay_t<ImplFwd>, DiscreteRange>>* = nullptr>
+        PythonRange(ImplFwd&& impl)
+          : m_impl(std::forward<ImplFwd>(impl)) {}
 
         PythonRange(pybind11::object begin, pybind11::object end)
           : m_impl(Range(std::move(begin), std::move(end))) {}
@@ -29,9 +42,6 @@ namespace Rover {
         }
 
       private:
-        using ContinuousRange = Range<pybind11::object, pybind11::object>;
-        using DiscreteRange = Range<pybind11::object, pybind11::object,
-          pybind11::object>;
         std::variant<ContinuousRange, DiscreteRange> m_impl;
     };
   }
@@ -60,24 +70,11 @@ namespace Rover {
         .def("generate", &Range<Begin, End, Granularity>::generate);
     }
     pybind11::implicitly_convertible<Range<Begin, End, Granularity>,
+      Details::PythonRange>();
+    pybind11::implicitly_convertible<Range<Begin, End, Granularity>,
       Box<typename Range<Begin, End, Granularity>::Type>>();
-    if constexpr(!std::is_same_v<Begin, pybind11::object> ||
-        !std::is_same_v<End, pybind11::object> || (
-        !std::is_same_v<Granularity, pybind11::object> &&
-        !std::is_same_v<Granularity, void>)) {
-      if constexpr(std::is_same_v<Granularity, void>) {
-        pybind11::implicitly_convertible<Range<Begin, End, void>,
-          Range<pybind11::object, pybind11::object, void>>();
-        pybind11::implicitly_convertible<Range<Begin, End, void>,
-          Box<Range<pybind11::object, pybind11::object, void>::Type>>();
-      } else {
-        pybind11::implicitly_convertible<Range<Begin, End, Granularity>,
-          Range<pybind11::object, pybind11::object, pybind11::object>>();
-        pybind11::implicitly_convertible<Range<Begin, End, Granularity>,
-          Box<Range<pybind11::object, pybind11::object,
-          pybind11::object>::Type>>();
-      }
-    }
+    pybind11::implicitly_convertible<Range<Begin, End, Granularity>,
+      Box<pybind11::object>>();
   }
 }
 
