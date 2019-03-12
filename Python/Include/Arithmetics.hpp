@@ -13,15 +13,6 @@ namespace Rover::Details {
   template<typename... Args>
   inline constexpr bool contain_objects_v = contain_objects<Args...>::value;
 
-  template<typename T>
-  auto ensure_object(const T& value) {
-    if constexpr(contain_objects_v<T>) {
-      return value;
-    } else {
-      return pybind11::cast(value);
-    }
-  }
-
   const pybind11::module& import_operator();
 }
 
@@ -34,7 +25,6 @@ namespace pybind11 {
   bool operator <(const T1& lhs, const T2& rhs) {
     return Rover::Details::import_operator().attr("__lt__")(lhs,
       rhs).cast<bool>();
-    return lhs.attr("__lt__")(rhs).cast<bool>();
   }
 
   template<typename T1, typename T2, std::enable_if_t<
