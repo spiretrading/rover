@@ -1,12 +1,40 @@
 #ifndef ROVER_PYTHON_RANGE_HPP
 #define ROVER_PYTHON_RANGE_HPP
 #include <string_view>
+#include <type_traits>
+#include <variant>
 #include <pybind11/pybind11.h>
 #include "Arithmetics.hpp"
 #include "Rover/Box.hpp"
 #include "Rover/Range.hpp"
 
 namespace Rover {
+  namespace Details {
+    class PythonRange {
+      public:
+        using Type = Range<pybind11::object, pybind11::object>::Type;
+
+        PythonRange(pybind11::object begin, pybind11::object end)
+          : m_impl(Range(std::move(begin), std::move(end))) {}
+
+        PythonRange(pybind11::object begin, pybind11::object end,
+            pybind11::object granularity)
+          : m_impl(Range(std::move(begin), std::move(end),
+              std::move(granularity))) {}
+
+        Type generate(Evaluator& e) {
+          return std::visit([&] (auto& impl) {
+            return impl.generate(e);
+          }, m_impl);
+        }
+
+      private:
+        using ContinuousRange = Range<pybind11::object, pybind11::object>;
+        using DiscreteRange = Range<pybind11::object, pybind11::object,
+          pybind11::object>;
+        std::variant<ContinuousRange, DiscreteRange> m_impl;
+    };
+  }
 
   //! Exports an instantiation of the Range class.
   /*!
