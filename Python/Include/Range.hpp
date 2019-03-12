@@ -31,9 +31,18 @@ namespace Rover {
           : m_impl(Range(std::move(begin), std::move(end))) {}
 
         PythonRange(pybind11::object begin, pybind11::object end,
+            Interval interval)
+          : m_impl(Range(std::move(begin), std::move(end), interval)) {}
+
+        PythonRange(pybind11::object begin, pybind11::object end,
             pybind11::object granularity)
           : m_impl(Range(std::move(begin), std::move(end),
               std::move(granularity))) {}
+
+        PythonRange(pybind11::object begin, pybind11::object end,
+            pybind11::object granularity, Interval interval)
+          : m_impl(Range(std::move(begin), std::move(end),
+              std::move(granularity), interval)) {}
 
         Type generate(Evaluator& e) {
           return std::visit([&] (auto& impl) {
