@@ -24,21 +24,11 @@ namespace Rover {
     auto name = std::string("Range").append(type_name);
     if constexpr(std::is_same_v<Granularity, void>) {
       pybind11::class_<Range<Begin, End>>(module, name.c_str())
-        .def(pybind11::init(
-          [] (pybind11::object begin, pybind11::object end) {
-            return std::make_unique<Range<Begin, End>>(begin.cast<Begin>(),
-              end.cast<End>());
-          }))
+        .def(pybind11::init<Begin, End>())
         .def("generate", &Range<Begin, End, Granularity>::generate);
     } else {
       pybind11::class_<Range<Begin, End, Granularity>>(module, name.c_str())
-        .def(pybind11::init(
-          [] (pybind11::object begin, pybind11::object end,
-              pybind11::object granularity) {
-            return std::make_unique<Range<Begin, End, Granularity>>(
-              begin.cast<Begin>(), end.cast<End>(),
-              granularity.cast<Granularity>());
-          }))
+        .def(pybind11::init<Begin, End, Granularity>())
         .def("generate", &Range<Begin, End, Granularity>::generate);
     }
     pybind11::implicitly_convertible<Range<Begin, End, Granularity>,
