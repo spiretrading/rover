@@ -36,5 +36,4 @@ void Rover::export_range(module& module) {
     .def("generate", &PythonRange::generate);
 
   implicitly_convertible<PythonRange, Box<PythonRange::Type>>();
-  implicitly_convertible<Box<PythonRange::Type>, PythonRange>();
 }
