@@ -19,36 +19,24 @@ namespace Rover {
 
         template<typename ImplFwd, std::enable_if_t<std::is_convertible_v<
           std::decay_t<ImplFwd>, ContinuousRange>>* = nullptr>
-        PythonRange(ImplFwd&& impl)
-          : m_impl(std::forward<ImplFwd>(impl)) {}
+        PythonRange(ImplFwd&& impl);
 
         template<typename ImplFwd, std::enable_if_t<std::is_convertible_v<
           std::decay_t<ImplFwd>, DiscreteRange>>* = nullptr>
-        PythonRange(ImplFwd&& impl)
-          : m_impl(std::forward<ImplFwd>(impl)) {}
+        PythonRange(ImplFwd&& impl);
 
-        PythonRange(pybind11::object begin, pybind11::object end)
-          : m_impl(Range(std::move(begin), std::move(end))) {}
+        PythonRange(pybind11::object begin, pybind11::object end);
 
         PythonRange(pybind11::object begin, pybind11::object end,
-            Interval interval)
-          : m_impl(Range(std::move(begin), std::move(end), interval)) {}
+          Interval interval);
 
         PythonRange(pybind11::object begin, pybind11::object end,
-            pybind11::object granularity)
-          : m_impl(Range(std::move(begin), std::move(end),
-              std::move(granularity))) {}
+          pybind11::object granularity);
 
         PythonRange(pybind11::object begin, pybind11::object end,
-            pybind11::object granularity, Interval interval)
-          : m_impl(Range(std::move(begin), std::move(end),
-              std::move(granularity), interval)) {}
+          pybind11::object granularity, Interval interval);
 
-        Type generate(Evaluator& e) {
-          return std::visit([&] (auto& impl) {
-            return impl.generate(e);
-          }, m_impl);
-        }
+        Type generate(Evaluator& e);
 
       private:
         std::variant<ContinuousRange, DiscreteRange> m_impl;
