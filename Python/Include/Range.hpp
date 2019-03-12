@@ -32,9 +32,7 @@ namespace Rover {
         .def("generate", &Range<Begin, End, Granularity>::generate);
     }
     pybind11::implicitly_convertible<Range<Begin, End, Granularity>,
-      Box<Range<Begin, End, Granularity>::Type>>();
-    pybind11::implicitly_convertible<Box<Range<Begin, End,
-      Granularity>::Type>, Range<Begin, End, Granularity>>();
+      Box<typename Range<Begin, End, Granularity>::Type>>();
     if constexpr(!std::is_same_v<Begin, pybind11::object> ||
         !std::is_same_v<End, pybind11::object> || (
         !std::is_same_v<Granularity, pybind11::object> &&
