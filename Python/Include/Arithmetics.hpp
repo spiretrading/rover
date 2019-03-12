@@ -6,8 +6,8 @@
 namespace Rover::Details {
   template<typename... Args>
   struct contain_objects {
-    static constexpr bool value = std::disjunction_v<std::is_convertible<
-      Args, pybind11::object>...>;
+    static constexpr bool value = std::disjunction_v<std::is_same<Args,
+      pybind11::object>...>;
   };
 
   template<typename... Args>
