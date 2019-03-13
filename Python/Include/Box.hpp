@@ -1,34 +1,9 @@
 #ifndef ROVER_PYTHON_BOX_HPP
 #define ROVER_PYTHON_BOX_HPP
-#include <memory>
 #include <string_view>
 #include <pybind11/pybind11.h>
+#include "Autobox.hpp"
 #include "Rover/Box.hpp"
-#include "Rover/Constant.hpp"
-#include "Rover/Evaluator.hpp"
-#include "Rover/Noncopyable.hpp"
-
-namespace Rover::Details {
-  template<typename T>
-  class PythonBox : private Noncopyable {
-    public:
-      using Type = T;
-
-      PythonBox(pybind11::object obj)
-        : m_obj(std::move(obj)) {
-      }
-
-      Type generate(Evaluator& e) {
-        auto wrapper = std::shared_ptr<Evaluator>(&e, [](auto ptr) {});
-        return m_obj.attr("generate")(std::move(wrapper)).cast<Type>();
-      }
-
-    private:
-      pybind11::object m_obj;
-  };
-
-  bool is_python_generator(const pybind11::object& arg);
-}
 
 namespace Rover {
 
@@ -49,12 +24,7 @@ namespace Rover {
     pybind11::class_<Box<T>>(module, name.c_str())
       .def(init(
         [](pybind11::object arg) {
-          if(Details::is_python_generator(arg)) {
-            return std::make_unique<Box<T>>(Details::PythonBox<T>(std::move(
-              arg)));
-          } else {
-            return std::make_unique<Box<T>>(Constant(arg.cast<T>()));
-          }
+          return python_autobox<T>(std::move(arg));
         }))
       .def("generate", &Box<T>::generate);
     if constexpr(!std::is_same_v<T, pybind11::object>) {
