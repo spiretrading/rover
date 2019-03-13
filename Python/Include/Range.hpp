@@ -13,9 +13,11 @@ namespace Rover {
     class PythonRange {
       public:
         using Type = Range<pybind11::object, pybind11::object>::Type;
-        using ContinuousRange = Range<pybind11::object, pybind11::object>;
-        using DiscreteRange = Range<pybind11::object, pybind11::object,
-          pybind11::object>;
+        using ContinuousRange = Range<std::unique_ptr<Box<pybind11::object>>,
+          std::unique_ptr<Box<pybind11::object>>>;
+        using DiscreteRange = Range<std::unique_ptr<Box<pybind11::object>>,
+          std::unique_ptr<Box<pybind11::object>>,
+          std::unique_ptr<Box<pybind11::object>>>;
 
         template<typename ImplFwd, std::enable_if_t<std::is_convertible_v<
           std::decay_t<ImplFwd>, ContinuousRange>>* = nullptr>
@@ -56,6 +58,9 @@ namespace Rover {
 
   template<typename Begin, typename End, typename Granularity>
   void export_range(pybind11::module& module, std::string_view type_name) {
+    static_assert(!std::is_same_v<Begin, pybind11::object> &&
+      !std::is_same_v<End, pybind11::object> &&
+      !std::is_same_v<Granularity, pybind11::object>);
     auto name = std::string("Range").append(type_name);
     if constexpr(std::is_same_v<Granularity, void>) {
       pybind11::class_<Range<Begin, End>>(module, name.c_str())

@@ -1,3 +1,4 @@
+#include "Autobox.hpp"
 #include "Range.hpp"
 
 using namespace pybind11;
@@ -15,18 +16,23 @@ namespace Rover::Details {
     : m_impl(std::forward<ImplFwd>(impl)) {}
 
   PythonRange::PythonRange(object begin, object end)
-    : m_impl(Range(std::move(begin), std::move(end))) {}
+    : m_impl(Range(python_autobox<object>(std::move(begin)),
+        python_autobox<object>(std::move(end)))) {}
 
   PythonRange::PythonRange(object begin, object end, Interval interval)
-    : m_impl(Range(std::move(begin), std::move(end), interval)) {}
+    : m_impl(Range(python_autobox<object>(std::move(begin)),
+        python_autobox<object>(std::move(end)), interval)) {}
 
   PythonRange::PythonRange(object begin, object end, object granularity)
-    : m_impl(Range(std::move(begin), std::move(end),
-        std::move(granularity))) {}
+    : m_impl(Range(python_autobox<object>(std::move(begin)),
+        python_autobox<object>(std::move(end)),
+        python_autobox<object>(std::move(granularity)))) {}
 
   PythonRange::PythonRange(object begin, object end, object granularity,
       Interval interval)
-    : m_impl(Range(std::move(begin), std::move(end), std::move(granularity),
+    : m_impl(Range(python_autobox<object>(std::move(begin)),
+        python_autobox<object>(std::move(end)),
+        python_autobox<object>(std::move(granularity)),
         interval)) {}
 
   PythonRange::Type PythonRange::generate(Evaluator& e) {
