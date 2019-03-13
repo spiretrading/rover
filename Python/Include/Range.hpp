@@ -18,14 +18,10 @@ namespace Rover {
           Box<pybind11::object>>;
         using DiscreteRange = Range<Box<pybind11::object>,
           Box<pybind11::object>, Box<pybind11::object>>;
+        
+        PythonRange(ContinuousRange impl);
 
-        template<typename ImplFwd, std::enable_if_t<std::is_convertible_v<
-          std::decay_t<ImplFwd>, ContinuousRange>>* = nullptr>
-        PythonRange(ImplFwd&& impl);
-
-        template<typename ImplFwd, std::enable_if_t<std::is_convertible_v<
-          std::decay_t<ImplFwd>, DiscreteRange>>* = nullptr>
-        PythonRange(ImplFwd&& impl);
+        PythonRange(DiscreteRange impl);
 
         PythonRange(pybind11::object begin, pybind11::object end);
 

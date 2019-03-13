@@ -5,15 +5,11 @@ using namespace pybind11;
 using namespace Rover;
 
 namespace Rover::Details {
-  template<typename ImplFwd, std::enable_if_t<std::is_convertible_v<
-    std::decay_t<ImplFwd>, PythonRange::ContinuousRange>>*>
-  PythonRange::PythonRange(ImplFwd&& impl)
-    : m_impl(std::forward<ImplFwd>(impl)) {}
+  PythonRange::PythonRange(ContinuousRange impl)
+    : m_impl(std::move(impl)) {}
 
-  template<typename ImplFwd, std::enable_if_t<std::is_convertible_v<
-    std::decay_t<ImplFwd>, PythonRange::DiscreteRange>>*>
-  PythonRange::PythonRange(ImplFwd&& impl)
-    : m_impl(std::forward<ImplFwd>(impl)) {}
+  PythonRange::PythonRange(DiscreteRange impl)
+    : m_impl(std::move(impl)) {}
 
   PythonRange::PythonRange(object begin, object end)
     : m_impl(Range(python_autobox<object>(std::move(begin)),
