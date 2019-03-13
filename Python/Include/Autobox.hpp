@@ -14,10 +14,8 @@ namespace Rover::Details {
     public:
       using Type = T;
 
-      template<typename ObjFwd, std::enable_if_t<!std::is_convertible_v<ObjFwd,
-        PythonBox>>* = nullptr>
-      PythonBox(ObjFwd&& obj)
-        : m_obj(std::forward<ObjFwd>(obj)) {}
+      PythonBox(pybind11::object obj)
+        : m_obj(std::move(obj)) {}
 
       Type generate(Evaluator& e) {
         auto wrapper = std::shared_ptr<Evaluator>(&e, [](auto ptr) {});
