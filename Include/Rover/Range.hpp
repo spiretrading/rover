@@ -1,5 +1,6 @@
 #ifndef ROVER_RANGE_HPP
 #define ROVER_RANGE_HPP
+#include <cmath>
 #include <functional>
 #include <random>
 #include <type_traits>
@@ -187,15 +188,15 @@ namespace Rover {
   template<typename TypeFwd>
   typename Range<B, E, G>::Type Range<B, E, G>::round(
       Evaluator& evaluator, TypeFwd&& value) {
+    using namespace std;
     if constexpr(std::is_same_v<G, void>) {
       return std::forward<TypeFwd>(value);
     } else {
       auto granularity = evaluator.evaluate(m_granularity);
-      auto flr = static_cast<Type>(granularity * static_cast<int64_t>(value /
-        granularity));
-      auto ceil = static_cast<Type>(granularity * (static_cast<int64_t>(value /
-        granularity) + 1));
-      if(std::abs(value - flr) <= std::abs(ceil - value)) {
+      auto flr = static_cast<Type>(granularity * floor(value / granularity));
+      auto ceil = static_cast<Type>(granularity * (floor(value / granularity) +
+        1));
+      if(abs(value - flr) <= abs(ceil - value)) {
         return flr;
       } else {
         return ceil;
