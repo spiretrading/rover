@@ -14,11 +14,10 @@ namespace Rover {
     class PythonRange {
       public:
         using Type = Range<pybind11::object, pybind11::object>::Type;
-        using ContinuousRange = Range<std::unique_ptr<Box<pybind11::object>>,
-          std::unique_ptr<Box<pybind11::object>>>;
-        using DiscreteRange = Range<std::unique_ptr<Box<pybind11::object>>,
-          std::unique_ptr<Box<pybind11::object>>,
-          std::unique_ptr<Box<pybind11::object>>>;
+        using ContinuousRange = Range<Box<pybind11::object>,
+          Box<pybind11::object>>;
+        using DiscreteRange = Range<Box<pybind11::object>,
+          Box<pybind11::object>, Box<pybind11::object>>;
 
         template<typename ImplFwd, std::enable_if_t<std::is_convertible_v<
           std::decay_t<ImplFwd>, ContinuousRange>>* = nullptr>
