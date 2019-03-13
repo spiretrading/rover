@@ -1,5 +1,6 @@
 #ifndef ROVER_PYTHON_RANGE_HPP
 #define ROVER_PYTHON_RANGE_HPP
+#include <memory>
 #include <string_view>
 #include <type_traits>
 #include <variant>
