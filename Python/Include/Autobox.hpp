@@ -35,7 +35,7 @@ namespace Rover {
     if(Details::is_python_generator(arg)) {
       return Box<T>(Details::PythonBox<T>(std::forward<ArgFwd>(arg)));
     } else {
-      return Box<T>(Constant(arg.cast<T>()));
+      return Box<T>(Constant(arg.template cast<T>()));
     }
   }
 }
