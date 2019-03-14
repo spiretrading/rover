@@ -22,6 +22,6 @@ if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX OR
 endif()
 if(UNIX)
   set_target_properties(python PROPERTIES PREFIX "")
-  include_directories(/usr/include/python)
+  include_directories(/usr/include/python3.6)
 endif()
 target_link_libraries(python ${PYTHON_LIBRARY_PATH})
