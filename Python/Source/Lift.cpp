@@ -9,8 +9,7 @@ using namespace pybind11;
 namespace {
   using namespace Rover;
   using ArgsCont = std::vector<Box<object>>;
-  using KwargsCont = std::vector<std::pair<handle,
-    Box<object>>>;
+  using KwargsCont = std::vector<std::pair<handle, Box<object>>>;
   
   ArgsCont args_apply(const std::function<Box<object>(object&&)>& func,
       tuple&& args) {
