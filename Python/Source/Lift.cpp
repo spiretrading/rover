@@ -54,12 +54,10 @@ namespace {
 
       PythonLift(object callable, args args, kwargs kwargs)
         : m_callable(std::move(callable)),
-          m_args(args_apply([](object&& generator) {
-            return python_autobox<object>(std::move(generator));
-          }, std::move(args))),
-          m_kwargs(args_apply([](object&& generator) {
-            return python_autobox<object>(std::move(generator));
-          }, std::move(kwargs))) {}
+          m_args(args_apply(python_autobox<object, object>,
+            std::move(args))),
+          m_kwargs(args_apply(python_autobox<object, object>,
+            std::move(kwargs))) {}
 
       Type generate(Evaluator& evaluator) {
         auto args = args_apply([&](Box<object>& generator) {
