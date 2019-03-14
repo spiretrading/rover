@@ -31,13 +31,14 @@ namespace Rover::Details {
 
 namespace Rover {
   template<typename T, typename ArgFwd>
-  auto python_autobox(ArgFwd&& arg) {
+  Box<T> python_autobox(ArgFwd&& arg) {
     if(Details::is_python_generator(arg)) {
-      return Box<T>(Details::PythonBox<T>(std::forward<ArgFwd>(arg)));
+      return Box(Details::PythonBox<T>(std::forward<ArgFwd>(arg)));
     } else {
-      return Box<T>(Constant(arg.template cast<T>()));
+      return Box(Constant(arg.template cast<T>()));
     }
   }
 }
 
 #endif
+
