@@ -13,7 +13,6 @@ if [ ! -d "Catch2-2.6.1" ]; then
     popd
   fi
 fi
-python3 -c "from distutils import sysconfig"
 if [ ! -d "pybind11-2.2.4" ]; then
   git clone --branch v2.2.4 https://github.com/pybind/pybind11.git pybind11-2.2.4
   if [ -d "pybind11-2.2.4" ]; then
