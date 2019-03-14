@@ -33,9 +33,9 @@ namespace Rover {
   template<typename T, typename ArgFwd>
   auto python_autobox(ArgFwd&& arg) {
     if(Details::is_python_generator(arg)) {
-      return Box(Details::PythonBox<T>(std::forward<ArgFwd>(arg)));
+      return Box<T>(Details::PythonBox<T>(std::forward<ArgFwd>(arg)));
     } else {
-      return Box(Constant(arg.cast<T>()));
+      return Box<T>(Constant(arg.cast<T>()));
     }
   }
 }
