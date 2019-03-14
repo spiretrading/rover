@@ -22,7 +22,7 @@ namespace Rover {
   void export_box(pybind11::module& module, std::string_view type_name) {
     auto name = std::string("Box").append(type_name);
     pybind11::class_<Box<T>>(module, name.c_str())
-      .def(init(
+      .def(pybind11::init(
         [](pybind11::object arg) {
           return python_autobox<T>(std::move(arg));
         }))
