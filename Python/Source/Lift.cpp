@@ -11,8 +11,8 @@ namespace {
   using ArgsCont = std::vector<Box<object>>;
   using KwargsCont = std::vector<std::pair<handle, Box<object>>>;
   
-  ArgsCont args_apply(const std::function<Box<object>(object&&)>& func,
-      tuple&& args) {
+  template<typename Func>
+  ArgsCont args_apply(Func&& func, tuple&& args) {
     auto result = ArgsCont();
     for(auto i = 0U; i < args.size(); ++i) {
       result.push_back(func(std::move(args[i])));
@@ -20,8 +20,8 @@ namespace {
     return result;
   }
 
-  KwargsCont args_apply(const std::function<Box<object>(object&&)>& func,
-      dict&& args) {
+  template<typename Func>
+  KwargsCont args_apply(Func&& func, dict&& args) {
     auto result = KwargsCont();
     for(auto& arg : args) {
       auto value = func(reinterpret_borrow<object>(std::move(arg.second)));
@@ -30,8 +30,8 @@ namespace {
     return result;
   }
 
-  tuple args_apply(const std::function<object(Box<object>&)>& func,
-      ArgsCont& cont) {
+  template<typename Func>
+  tuple args_apply(Func&& func, ArgsCont& cont) {
     auto result = tuple(cont.size());
     for(auto i = 0U; i < cont.size(); ++i) {
       result[i] = func(cont[i]);
@@ -39,8 +39,8 @@ namespace {
     return result;
   }
 
-  dict args_apply(const std::function<object(Box<object>&)>& func,
-      KwargsCont& cont) {
+  template<typename Func>
+  dict args_apply(Func&& func, KwargsCont& cont) {
     auto result = dict();
     for(auto& arg : cont) {
       result[arg.first] = func(arg.second);
