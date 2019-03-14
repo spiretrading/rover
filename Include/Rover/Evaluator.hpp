@@ -1,5 +1,6 @@
 #ifndef ROVER_EVALUATION_HPP
 #define ROVER_EVALUATION_HPP
+#include <algorithm>
 #include <memory>
 #include <typeindex>
 #include <typeinfo>
