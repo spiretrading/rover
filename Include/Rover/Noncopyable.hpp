@@ -2,7 +2,7 @@
 #define ROVER_NONCOPYABLE_HPP
 
 namespace Rover {
-namespace {
+namespace Details {
 
   /** Base class that disables default copy construction and assignment. */
   class Noncopyable {
@@ -14,6 +14,8 @@ namespace {
       Noncopyable& operator =(Noncopyable&&) = default;
   };
 }
+
+  using Noncopyable = Details::Noncopyable;
 }
 
 #endif

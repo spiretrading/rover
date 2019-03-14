@@ -36,7 +36,7 @@ namespace Rover {
 
   template<typename T>
   struct is_generator<T, std::enable_if_t<!std::is_same_v<
-    decltype(std::declval<T>().generate(std::declval<Evaluator>())), void>>> :
+    decltype(std::declval<T>().generate(std::declval<Evaluator&>())), void>>> :
     std::true_type {};
   
   template<typename T>

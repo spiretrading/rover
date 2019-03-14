@@ -14,6 +14,9 @@ namespace {
     public:
       using Constant<T>::Constant;
   };
+
+  template<typename T>
+  MoveOnlyConstant(T) -> MoveOnlyConstant<T>;
 }
 
 TEST_CASE("test_int_range", "[Range]") {
