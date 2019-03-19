@@ -26,12 +26,6 @@ namespace Rover {
   
       //! Inserts a sample to this trial.
       void insert(Sample&& s);
-
-      //! Inserts all samples from another trial to this one.
-      void insert(const ListTrial& t);
-
-      //! Inserts all samples from another trial to this one.
-      void insert(ListTrial&& t);
   
       //! Inserts all samples from a collection via iterators to this one.
       template<typename Begin, typename End>
@@ -69,17 +63,6 @@ namespace Rover {
   template<typename S>
   void ListTrial<S>::insert(Sample&& s) {
     m_samples.push_back(std::move(s));
-  }
-
-  template<typename S>
-  void ListTrial<S>::insert(const ListTrial& t) {
-    insert(t.m_samples.begin(), t.m_samples.end());
-  }
-
-  template<typename S>
-  void ListTrial<S>::insert(ListTrial&& t) {
-    insert(std::make_move_iterator(t.m_samples.begin()),
-      std::make_move_iterator(t.m_samples.end()));
   }
 
   template<typename S>

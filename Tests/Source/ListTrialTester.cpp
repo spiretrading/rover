@@ -18,21 +18,6 @@ TEST_CASE("test_list_trial_size_and_capacity", "[ListTrial]") {
     REQUIRE(t.size() == 3);
     REQUIRE(t.capacity() >= 3);
   }
-  SECTION("Insert trials.") {
-    auto t = ListTrial<Sample<int, double, char>>();
-    auto t1 = ListTrial<Sample<int, double, char>>();
-    t1.insert({ 1, { 0.5, 'a' } });
-    t1.insert({ 5, { 1.5, 'c' } });
-    t.insert(t1);
-    REQUIRE(t.size() == 2);
-    REQUIRE(t.capacity() >= 2);
-    auto t2 = ListTrial<Sample<int, double, char>>();
-    t2.insert({ 4, { -0.5, 'b' } });
-    t2.insert({ 3, { 1.0, 'd' } });
-    t.insert(std::move(t2));
-    REQUIRE(t.size() == 4);
-    REQUIRE(t.capacity() >= 4);
-  }
   SECTION("Insert by iterators.") {
     auto t = ListTrial<Sample<int, double, char>>();
     auto v = std::vector<Sample<int, double, char>> {
@@ -74,29 +59,6 @@ TEST_CASE("test_list_trial_values", "[ListTrial]") {
     REQUIRE(std::get<0>(t[2].m_arguments) == 1.5);
     REQUIRE(std::get<1>(t[2].m_arguments) == 'c');
     REQUIRE(t[2].m_result == 5);
-  }
-  SECTION("Insert trials.") {
-    auto t = ListTrial<Sample<int, double, char>>();
-    auto t1 = ListTrial<Sample<int, double, char>>();
-    t1.insert({ 1, { 0.5, 'a' } });
-    t1.insert({ 5, { 1.5, 'c' } });
-    t.insert(t1);
-    auto t2 = ListTrial<Sample<int, double, char>>();
-    t2.insert({ 4, { -0.5, 'b' } });
-    t2.insert({ 3, { 1.0, 'd' } });
-    t.insert(std::move(t2));
-    REQUIRE(std::get<0>(t[0].m_arguments) == 0.5);
-    REQUIRE(std::get<1>(t[0].m_arguments) == 'a');
-    REQUIRE(t[0].m_result == 1);
-    REQUIRE(std::get<0>(t[1].m_arguments) == 1.5);
-    REQUIRE(std::get<1>(t[1].m_arguments) == 'c');
-    REQUIRE(t[1].m_result == 5);
-    REQUIRE(std::get<0>(t[2].m_arguments) == -0.5);
-    REQUIRE(std::get<1>(t[2].m_arguments) == 'b');
-    REQUIRE(t[2].m_result == 4);
-    REQUIRE(std::get<0>(t[3].m_arguments) == 1.0);
-    REQUIRE(std::get<1>(t[3].m_arguments) == 'd');
-    REQUIRE(t[3].m_result == 3);
   }
   SECTION("Insert by iterators.") {
     auto t = ListTrial<Sample<int, double, char>>();
