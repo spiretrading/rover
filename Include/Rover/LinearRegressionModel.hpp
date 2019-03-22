@@ -1,8 +1,11 @@
 #ifndef ROVER_LINEAR_REGRESSION_MODEL_HPP
 #define ROVER_LINEAR_REGRESSION_MODEL_HPP
+#include <type_traits>
+#include <vector>
 #include <dlib/matrix.h>
 
 namespace Rover {
+
   //! Models a trial using linear regression.
   /*!
     \tparam T The Trial to model.
@@ -42,8 +45,12 @@ namespace Rover {
       LinearRegressionModel<T>::operator ()(Arg&&... arg) const {
     auto x = dlib::matrix<Result, 1, std::tuple_size_v<
       typename Trial::Sample::Parameters> + 1>();
-    x = { 1., std::forward<Arg>(arg)... };
-    auto result = static_cast<Result>(x * m_transformation);
+    auto coef = std::vector<Result>();
+    coef.reserve(std::tuple_size_v<typename Trial::Sample::Parameters>);
+    (coef.push_back(std::forward<Arg>(arg)), ...);
+    x(0, 0) = 1.;
+    std::move(coef.begin(), coef.end(), x.begin() + 1);
+    auto result = x * m_transformation;
     return result;
   }
 
