@@ -27,9 +27,8 @@ namespace Rover {
       Result operator ()(Arg&&... arg) const;
 
     private:
-      static dlib::matrix<Result> compute_transformation_vector(const T& trial);
-
-    private:
+      static dlib::matrix<Result> compute_transformation_vector(
+        const Trial& trial);
       dlib::matrix<Result> m_transformation;
   };
 
@@ -50,12 +49,13 @@ namespace Rover {
 
   template<typename T>
   dlib::matrix<typename LinearRegressionModel<T>::Result> 
-      LinearRegressionModel<T>::compute_transformation_vector(const T& trial) {
+      LinearRegressionModel<T>::compute_transformation_vector(
+      const Trial& trial) {
     auto x = dlib::matrix<Result>(trial.size(),
-      std::tuple_size_v<typename T::Sample::Parameters> + 1);
+      std::tuple_size_v<typename Trial::Sample::Parameters> + 1);
     for(auto i = 0U; i < trial.size(); ++i) {
       auto row = std::apply([](const auto&... param) {
-        return std::vector<Result> { 1., param... };
+        return std::vector<Result>{ 1., param... };
       }, trial[i].m_arguments);
       std::move(row.begin(), row.end(), x.begin() + i * x.nc());
     }
