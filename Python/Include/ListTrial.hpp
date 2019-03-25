@@ -28,8 +28,8 @@ namespace Rover {
       .def(pybind11::init<>())
       .def("reserve", &ListTrial<S>::reserve)
       .def("capacity", &ListTrial<S>::capacity)
-      .def("insert", (void (ListTrial<S>::*)(const S&))
-         &ListTrial<S>::insert)
+      .def("insert", static_cast<void (ListTrial<S>::*)(const S&)>(
+         &ListTrial<S>::insert))
       .def("insert", [](ListTrial<S>& out,
            ListTrial<S> in) {
          out.insert(std::make_move_iterator(in.begin()),

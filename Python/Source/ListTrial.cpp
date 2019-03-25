@@ -9,8 +9,8 @@ namespace Rover {
       .def(init<>())
       .def("reserve", &ListTrial<PythonSample>::reserve)
       .def("capacity", &ListTrial<PythonSample>::capacity)
-      .def("insert", (void (ListTrial<PythonSample>::*)(const PythonSample&))
-         &ListTrial<PythonSample>::insert)
+      .def("insert", static_cast<void (ListTrial<PythonSample>::*)(const
+         PythonSample&)>(&ListTrial<PythonSample>::insert))
       .def("insert", [](ListTrial<PythonSample>& out,
            ListTrial<PythonSample> in) {
          out.insert(std::make_move_iterator(in.begin()),
