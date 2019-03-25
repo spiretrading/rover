@@ -28,14 +28,14 @@ namespace Rover {
     \tparam R The type of the result.
     \tparam P The types of the parameters.
     \param module The module to export the class to.
-    \param postifx The postfix to the name of the exported class.
+    \param suffix The suffix to the name of the exported class.
   */
   template<typename R, typename... P>
-  void export_sample(pybind11::module& module, std::string_view postfix);
+  void export_sample(pybind11::module& module, std::string_view suffix);
 
   template<typename R, typename... P>
-  void export_sample(pybind11::module& module, std::string_view postfix) {
-    auto name = std::string("Constant").append(postfix);
+  void export_sample(pybind11::module& module, std::string_view suffix) {
+    auto name = std::string("Constant").append(suffix);
     pybind11::class_<Sample<R, P...>>(module, name.c_str())
       .def(pybind11::init<>())
       .def_readwrite("result", &Sample<R, P...>::m_result)

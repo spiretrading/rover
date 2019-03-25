@@ -16,14 +16,14 @@ namespace Rover {
   //! Exports a Trial for a particular Sample type
   /*!
     \param module The module to export the class to
-    \param postfix The postfix to the name of the exported type
+    \param suffix The suffix to the name of the exported type
   */
   template<typename S>
-  void export_list_trial(pybind11::module& module, std::string_view postfix);
+  void export_list_trial(pybind11::module& module, std::string_view suffix);
 
   template<typename S>
-  void export_list_trial(pybind11::module& module, std::string_view postfix) {
-    auto name = std::string("Constant").append(postfix);
+  void export_list_trial(pybind11::module& module, std::string_view suffix) {
+    auto name = std::string("Constant").append(suffix);
     pybind11::class_<ListTrial<S>>(module, name.c_str())
       .def(pybind11::init<>())
       .def("reserve", &ListTrial<S>::reserve)
