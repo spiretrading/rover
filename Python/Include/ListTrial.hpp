@@ -23,7 +23,7 @@ namespace Rover {
 
   template<typename S>
   void export_list_trial(pybind11::module& module, std::string_view suffix) {
-    auto name = std::string("Constant").append(suffix);
+    auto name = std::string("ListTrial").append(suffix);
     pybind11::class_<ListTrial<S>>(module, name.c_str())
       .def(pybind11::init<>())
       .def("reserve", &ListTrial<S>::reserve)
