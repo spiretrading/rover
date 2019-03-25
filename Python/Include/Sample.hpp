@@ -35,7 +35,7 @@ namespace Rover {
 
   template<typename R, typename... P>
   void export_sample(pybind11::module& module, std::string_view suffix) {
-    auto name = std::string("Constant").append(suffix);
+    auto name = std::string("Sample").append(suffix);
     pybind11::class_<Sample<R, P...>>(module, name.c_str())
       .def(pybind11::init<>())
       .def_readwrite("result", &Sample<R, P...>::m_result)
