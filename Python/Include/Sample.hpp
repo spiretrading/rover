@@ -28,10 +28,9 @@ namespace Details {
 
   template<typename S>
   S sample_cast(const PythonSample& s) {
-    S result;
-    result.m_result = s.m_result.template cast<typename S::Result>();
-    result.m_arguments = cast_arguments<typename S::Parameters>(s.m_arguments,
-      std::make_index_sequence<std::tuple_size_v<typename S::Parameters>>());
+    auto result = S{ s.m_result.template cast<typename S::Result>(),
+      cast_arguments<typename S::Parameters>(s.m_arguments,
+      std::make_index_sequence<std::tuple_size_v<typename S::Parameters>>()) };
     return result;
   }
 }
