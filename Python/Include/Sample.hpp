@@ -57,6 +57,8 @@ namespace Details {
     auto name = std::string("Sample").append(suffix);
     pybind11::class_<Sample<R, P...>>(module, name.c_str())
       .def(pybind11::init<>())
+      .def(pybind11::init<typename Sample<R, P...>::Result,
+         typename Sample<R, P...>::Parameters>())
       .def(pybind11::init(
          [](PythonSample s) {
            return Details::sample_cast<Sample<R, P...>>(s);
