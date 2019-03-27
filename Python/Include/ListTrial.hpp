@@ -30,10 +30,8 @@ namespace Rover {
       .def("capacity", &ListTrial<S>::capacity)
       .def("insert", static_cast<void (ListTrial<S>::*)(const S&)>(
          &ListTrial<S>::insert))
-      .def("insert", [](ListTrial<S>& out,
-           ListTrial<S> in) {
-         out.insert(std::make_move_iterator(in.begin()),
-           std::make_move_iterator(in.end()));
+      .def("insert", [](ListTrial<S>& out, const ListTrial<S>& in) {
+         out.insert(in.begin(), in.end());
        })
       .def("__getitem__", &ListTrial<S>::operator [])
       .def("__iter__", [](const ListTrial<S>& t) {

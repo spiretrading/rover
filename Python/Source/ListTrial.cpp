@@ -12,9 +12,8 @@ void Rover::export_list_trial(module& module) {
     .def("insert", static_cast<void (ListTrial<PythonSample>::*)(const
        PythonSample&)>(&ListTrial<PythonSample>::insert))
     .def("insert", [](ListTrial<PythonSample>& out,
-         ListTrial<PythonSample> in) {
-       out.insert(std::make_move_iterator(in.begin()),
-         std::make_move_iterator(in.end()));
+         const ListTrial<PythonSample>& in) {
+       out.insert(in.begin(), in.end());
      })
     .def("__getitem__", &ListTrial<PythonSample>::operator [])
     .def("__iter__", [](const ListTrial<PythonSample>& t) {
