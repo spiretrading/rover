@@ -60,7 +60,7 @@ namespace Details {
       .def(pybind11::init<typename Sample<R, P...>::Result,
          typename Sample<R, P...>::Parameters>())
       .def(pybind11::init(
-         [](PythonSample s) {
+         [](const PythonSample& s) {
            return Details::sample_cast<Sample<R, P...>>(s);
          }))
       .def_readwrite("result", &Sample<R, P...>::m_result)
