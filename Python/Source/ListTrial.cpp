@@ -4,7 +4,7 @@
 using namespace pybind11;
 using namespace Rover;
 
-void Rover::export_list_trial(pybind11::module& module) {
+void Rover::export_list_trial(module& module) {
   class_<ListTrial<PythonSample>>(module, "ListTrial")
     .def(init<>())
     .def("reserve", &ListTrial<PythonSample>::reserve)
