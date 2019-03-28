@@ -49,7 +49,7 @@ namespace Rover {
   template<typename... Arg>
   typename LinearRegressionModel<T, C>::Result
       LinearRegressionModel<T, C>::operator ()(Arg&&... arg) const {
-    auto x = dlib::matrix<Result, 1, std::tuple_size_v<
+    auto x = dlib::matrix<CompType, 1, std::tuple_size_v<
       typename Trial::Sample::Parameters> + 1>();
     auto coef = std::vector<CompType>();
     coef.reserve(std::tuple_size_v<typename Trial::Sample::Parameters>);
@@ -76,7 +76,7 @@ namespace Rover {
     auto y = dlib::matrix<CompType>(trial.size(), 1);
     std::transform(trial.begin(), trial.end(), y.begin(),
       [](const auto& sample) {
-        return sample.m_result;
+        return static_cast<CompType>(sample.m_result);
       });
     auto xtr = dlib::trans(x);
     auto result = dlib::inv(xtr * x) * xtr * y;
