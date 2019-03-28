@@ -1,6 +1,6 @@
 #ifndef ROVER_LINEAR_REGRESSION_MODEL_HPP
 #define ROVER_LINEAR_REGRESSION_MODEL_HPP
-#include <type_traits>
+#include <tuple>
 #include <vector>
 #include <dlib/matrix.h>
 
