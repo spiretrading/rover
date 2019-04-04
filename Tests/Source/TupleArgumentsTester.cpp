@@ -1,6 +1,5 @@
 #include <catch.hpp>
 #include "Rover/Sample.hpp"
-#include "Rover/TupleArguments.hpp"
 
 using namespace Rover;
 
