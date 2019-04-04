@@ -26,7 +26,7 @@ namespace Rover {
   */
   template<typename Func>
   void visit_arguments(Func&& func, pybind11::tuple& tuple) {
-    for(std::size_t i = 0LU; i < tuple.size(); ++i) {
+    for(auto i = std::size_t(0); i < tuple.size(); ++i) {
       func(tuple[i], i);
     }
   }
