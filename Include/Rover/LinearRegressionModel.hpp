@@ -29,7 +29,7 @@ namespace Rover {
       //! Constructs a linear regression model for a trial.
       /*!
         \param trial The trial to model.
-      */
+      */ 
       LinearRegressionModel(const Trial& trial);
 
       template<typename... Arg>
@@ -50,9 +50,9 @@ namespace Rover {
   typename LinearRegressionModel<T, C>::Result
       LinearRegressionModel<T, C>::operator ()(Arg&&... arg) const {
     auto x = dlib::matrix<CompType, 1, std::tuple_size_v<
-      typename Trial::Sample::Parameters> + 1>();
+      typename Trial::Sample::Arguments> + 1>();
     auto coef = std::vector<CompType>();
-    coef.reserve(std::tuple_size_v<typename Trial::Sample::Parameters>);
+    coef.reserve(std::tuple_size_v<typename Trial::Sample::Arguments>);
     (coef.push_back(std::forward<Arg>(arg)), ...);
     x(0, 0) = static_cast<CompType>(1.);
     std::move(coef.begin(), coef.end(), x.begin() + 1);
@@ -65,7 +65,7 @@ namespace Rover {
       LinearRegressionModel<T, C>::compute_transformation_vector(
       const Trial& trial) {
     auto x = dlib::matrix<CompType>(trial.size(),
-      std::tuple_size_v<typename Trial::Sample::Parameters> + 1);
+      std::tuple_size_v<typename Trial::Sample::Arguments> + 1);
     for(auto i = 0U; i < trial.size(); ++i) {
       auto row = std::apply([](const auto&... param) {
         return std::vector<CompType>{ static_cast<CompType>(1.),
