@@ -236,7 +236,6 @@ namespace Rover {
     return *(*m_get_ptr)(m_offset + offset);
   }
 
-
   template<typename T>
   template<typename Trial>
   TrialView<T>::TrialView(const Trial& t)
