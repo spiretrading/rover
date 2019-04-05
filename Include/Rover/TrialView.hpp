@@ -1,7 +1,6 @@
 #ifndef ROVER_TRIAL_VIEW_HPP
 #define ROVER_TRIAL_VIEW_HPP
 #include <functional>
-#include <type_traits>
 
 namespace Rover {
 
@@ -99,11 +98,6 @@ namespace Rover {
       //! Creates a TrialView for a trial.
       template<typename Trial>
       TrialView(const Trial& t);
-
-      //! Creates a TrialView for a trial.
-      template<typename Trial, std::enable_if_t<!std::is_lvalue_reference_v<
-        Trial>>* = nullptr>
-      TrialView(Trial&& t);
 
       //! Returns an iterator to the beginning of the trial.
       ConstIterator begin() const;
@@ -251,17 +245,6 @@ namespace Rover {
     : m_size(t.size()),
       m_get_ptr([begin = t.begin()] (std::size_t offset) {
         return &(*(begin + offset));
-      }),
-      m_begin(m_get_ptr, 0),
-      m_end(m_get_ptr, m_size) {}
-
-  template<typename T>
-  template<typename Trial, std::enable_if_t<!std::is_lvalue_reference_v<
-    Trial>>*>
-  TrialView<T>::TrialView(Trial&& t)
-    : m_size(t.size()),
-      m_get_ptr([t = std::move(t)](std::size_t offset) {
-        return &(*(t.begin() + offset));
       }),
       m_begin(m_get_ptr, 0),
       m_end(m_get_ptr, m_size) {}
