@@ -132,8 +132,9 @@ namespace Rover {
   template<typename S>
   typename TrialView<S>::ConstIterator
       TrialView<S>::ConstIterator::operator ++(int) {
+    auto copy = *this;
     ++m_offset;
-    return *this;
+    return copy;
   }
 
   template<typename S>
@@ -146,8 +147,9 @@ namespace Rover {
   template<typename S>
   typename TrialView<S>::ConstIterator
       TrialView<S>::ConstIterator::operator --(int) {
+    auto copy = *this;
     --m_offset;
-    return *this;
+    return copy;
   }
 
   template<typename S>
