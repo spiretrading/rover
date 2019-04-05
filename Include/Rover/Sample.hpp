@@ -25,7 +25,7 @@ namespace Rover {
     Arguments m_arguments;
   };
 
-  //! Applies a function to every element of a tuple
+  //! Applies a function to every element of a tuple.
   /*!
     \param func Function taking a tuple element and its index as arguments.
     \param tuple Tuple of the arguments.
@@ -33,12 +33,12 @@ namespace Rover {
   template<typename Func, typename... A>
   void visit_arguments(Func&& func, std::tuple<A...>& tuple) {
     std::apply([&](auto&&... args) {
-      auto i = 0LU;
+      auto i = std::size_t(0);
       (func(args, i++), ...);
     }, tuple);
   }
 
-  //! Returns the number of elements in a tuple
+  //! Returns the number of elements in a tuple.
   template<typename... A>
   constexpr std::size_t arguments_size(const std::tuple<A...>& tuple) {
     return std::tuple_size_v<std::tuple<A...>>;
