@@ -1,6 +1,7 @@
 #ifndef ROVER_TRIAL_VIEW_HPP
 #define ROVER_TRIAL_VIEW_HPP
 #include <functional>
+#include <type_traits>
 
 namespace Rover {
 
@@ -15,17 +16,21 @@ namespace Rover {
       //! The type of the samples stored in the Trial.
       using Sample = S;
 
+    private:
+      using GetPtr = std::function<const Sample* (std::ptrdiff_t)>;
+
+    public:
+
       //! Random access constant iterator.
       class ConstIterator {
         public:
 
           //! Creates a constant iterator.
           /*
-            \param t Trial to read.
+            \param get_ptr Reference to TrialView::m_get_ptr.
             \param offset Offset from t.begin().
           */
-          template<typename Trial>
-          ConstIterator(const Trial& t, std::ptrdiff_t offset);
+          ConstIterator(const GetPtr& get_ptr, std::size_t offset);
 
           //! Increments the iterator.
           ConstIterator& operator ++();
@@ -87,13 +92,18 @@ namespace Rover {
           const Sample& operator [](std::ptrdiff_t offset) const;
 
         private:
+          const GetPtr* m_get_ptr;
           std::ptrdiff_t m_offset;
-          std::function<const Sample* (std::ptrdiff_t)> m_get_ptr;
       };
 
       //! Creates a TrialView for a trial.
       template<typename Trial>
       TrialView(const Trial& t);
+
+      //! Creates a TrialView for a trial.
+      template<typename Trial, std::enable_if_t<!std::is_lvalue_reference_v<
+        Trial>>* = nullptr>
+      TrialView(Trial&& t);
 
       //! Returns an iterator to the beginning of the trial.
       ConstIterator begin() const;
@@ -108,40 +118,37 @@ namespace Rover {
       const Sample& operator [](std::size_t index) const;
 
     private:
+      std::size_t m_size;
+      GetPtr m_get_ptr;
       ConstIterator m_begin;
       ConstIterator m_end;
-      std::size_t m_size;
   };
 
   template<typename Trial>
   TrialView(const Trial&) -> TrialView<typename Trial::Sample>;
 
   template<typename S>
-  template<typename Trial>
-  TrialView<S>::ConstIterator::ConstIterator(const Trial& t,
-      std::ptrdiff_t offset)
-    : m_offset(offset),
-      m_get_ptr([begin = t.begin()] (std::ptrdiff_t offset)
-      {
-        return &(*(begin + offset));
-      }) {}
+  TrialView<S>::ConstIterator::ConstIterator(const GetPtr& get_ptr,
+      std::size_t offset)
+    : m_get_ptr(&get_ptr),
+      m_offset(static_cast<std::ptrdiff_t>(offset)) {}
 
   template<typename S>
   typename const TrialView<S>::Sample&
       TrialView<S>::ConstIterator::operator *() const {
-    return *m_get_ptr(m_offset);
+    return *m_get_ptr->operator ()(m_offset);
   }
 
   template<typename S>
   typename const TrialView<S>::Sample*
       TrialView<S>::ConstIterator::operator ->() const {
-    return m_get_ptr(m_offset);
+    return m_get_ptr->operator ()(m_offset);
   }
 
   template<typename S>
   typename const TrialView<S>::Sample&
       TrialView<S>::ConstIterator::operator [](std::ptrdiff_t offset) const {
-    return *m_get_ptr(m_offset + offset);
+    return *m_get_ptr->operator ()(m_offset + offset);
   }
 
   template<typename S>
@@ -241,9 +248,23 @@ namespace Rover {
   template<typename T>
   template<typename Trial>
   TrialView<T>::TrialView(const Trial& t)
-    : m_begin(ConstIterator(t, std::ptrdiff_t(0))),
-      m_end(ConstIterator(t, static_cast<std::ptrdiff_t>(t.size()))),
-      m_size(t.size()) {}
+    : m_size(t.size()),
+      m_get_ptr([begin = t.begin()] (std::ptrdiff_t offset) {
+        return &(*(begin + offset));
+      }),
+      m_begin(m_get_ptr, 0),
+      m_end(m_get_ptr, m_size) {}
+
+  template<typename T>
+  template<typename Trial, std::enable_if_t<!std::is_lvalue_reference_v<
+    Trial>>*>
+  TrialView<T>::TrialView(Trial&& t)
+    : m_size(t.size()),
+      m_get_ptr([t = std::move(t)](std::ptrdiff_t offset) {
+        return &(*(t.begin() + offset));
+      }),
+      m_begin(m_get_ptr, 0),
+      m_end(m_get_ptr, m_size) {}
 
   template<typename T>
   typename TrialView<T>::ConstIterator TrialView<T>::begin() const {

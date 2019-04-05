@@ -5,6 +5,16 @@
 
 using namespace Rover;
 
+namespace {
+  auto create_list_trial() {
+    auto t = ListTrial<Sample<int, double, char>>();
+    t.insert({ 1, { 0.5, 'c' } });
+    t.insert({ 6, { 0.0, 'a' } });
+    t.insert({ 5, { 0.3, 'd' } });
+    return t;
+  }
+}
+
 TEST_CASE("test_list_trial_to_view", "[TrialView]") {
   SECTION("Empty trial.") {
     auto t = ListTrial<Sample<int, double, char>>();
@@ -107,5 +117,26 @@ TEST_CASE("test_list_trial_to_view", "[TrialView]") {
     }
     it = it + 2;
     REQUIRE(it == v.end());
+  }
+  SECTION("Dangling trial.") {
+    auto v = TrialView(create_list_trial());
+    REQUIRE(v.size() == 3);
+    auto count = 0;
+    for(const auto& s : v) {
+      ++count;
+    }
+    REQUIRE(count == 3);
+    const auto& s1 = v[0];
+    REQUIRE(s1.m_result == 1);
+    REQUIRE(std::get<0>(s1.m_arguments) == 0.5);
+    REQUIRE(std::get<1>(s1.m_arguments) == 'c');
+    auto s2 = v[1];
+    REQUIRE(s2.m_result == 6);
+    REQUIRE(std::get<0>(s2.m_arguments) == 0.0);
+    REQUIRE(std::get<1>(s2.m_arguments) == 'a');
+    auto s3 = v[2];
+    REQUIRE(s3.m_result == 5);
+    REQUIRE(std::get<0>(s3.m_arguments) == 0.3);
+    REQUIRE(std::get<1>(s3.m_arguments) == 'd');
   }
 }
