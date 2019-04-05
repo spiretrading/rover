@@ -114,8 +114,6 @@ namespace Rover {
     private:
       std::size_t m_size;
       GetPtr m_get_ptr;
-      ConstIterator m_begin;
-      ConstIterator m_end;
   };
 
   template<typename Trial>
@@ -245,18 +243,16 @@ namespace Rover {
     : m_size(t.size()),
       m_get_ptr([begin = t.begin()] (std::size_t offset) {
         return &(*(begin + offset));
-      }),
-      m_begin(m_get_ptr, 0),
-      m_end(m_get_ptr, m_size) {}
+      }) {}
 
   template<typename T>
   typename TrialView<T>::ConstIterator TrialView<T>::begin() const {
-    return m_begin;
+    return ConstIterator(m_get_ptr, 0);
   }
 
   template<typename T>
   typename TrialView<T>::ConstIterator TrialView<T>::end() const {
-    return m_end;
+    return ConstIterator(m_get_ptr, m_size);
   }
 
   template<typename T>
@@ -267,7 +263,7 @@ namespace Rover {
   template<typename T>
   typename const TrialView<T>::Sample& TrialView<T>::operator [](std::size_t
       index) const {
-    return m_begin[static_cast<std::ptrdiff_t>(index)];
+    return begin()[index];
   }
 }
 
