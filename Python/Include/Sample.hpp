@@ -10,14 +10,29 @@ namespace Rover {
   //! Sample containing Python objects.
   struct PythonSample {
     using Result = pybind11::object;
-    using Parameters = pybind11::tuple;
+    using Arguments = pybind11::tuple;
 
     //! The result of the function.
     Result m_result;
 
     //! The arguments passed to the function.
-    Parameters m_arguments;
+    Arguments m_arguments;
   };
+
+  //! Applies a function to every element of a Python tuple.
+  /*!
+    \param func Function taking a tuple element and its index as arguments.
+    \param tuple Python tuple of the arguments.
+  */
+  template<typename Func>
+  void visit_arguments(Func&& func, pybind11::tuple& tuple) {
+    for(auto i = std::size_t(0); i < tuple.size(); ++i) {
+      func(tuple[i], i);
+    }
+  }
+
+  //! Returns the number of elements in a Python tuple.
+  std::size_t arguments_size(const pybind11::tuple& tuple);
 
 namespace Details {
   template<typename T, std::size_t... I>
@@ -25,12 +40,11 @@ namespace Details {
     return std::make_tuple(t[I].template cast<std::tuple_element_t<I, T>>()...);
   }
 
-
   template<typename S>
   S sample_cast(const PythonSample& s) {
     auto result = S{ s.m_result.template cast<typename S::Result>(),
-      cast_arguments<typename S::Parameters>(s.m_arguments,
-      std::make_index_sequence<std::tuple_size_v<typename S::Parameters>>()) };
+      cast_arguments<typename S::Arguments>(s.m_arguments,
+      std::make_index_sequence<std::tuple_size_v<typename S::Arguments>>()) };
     return result;
   }
 }
