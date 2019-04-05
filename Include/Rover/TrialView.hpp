@@ -23,6 +23,7 @@ namespace Rover {
       //! Random access constant iterator.
       class ConstIterator {
         public:
+
           //! Increments the iterator.
           ConstIterator& operator ++();
 
@@ -84,9 +85,11 @@ namespace Rover {
 
         private:
           friend class TrialView<S>;
-          ConstIterator(const GetPtr& get_ptr, std::size_t offset);
+
           const GetPtr* m_get_ptr;
           std::size_t m_offset;
+
+          ConstIterator(const GetPtr& get_ptr, std::size_t offset);
       };
 
       //! Creates a TrialView for a trial.
@@ -118,54 +121,6 @@ namespace Rover {
       std::size_t offset)
     : m_get_ptr(&get_ptr),
       m_offset(offset) {}
-
-  template<typename S>
-  typename const TrialView<S>::Sample&
-      TrialView<S>::ConstIterator::operator *() const {
-    return *(*m_get_ptr)(m_offset);
-  }
-
-  template<typename S>
-  typename const TrialView<S>::Sample*
-      TrialView<S>::ConstIterator::operator ->() const {
-    return (*m_get_ptr)(m_offset);
-  }
-
-  template<typename S>
-  typename const TrialView<S>::Sample&
-      TrialView<S>::ConstIterator::operator [](std::ptrdiff_t offset) const {
-    return *(*m_get_ptr)(m_offset + offset);
-  }
-
-  template<typename S>
-  bool TrialView<S>::ConstIterator::operator ==(ConstIterator other) const {
-    return m_offset == other.m_offset;
-  }
-
-  template<typename S>
-  bool TrialView<S>::ConstIterator::operator !=(ConstIterator other) const {
-    return m_offset != other.m_offset;
-  }
-
-  template<typename S>
-  bool TrialView<S>::ConstIterator::operator <(ConstIterator other) const {
-    return m_offset < other.m_offset;
-  }
-
-  template<typename S>
-  bool TrialView<S>::ConstIterator::operator <=(ConstIterator other) const {
-    return m_offset <= other.m_offset;
-  }
-
-  template<typename S>
-  bool TrialView<S>::ConstIterator::operator >(ConstIterator other) const {
-    return m_offset > other.m_offset;
-  }
-
-  template<typename S>
-  bool TrialView<S>::ConstIterator::operator >=(ConstIterator other) const {
-    return m_offset >= other.m_offset;
-  }
 
   template<typename S>
   typename TrialView<S>::ConstIterator&
@@ -230,6 +185,55 @@ namespace Rover {
       ConstIterator other) const {
     return m_offset - other.m_offset;
   }
+
+  template<typename S>
+  bool TrialView<S>::ConstIterator::operator ==(ConstIterator other) const {
+    return m_offset == other.m_offset;
+  }
+
+  template<typename S>
+  bool TrialView<S>::ConstIterator::operator !=(ConstIterator other) const {
+    return m_offset != other.m_offset;
+  }
+
+  template<typename S>
+  bool TrialView<S>::ConstIterator::operator <(ConstIterator other) const {
+    return m_offset < other.m_offset;
+  }
+
+  template<typename S>
+  bool TrialView<S>::ConstIterator::operator <=(ConstIterator other) const {
+    return m_offset <= other.m_offset;
+  }
+
+  template<typename S>
+  bool TrialView<S>::ConstIterator::operator >(ConstIterator other) const {
+    return m_offset > other.m_offset;
+  }
+
+  template<typename S>
+  bool TrialView<S>::ConstIterator::operator >=(ConstIterator other) const {
+    return m_offset >= other.m_offset;
+  }
+
+  template<typename S>
+  typename const TrialView<S>::Sample&
+      TrialView<S>::ConstIterator::operator *() const {
+    return *(*m_get_ptr)(m_offset);
+  }
+
+  template<typename S>
+  typename const TrialView<S>::Sample*
+      TrialView<S>::ConstIterator::operator ->() const {
+    return (*m_get_ptr)(m_offset);
+  }
+
+  template<typename S>
+  typename const TrialView<S>::Sample&
+      TrialView<S>::ConstIterator::operator [](std::ptrdiff_t offset) const {
+    return *(*m_get_ptr)(m_offset + offset);
+  }
+
 
   template<typename T>
   template<typename Trial>
