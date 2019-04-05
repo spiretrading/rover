@@ -22,15 +22,9 @@ namespace Rover {
 
       //! Random access constant iterator.
       class ConstIterator {
+        friend class TrialView<S>;
+
         public:
-
-          //! Creates a constant iterator.
-          /*
-            \param get_ptr Reference to TrialView::m_get_ptr.
-            \param offset Offset from t.begin().
-          */
-          ConstIterator(const GetPtr& get_ptr, std::size_t offset);
-
           //! Increments the iterator.
           ConstIterator& operator ++();
 
@@ -91,6 +85,7 @@ namespace Rover {
           const Sample& operator [](std::ptrdiff_t offset) const;
 
         private:
+          ConstIterator(const GetPtr& get_ptr, std::size_t offset);
           const GetPtr* m_get_ptr;
           std::size_t m_offset;
       };
