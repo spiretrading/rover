@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <chrono>
 #include <optional>
 #include <catch.hpp>
 #include "Rover/ListTrial.hpp"
@@ -7,6 +8,7 @@
 #include "Rover/TrialReader.hpp"
 
 using namespace Rover;
+using namespace std::chrono_literals;
 
 namespace {
   class TestAlgorithm {
@@ -225,4 +227,26 @@ TEST_CASE("test_model_singularity_resolution", "[Model]") {
     REQUIRE(model({ 4., 11. }) == Approx(3.));
     REQUIRE(model({ 100., 100. }) == Approx(3.));
   }
+}
+
+TEST_CASE("test_model_reuse_for_other_types", "[Model]") {
+  using OtherSample = Sample<std::chrono::duration<double>, double,
+    std::chrono::duration<double>>;
+  using OtherTrial = ListTrial<OtherSample>;
+  auto trial = OtherTrial();
+  // Normalized to { 1.0, 0.6 }.
+  trial.insert({ 2.s, { 5., 7.min } });
+  // Normalized to { 0.5, 1.0 }.
+  trial.insert({ 4.s, { 3., 9.min } });
+  // Normalized to { 0.0, 0.0 }.
+  trial.insert({ 6.s, { 1., 4.min } });
+  auto model = Model<TestAlgorithm, OtherTrial>(trial);
+  REQUIRE(model({ 1., 4.min }) == 5.s);
+  REQUIRE(model({ 0., 4.min }) == 5.s);
+  REQUIRE(model({ -5., 4.min }) == 5.s);
+  REQUIRE(model({ 3., 9.min }) == 3.s);
+  REQUIRE(model({ 4., 9.min }) == 3.s);
+  REQUIRE(model({ 5., 9.min }) == 3.s);
+  REQUIRE(model({ 4., 8.min }) == 3.s);
+  REQUIRE(model({ 1., 0.min }) == 4.s);
 }
