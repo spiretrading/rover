@@ -44,25 +44,42 @@ namespace {
 
 namespace Rover { 
 
+  //! Single-value regression (prediction) model.
+  /*!
+    \tparam A The type of the regression algorithm.
+    \tparam T The type of the trial.
+  */
   template<typename A, typename T>
   class Model {
     public:
 
+      //! The type of the regression algorithm.
       using Algorithm = A;
 
+      //! The computation type used by the algorithm.
       using CompType = typename Algorithm::CompType;
 
+      //! The type of the trial.
       using Trial = T;
 
+      //! The type of a sample.
       using Sample = typename Trial::Sample;
 
+      //! The type of a sample's arguments.
       using Arguments = typename Sample::Arguments;
 
+      //! The type of a sample's result.
       using Result = typename Sample::Result;
 
+      //! Creates a Model.
+      /*!
+        \param trial The trial.
+        \param args The arguments for the algorithm's constructor.
+      */
       template<typename... AlgoArgFwd>
       explicit Model(const Trial& trial, AlgoArgFwd&&... args);
 
+      //! Predicts a Result for given arguments.
       Result operator ()(const Arguments& args) const;
 
     private:
