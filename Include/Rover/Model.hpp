@@ -80,7 +80,7 @@ namespace Rover {
       explicit Model(const Trial& trial, AlgoArgFwd&&... args);
 
       //! Predicts a Result for given arguments.
-      Result operator ()(const Arguments& args) const;
+      auto operator ()(const Arguments& args) const;
 
     private:
       using Reader = ScalarView<CompType>;
@@ -95,7 +95,7 @@ namespace Rover {
       ReaderSample sample_cast(const Sample& sample) const;
       ReaderArguments arguments_cast(const Arguments& sample) const;
       ReaderResult result_cast(const Result& value) const;
-      Result result_cast(ReaderResult value) const;
+      auto result_cast(ReaderResult value) const;
   };
 
   template<typename A, typename T>
@@ -110,7 +110,7 @@ namespace Rover {
   }
 
   template<typename A, typename T>
-  typename Model<A, T>::Result Model<A, T>::operator ()(const Arguments& args)
+  auto Model<A, T>::operator ()(const Arguments& args)
       const {
     auto arguments = arguments_cast(args);
     auto value = m_algorithm.predict(arguments);
@@ -181,7 +181,7 @@ namespace Rover {
   }
 
   template<typename A, typename T>
-  typename Model<A, T>::Result Model<A, T>::result_cast(ReaderResult value)
+  auto Model<A, T>::result_cast(ReaderResult value)
       const {
     return m_basis.m_result * value;
   }
