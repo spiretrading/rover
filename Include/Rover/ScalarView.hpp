@@ -1,5 +1,5 @@
-#ifndef ROVER_TRIAL_READER_HPP
-#define ROVER_TRIAL_READER_HPP
+#ifndef ROVER_SCALAR_VIEW_HPP
+#define ROVER_SCALAR_VIEW_HPP
 #include <functional>
 #include <optional>
 #include <vector>
@@ -11,7 +11,7 @@ namespace Rover {
     \tparam T CompType used by the algorithm.
   */
   template<typename T>
-  class TrialReader {
+  class ScalarView {
     public:
 
       //! CompType used by the algorithm.
@@ -56,24 +56,24 @@ namespace Rover {
           ConstIterator operator++(int);
 
         private:
-          friend class TrialReader;
+          friend class ScalarView;
 
-          ConstIterator(const TrialReader* reader, std::size_t index);
+          ConstIterator(const ScalarView* reader, std::size_t index);
           std::optional<Sample> retrieve_sample() const;
 
-          const TrialReader* m_reader;
+          const ScalarView* m_reader;
           std::size_t m_index;
           std::optional<Sample> m_sample;
       };
 
-      //! Creates a TrialReader.
+      //! Creates a ScalarView.
       /*!
         \param get The function taking an index i and returning the ith adapted
                    sample.
         \param size The total number of samples.
       */
       template<typename GetFwd>
-      TrialReader(GetFwd&& get, std::size_t size);
+      ScalarView(GetFwd&& get, std::size_t size);
 
       //! Returns an input iterator to the beginning of the trial.
       ConstIterator begin() const;
@@ -93,38 +93,38 @@ namespace Rover {
   };
 
   template<typename T>
-  bool TrialReader<T>::ConstIterator::operator ==(ConstIterator other) const {
+  bool ScalarView<T>::ConstIterator::operator ==(ConstIterator other) const {
     return m_reader == other.m_reader && m_index == other.m_index;
   }
 
   template<typename T>
-  bool TrialReader<T>::ConstIterator::operator !=(ConstIterator other) const {
+  bool ScalarView<T>::ConstIterator::operator !=(ConstIterator other) const {
     return !(*this == other);
   }
 
   template<typename T>
-  typename const TrialReader<T>::Sample&
-      TrialReader<T>::ConstIterator::operator *() const {
+  typename const ScalarView<T>::Sample&
+      ScalarView<T>::ConstIterator::operator *() const {
     return *m_sample;
   }
 
   template<typename T>
-  typename const TrialReader<T>::Sample*
-      TrialReader<T>::ConstIterator::operator ->() const {
+  typename const ScalarView<T>::Sample*
+      ScalarView<T>::ConstIterator::operator ->() const {
     return &(*m_sample);
   }
 
   template<typename T>
-  typename TrialReader<T>::ConstIterator&
-      TrialReader<T>::ConstIterator::operator++() {
+  typename ScalarView<T>::ConstIterator&
+      ScalarView<T>::ConstIterator::operator++() {
     ++m_index;
     m_sample = retrieve_sample();
     return *this;
   }
 
   template<typename T>
-  typename TrialReader<T>::ConstIterator 
-      TrialReader<T>::ConstIterator::operator++(int) {
+  typename ScalarView<T>::ConstIterator 
+      ScalarView<T>::ConstIterator::operator++(int) {
     auto copy = *this;
     ++m_index;
     m_sample = retrieve_sample();
@@ -132,15 +132,15 @@ namespace Rover {
   }
   
   template<typename T>
-  TrialReader<T>::ConstIterator::ConstIterator(const TrialReader* reader,
+  ScalarView<T>::ConstIterator::ConstIterator(const ScalarView* reader,
       std::size_t index)
     : m_reader(reader),
       m_index(index),
       m_sample(retrieve_sample()) {}
 
   template<typename T>
-  std::optional<typename TrialReader<T>::Sample>
-      TrialReader<T>::ConstIterator::retrieve_sample() const {
+  std::optional<typename ScalarView<T>::Sample>
+      ScalarView<T>::ConstIterator::retrieve_sample() const {
     if(m_index < m_reader->size()) {
       return (*m_reader)[m_index];
     } else {
@@ -150,28 +150,28 @@ namespace Rover {
 
   template<typename T>
   template<typename GetFwd>
-  TrialReader<T>::TrialReader(GetFwd&& get, std::size_t size)
+  ScalarView<T>::ScalarView(GetFwd&& get, std::size_t size)
     : m_get(std::forward<GetFwd>(get)),
       m_size(size) {}
 
   template<typename T>
-  typename TrialReader<T>::ConstIterator TrialReader<T>::begin() const {
+  typename ScalarView<T>::ConstIterator ScalarView<T>::begin() const {
     return ConstIterator(this, 0);
   }
 
   template<typename T>
-  typename TrialReader<T>::ConstIterator TrialReader<T>::end() const {
+  typename ScalarView<T>::ConstIterator ScalarView<T>::end() const {
     return ConstIterator(this, m_size);
   }
 
   template<typename T>
-  typename TrialReader<T>::Sample TrialReader<T>::operator [](
+  typename ScalarView<T>::Sample ScalarView<T>::operator [](
       std::size_t i) const {
     return m_get(i);
   }
 
   template<typename T>
-  std::size_t TrialReader<T>::size() const {
+  std::size_t ScalarView<T>::size() const {
     return m_size;
   }
 }

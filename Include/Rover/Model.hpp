@@ -5,7 +5,7 @@
 #include <random>
 #include <type_traits>
 #include <vector>
-#include "TrialReader.hpp"
+#include "ScalarView.hpp"
 
 namespace {
   template<typename R, typename X, typename Y>
@@ -83,7 +83,7 @@ namespace Rover {
       Result operator ()(const Arguments& args) const;
 
     private:
-      using Reader = TrialReader<CompType>;
+      using Reader = ScalarView<CompType>;
       using ReaderSample = typename Reader::Sample;
       using ReaderArguments = typename Reader::Sample::Arguments;
       using ReaderResult = typename Reader::Sample::Result;
@@ -103,7 +103,7 @@ namespace Rover {
   Model<A, T>::Model(const Trial& trial, AlgoArgFwd&&... args)
     : m_basis(compute_basis(trial)),
       m_algorithm(std::forward<AlgoArgFwd>(args)...) {
-    auto reader = TrialReader<CompType>([&](std::size_t i) {
+    auto reader = ScalarView<CompType>([&](std::size_t i) {
       return sample_cast(trial[i]);
     }, trial.size());
     m_algorithm.learn(std::move(reader));

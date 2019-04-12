@@ -5,7 +5,7 @@
 #include "Rover/ListTrial.hpp"
 #include "Rover/Model.hpp"
 #include "Rover/Sample.hpp"
-#include "Rover/TrialReader.hpp"
+#include "Rover/ScalarView.hpp"
 
 using namespace Rover;
 using namespace std::chrono_literals;
@@ -14,10 +14,10 @@ namespace {
   class TestAlgorithm {
     public:
       using CompType = double;
-      using Sample = TrialReader<double>::Sample;
+      using Sample = ScalarView<double>::Sample;
       using Arguments = typename Sample::Arguments;
 
-      void learn(TrialReader<double>&& reader) {
+      void learn(ScalarView<double>&& reader) {
         for(const auto& sample : reader) {
           m_data.push_back(sample);
         }
