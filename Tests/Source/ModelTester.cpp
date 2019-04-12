@@ -18,8 +18,8 @@ namespace {
       using Arguments = typename Sample::Arguments;
 
       void learn(TrialReader<double>&& reader) {
-        for(auto i = std::size_t(0); i < reader.size(); ++i) {
-          m_data.push_back(reader[i]);
+        for(const auto& sample : reader) {
+          m_data.push_back(sample);
         }
         if(m_data.empty()) {
           return;
