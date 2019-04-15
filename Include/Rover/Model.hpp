@@ -101,8 +101,8 @@ namespace Rover {
   template<typename A, typename T>
   template<typename... AlgoArgFwd>
   Model<A, T>::Model(const Trial& trial, AlgoArgFwd&&... args)
-    : m_basis(compute_basis(trial)),
-      m_algorithm(std::forward<AlgoArgFwd>(args)...) {
+      : m_basis(compute_basis(trial)),
+        m_algorithm(std::forward<AlgoArgFwd>(args)...) {
     auto reader = ScalarView<CompType>([&](std::size_t i) {
       return sample_cast(trial[i]);
     }, trial.size());
