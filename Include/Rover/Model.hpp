@@ -123,7 +123,7 @@ namespace Rover {
     auto order = std::vector<std::size_t>(trial.size());
     auto generator = std::mt19937(std::random_device()());
     std::iota(order.begin(), order.end(), 0LU);
-    auto basis = *trial.begin();
+    auto basis = trial[0];
     visit_arguments([&](auto& result, auto i) {
       std::shuffle(order.begin(), order.end(), generator);
       const auto& first_arguments = trial[order[0]].m_arguments;
