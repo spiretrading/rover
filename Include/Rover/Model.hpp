@@ -130,7 +130,7 @@ namespace Rover {
       visit_arguments([&](const auto& lhs, auto j) {
         if(i == j) {
           auto to_break = false;
-          for(auto l = size_t(1); l < order.size() && !to_break; ++l) {
+          for(auto l = std::size_t(1); l < order.size() && !to_break; ++l) {
             const auto& second_arguments = trial[order[l]].m_arguments;
             visit_arguments([&](const auto& rhs, auto k) {
               if(j == k && solve_basis(result, lhs, rhs)) {
@@ -143,7 +143,7 @@ namespace Rover {
     }, basis.m_arguments);
     std::shuffle(order.begin(), order.end(), std::move(generator));
     const auto& first_result = trial[order[0]].m_result;
-    for(auto l = size_t(1); l < order.size(); ++l) {
+    for(auto l = std::size_t(1); l < order.size(); ++l) {
       const auto& second_result = trial[order[l]].m_result;
       if(first_result != second_result) {
         solve_basis(basis.m_result, first_result, second_result);
