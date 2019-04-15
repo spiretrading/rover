@@ -24,8 +24,7 @@ namespace {
     }
     if(x + y == x) {
       r = x;
-    }
-    else {
+    } else {
       r = y;
     }
     return true;
