@@ -50,10 +50,10 @@ namespace Rover {
           const Sample* operator ->() const;
 
           //! Increments the iterator.
-          ConstIterator& operator++();
+          ConstIterator& operator ++();
 
           //! Increments the iterator.
-          ConstIterator operator++(int);
+          ConstIterator operator ++(int);
 
         private:
           friend class ScalarView;
@@ -116,7 +116,7 @@ namespace Rover {
 
   template<typename T>
   typename ScalarView<T>::ConstIterator&
-      ScalarView<T>::ConstIterator::operator++() {
+      ScalarView<T>::ConstIterator::operator ++() {
     ++m_index;
     m_sample = retrieve_sample();
     return *this;
@@ -124,7 +124,7 @@ namespace Rover {
 
   template<typename T>
   typename ScalarView<T>::ConstIterator 
-      ScalarView<T>::ConstIterator::operator++(int) {
+      ScalarView<T>::ConstIterator::operator ++(int) {
     auto copy = *this;
     ++m_index;
     m_sample = retrieve_sample();
