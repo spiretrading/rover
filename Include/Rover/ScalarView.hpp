@@ -3,35 +3,43 @@
 #include <functional>
 #include <optional>
 #include <vector>
+#include <type_traits>
 
 namespace Rover {
 
+  //! Representation of a sample using a single numeric type.
+  template<typename T>
+  struct ScalarSample {
+
+    //! The type of the result.
+    using Result = T;
+
+    //! The type of the arguments.
+    using Arguments = std::vector<T>;
+
+    //! The result of the trial's function.
+    Result m_result;
+
+    //! The arguments passed to the trial's function.
+    Arguments m_arguments;
+  };
+
   //! Interface to pass adapted Trial Samples to typed Algorithms.
   /*!
-    \tparam T Computation type used by the algorithm.
+    \tparam G The type of a function returning adapted samples by index.
   */
-  template<typename T>
+  template<typename G>
   class ScalarView {
     public:
 
-      //! Computation type used by the algorithm.
-      using Type = T;
+      //! The type of a function returning adapted samples by index.
+      using Get = G;
 
-      //! Adapted sample.
-      struct Sample {
+      //! Type used by the algorithm.
+      using Type = typename std::invoke_result_t<Get, std::size_t>::Result;
 
-        //! The type of the result.
-        using Result = Type;
-
-        //! The type of the arguments.
-        using Arguments = std::vector<Type>;
-
-        //! The result of the trial's function.
-        Result m_result;
-
-        //! The arguments passed to the trial's function.
-        Arguments m_arguments;
-      };
+      //! The type representing a sample.
+      using Sample = ScalarSample<Type>;
 
       //! Constant input iterator.
       class ConstIterator {
@@ -88,59 +96,62 @@ namespace Rover {
       std::size_t size() const;
 
     private:
-      std::function<Sample (std::size_t)> m_get;
+      Get m_get;
       std::size_t m_size;
   };
 
-  template<typename T>
-  bool ScalarView<T>::ConstIterator::operator ==(ConstIterator other) const {
+  template<typename G>
+  ScalarView(G&&, std::size_t) -> ScalarView<std::decay_t<G>>;
+
+  template<typename G>
+  bool ScalarView<G>::ConstIterator::operator ==(ConstIterator other) const {
     return m_reader == other.m_reader && m_index == other.m_index;
   }
 
-  template<typename T>
-  bool ScalarView<T>::ConstIterator::operator !=(ConstIterator other) const {
+  template<typename G>
+  bool ScalarView<G>::ConstIterator::operator !=(ConstIterator other) const {
     return !(*this == other);
   }
 
-  template<typename T>
-  typename const ScalarView<T>::Sample&
-      ScalarView<T>::ConstIterator::operator *() const {
+  template<typename G>
+  typename const ScalarView<G>::Sample&
+      ScalarView<G>::ConstIterator::operator *() const {
     return *m_sample;
   }
 
-  template<typename T>
-  typename const ScalarView<T>::Sample*
-      ScalarView<T>::ConstIterator::operator ->() const {
+  template<typename G>
+  typename const ScalarView<G>::Sample*
+      ScalarView<G>::ConstIterator::operator ->() const {
     return std::addressof(m_sample);
   }
 
-  template<typename T>
-  typename ScalarView<T>::ConstIterator&
-      ScalarView<T>::ConstIterator::operator ++() {
+  template<typename G>
+  typename ScalarView<G>::ConstIterator&
+      ScalarView<G>::ConstIterator::operator ++() {
     ++m_index;
     m_sample = retrieve_sample();
     return *this;
   }
 
-  template<typename T>
-  typename ScalarView<T>::ConstIterator 
-      ScalarView<T>::ConstIterator::operator ++(int) {
+  template<typename G>
+  typename ScalarView<G>::ConstIterator 
+      ScalarView<G>::ConstIterator::operator ++(int) {
     auto copy = *this;
     ++m_index;
     m_sample = retrieve_sample();
     return copy;
   }
   
-  template<typename T>
-  ScalarView<T>::ConstIterator::ConstIterator(const ScalarView* reader,
+  template<typename G>
+  ScalarView<G>::ConstIterator::ConstIterator(const ScalarView* reader,
       std::size_t index)
     : m_reader(reader),
       m_index(index),
       m_sample(retrieve_sample()) {}
 
-  template<typename T>
-  std::optional<typename ScalarView<T>::Sample>
-      ScalarView<T>::ConstIterator::retrieve_sample() const {
+  template<typename G>
+  std::optional<typename ScalarView<G>::Sample>
+      ScalarView<G>::ConstIterator::retrieve_sample() const {
     if(m_index < m_reader->size()) {
       return (*m_reader)[m_index];
     } else {
@@ -148,30 +159,30 @@ namespace Rover {
     }
   }
 
-  template<typename T>
+  template<typename G>
   template<typename GetFwd>
-  ScalarView<T>::ScalarView(GetFwd&& get, std::size_t size)
+  ScalarView<G>::ScalarView(GetFwd&& get, std::size_t size)
     : m_get(std::forward<GetFwd>(get)),
       m_size(size) {}
 
-  template<typename T>
-  typename ScalarView<T>::ConstIterator ScalarView<T>::begin() const {
+  template<typename G>
+  typename ScalarView<G>::ConstIterator ScalarView<G>::begin() const {
     return ConstIterator(this, 0);
   }
 
-  template<typename T>
-  typename ScalarView<T>::ConstIterator ScalarView<T>::end() const {
+  template<typename G>
+  typename ScalarView<G>::ConstIterator ScalarView<G>::end() const {
     return ConstIterator(this, m_size);
   }
 
-  template<typename T>
-  typename ScalarView<T>::Sample ScalarView<T>::operator [](
+  template<typename G>
+  typename ScalarView<G>::Sample ScalarView<G>::operator [](
       std::size_t i) const {
     return m_get(i);
   }
 
-  template<typename T>
-  std::size_t ScalarView<T>::size() const {
+  template<typename G>
+  std::size_t ScalarView<G>::size() const {
     return m_size;
   }
 }

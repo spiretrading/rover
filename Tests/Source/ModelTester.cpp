@@ -14,10 +14,11 @@ namespace {
   class TestAlgorithm {
     public:
       using Type = double;
-      using Sample = ScalarView<double>::Sample;
+      using Sample = ScalarSample<double>;
       using Arguments = typename Sample::Arguments;
 
-      void learn(ScalarView<double>&& reader) {
+      template<typename ScalarView>
+      void learn(ScalarView&& reader) {
         for(const auto& sample : reader) {
           m_data.push_back(sample);
         }

@@ -82,19 +82,18 @@ namespace Rover {
       auto operator ()(const Arguments& args) const;
 
     private:
-      using Reader = ScalarView<ComputationType>;
-      using ReaderSample = typename Reader::Sample;
-      using ReaderArguments = typename Reader::Sample::Arguments;
-      using ReaderResult = typename Reader::Sample::Result;
+      using ScalarSample = ScalarSample<ComputationType>;
+      using ScalarArguments = typename ScalarSample::Arguments;
+      using ScalarResult = typename ScalarSample::Result;
 
       Sample m_basis;
       Algorithm m_algorithm;
 
       static Sample compute_basis(const Trial& trial);
-      ReaderSample sample_cast(const Sample& sample) const;
-      ReaderArguments arguments_cast(const Arguments& sample) const;
-      ReaderResult result_cast(const Result& value) const;
-      auto result_cast(ReaderResult value) const;
+      ScalarSample sample_cast(const Sample& sample) const;
+      ScalarArguments arguments_cast(const Arguments& sample) const;
+      ScalarResult result_cast(const Result& value) const;
+      auto result_cast(ScalarResult value) const;
   };
 
   template<typename A, typename T>
@@ -102,10 +101,10 @@ namespace Rover {
   Model<A, T>::Model(const Trial& trial, AlgoArgFwd&&... args)
       : m_basis(compute_basis(trial)),
         m_algorithm(std::forward<AlgoArgFwd>(args)...) {
-    auto reader = ScalarView<ComputationType>([&](std::size_t i) {
+    auto view = ScalarView([&](std::size_t i) {
       return sample_cast(trial[i]);
     }, trial.size());
-    m_algorithm.learn(std::move(reader));
+    m_algorithm.learn(std::move(view));
   }
 
   template<typename A, typename T>
@@ -152,7 +151,7 @@ namespace Rover {
   }
   
   template<typename A, typename T>
-  typename Model<A, T>::ReaderSample Model<A, T>::sample_cast(
+  typename Model<A, T>::ScalarSample Model<A, T>::sample_cast(
       const Sample& sample) const {
     auto arguments = arguments_cast(sample.m_arguments);
     auto result = result_cast(sample.m_result);
@@ -160,7 +159,7 @@ namespace Rover {
   }
 
   template<typename A, typename T>
-  typename Model<A, T>::ReaderArguments Model<A, T>::arguments_cast(
+  typename Model<A, T>::ScalarArguments Model<A, T>::arguments_cast(
       const Arguments& arguments) const {
     auto result = std::vector<ComputationType>(arguments_size(arguments));
     visit_arguments([&](const auto& arg, auto i) {
@@ -174,13 +173,13 @@ namespace Rover {
   }
 
   template<typename A, typename T>
-  typename Model<A, T>::ReaderResult Model<A, T>::result_cast(
+  typename Model<A, T>::ScalarResult Model<A, T>::result_cast(
       const Result& value) const {
     return value / m_basis.m_result;
   }
 
   template<typename A, typename T>
-  auto Model<A, T>::result_cast(ReaderResult value)
+  auto Model<A, T>::result_cast(ScalarResult value)
       const {
     return m_basis.m_result * value;
   }
