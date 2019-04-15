@@ -179,12 +179,16 @@ TEST_CASE("test_model_unique_arguments", "[Model]") {
   }
   SECTION("Three samples.") {
     auto trial = TestTrial();
+
     // Normalized to { 1.0, 0.6 }.
     trial.insert({ 2., { 5., 7. } });
+
     // Normalized to { 0.5, 1.0 }.
     trial.insert({ 4., { 3., 9. } });
+
     // Normalized to { 0.0, 0.0 }.
     trial.insert({ 5., { 1., 4. } });
+
     auto model = Model<TestAlgorithm, TestTrial>(trial);
     REQUIRE(model({ 1., 4. }) == Approx(4.5));
     REQUIRE(model({ 0., 4. }) == Approx(4.5));
