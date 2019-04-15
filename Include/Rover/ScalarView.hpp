@@ -8,13 +8,13 @@ namespace Rover {
 
   //! Interface to pass adapted Trial Samples to typed Algorithms.
   /*!
-    \tparam T CompType used by the algorithm.
+    \tparam T Computation type used by the algorithm.
   */
   template<typename T>
   class ScalarView {
     public:
 
-      //! CompType used by the algorithm.
+      //! Computation type used by the algorithm.
       using Type = T;
 
       //! Adapted sample.

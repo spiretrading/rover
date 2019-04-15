@@ -13,7 +13,7 @@ using namespace std::chrono_literals;
 namespace {
   class TestAlgorithm {
     public:
-      using CompType = double;
+      using Type = double;
       using Sample = ScalarView<double>::Sample;
       using Arguments = typename Sample::Arguments;
 

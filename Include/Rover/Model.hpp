@@ -57,7 +57,7 @@ namespace Rover {
       using Algorithm = A;
 
       //! The computation type used by the algorithm.
-      using CompType = typename Algorithm::CompType;
+      using ComputationType = typename Algorithm::Type;
 
       //! The type of the trial.
       using Trial = T;
@@ -83,7 +83,7 @@ namespace Rover {
       auto operator ()(const Arguments& args) const;
 
     private:
-      using Reader = ScalarView<CompType>;
+      using Reader = ScalarView<ComputationType>;
       using ReaderSample = typename Reader::Sample;
       using ReaderArguments = typename Reader::Sample::Arguments;
       using ReaderResult = typename Reader::Sample::Result;
@@ -103,7 +103,7 @@ namespace Rover {
   Model<A, T>::Model(const Trial& trial, AlgoArgFwd&&... args)
       : m_basis(compute_basis(trial)),
         m_algorithm(std::forward<AlgoArgFwd>(args)...) {
-    auto reader = ScalarView<CompType>([&](std::size_t i) {
+    auto reader = ScalarView<ComputationType>([&](std::size_t i) {
       return sample_cast(trial[i]);
     }, trial.size());
     m_algorithm.learn(std::move(reader));
@@ -163,7 +163,7 @@ namespace Rover {
   template<typename A, typename T>
   typename Model<A, T>::ReaderArguments Model<A, T>::arguments_cast(
       const Arguments& arguments) const {
-    auto result = std::vector<CompType>(arguments_size(arguments));
+    auto result = std::vector<ComputationType>(arguments_size(arguments));
     visit_arguments([&](const auto& arg, auto i) {
       visit_arguments([&](const auto& identity, auto j) {
         if(i == j) {
