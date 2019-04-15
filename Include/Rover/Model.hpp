@@ -11,14 +11,14 @@ namespace {
   template<typename R, typename X, typename Y>
   constexpr std::enable_if_t<!std::is_same_v<std::decay_t<R>,
       std::decay_t<X>> || !std::is_same_v<std::decay_t<R>, std::decay_t<Y>>,
-      bool> solve_basis(R&, X&, Y&) {
+      bool> solve_basis(R&, const X&, const Y&) {
     return false;
   }
 
   template<typename R, typename X, typename Y>
   std::enable_if_t<std::is_same_v<std::decay_t<R>, std::decay_t<X>> &&
       std::is_same_v<std::decay_t<R>, std::decay_t<Y>>, bool>
-      solve_basis(R& r, X& x, Y& y) {
+      solve_basis(R& r, const X& x, const Y& y) {
     if(x == y) {
       return false;
     }
