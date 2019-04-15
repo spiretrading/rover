@@ -58,12 +58,12 @@ namespace Rover {
         private:
           friend class ScalarView;
 
-          ConstIterator(const ScalarView* reader, std::size_t index);
-          std::optional<Sample> retrieve_sample() const;
-
           const ScalarView* m_reader;
           std::size_t m_index;
           std::optional<Sample> m_sample;
+
+          ConstIterator(const ScalarView* reader, std::size_t index);
+          std::optional<Sample> retrieve_sample() const;
       };
 
       //! Creates a ScalarView.
