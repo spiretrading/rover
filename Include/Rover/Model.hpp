@@ -122,7 +122,7 @@ namespace Rover {
   typename Model<A, T>::Sample Model<A, T>::compute_basis(const Trial& trial) {
     auto order = std::vector<std::size_t>(trial.size());
     auto generator = std::mt19937(std::random_device()());
-    std::iota(order.begin(), order.end(), 0LU);
+    std::iota(order.begin(), order.end(), std::size_t(0));
     auto basis = trial[0];
     visit_arguments([&](auto& result, auto i) {
       std::shuffle(order.begin(), order.end(), generator);
