@@ -163,7 +163,7 @@ namespace Rover {
   template<typename A, typename T>
   typename Model<A, T>::ReaderArguments Model<A, T>::arguments_cast(
       const Arguments& arguments) const {
-    std::vector<CompType> result(arguments_size(arguments));
+    auto result = std::vector<CompType>(arguments_size(arguments));
     visit_arguments([&](const auto& arg, auto i) {
       visit_arguments([&](const auto& identity, auto j) {
         if(i == j) {
