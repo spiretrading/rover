@@ -179,8 +179,7 @@ namespace Rover {
   }
 
   template<typename A, typename T>
-  auto Model<A, T>::result_cast(ScalarResult value)
-      const {
+  auto Model<A, T>::result_cast(ScalarResult value) const {
     return m_basis.m_result * value;
   }
 }

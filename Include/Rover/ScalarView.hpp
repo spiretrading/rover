@@ -2,8 +2,8 @@
 #define ROVER_SCALAR_VIEW_HPP
 #include <functional>
 #include <optional>
-#include <vector>
 #include <type_traits>
+#include <vector>
 
 namespace Rover {
 
@@ -70,7 +70,7 @@ namespace Rover {
           std::size_t m_index;
           std::optional<Sample> m_sample;
 
-          ConstIterator(const ScalarView* reader, std::size_t index);
+          ConstIterator(const ScalarView& reader, std::size_t index);
           std::optional<Sample> retrieve_sample() const;
       };
 
@@ -143,9 +143,9 @@ namespace Rover {
   }
   
   template<typename G>
-  ScalarView<G>::ConstIterator::ConstIterator(const ScalarView* reader,
+  ScalarView<G>::ConstIterator::ConstIterator(const ScalarView& reader,
       std::size_t index)
-    : m_reader(reader),
+    : m_reader(&reader),
       m_index(index),
       m_sample(retrieve_sample()) {}
 
@@ -167,12 +167,12 @@ namespace Rover {
 
   template<typename G>
   typename ScalarView<G>::ConstIterator ScalarView<G>::begin() const {
-    return ConstIterator(this, 0);
+    return ConstIterator(*this, 0);
   }
 
   template<typename G>
   typename ScalarView<G>::ConstIterator ScalarView<G>::end() const {
-    return ConstIterator(this, m_size);
+    return ConstIterator(*this, m_size);
   }
 
   template<typename G>
