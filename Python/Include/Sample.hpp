@@ -31,6 +31,18 @@ namespace Rover {
     }
   }
 
+  //! Applies a function to every element of a Python tuple.
+  /*!
+    \param func Function taking a tuple element and its index as arguments.
+    \param tuple Python tuple of the arguments.
+  */
+  template<typename Func>
+  void visit_arguments(Func&& func, const pybind11::tuple& tuple) {
+    for(auto i = std::size_t(0); i < tuple.size(); ++i) {
+      func(tuple[i], i);
+    }
+  }
+
   //! Returns the number of elements in a Python tuple.
   std::size_t arguments_size(const pybind11::tuple& tuple);
 
