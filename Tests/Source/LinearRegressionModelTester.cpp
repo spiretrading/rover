@@ -62,9 +62,12 @@ TEST_CASE("test_simple_linear_regression_model", "[LinearRegressionModel]") {
     trial.insert({ Convertible<double>(8.), { Convertible<double>(3.) } });
     auto model = Model<LinearRegression<double>, ListTrial<Sample<Convertible<
       double>, Convertible<double>>>>(trial);
-    REQUIRE(static_cast<double>(model(Convertible<double>(-10.))) == Approx(-18.));
-    REQUIRE(static_cast<double>(model(Convertible<double>(0.5))) == Approx(3.));
-    REQUIRE(static_cast<double>(model(Convertible<double>(10.))) == Approx(22.));
+    REQUIRE(static_cast<double>(model(Convertible<double>(-10.))) ==
+      Approx(-18.));
+    REQUIRE(static_cast<double>(model(Convertible<double>(0.5))) ==
+      Approx(3.));
+    REQUIRE(static_cast<double>(model(Convertible<double>(10.))) ==
+      Approx(22.));
   }
   SECTION("ConvertibleMixedTypes.") {
     auto trial = ListTrial<Sample<Convertible<float>, Convertible<double>>>();
@@ -73,9 +76,12 @@ TEST_CASE("test_simple_linear_regression_model", "[LinearRegressionModel]") {
     trial.insert({ Convertible<float>(8.f), { Convertible<double>(3.) } });
     auto model = Model<LinearRegression<double>, ListTrial<Sample<Convertible<
       float>, Convertible<double>>>>(trial);
-    REQUIRE(static_cast<float>(model(Convertible<double>(-10.))) == Approx(-18.f));
-    REQUIRE(static_cast<float>(model(Convertible<double>(0.5))) == Approx(3.f));
-    REQUIRE(static_cast<float>(model(Convertible<double>(10.))) == Approx(22.f));
+    REQUIRE(static_cast<float>(model(Convertible<double>(-10.))) ==
+      Approx(-18.f));
+    REQUIRE(static_cast<float>(model(Convertible<double>(0.5))) ==
+      Approx(3.f));
+    REQUIRE(static_cast<float>(model(Convertible<double>(10.))) ==
+      Approx(22.f));
   }
   SECTION("NarrowComputationType.") {
     auto trial = ListTrial<Sample<double, double>>();
