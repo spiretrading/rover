@@ -19,30 +19,30 @@ namespace Rover {
 
       //! Learns a trial represented by a ScalarView.
       template<typename ScalarView>
-      void learn(ScalarView&& view);
+      void learn(const ScalarView& view);
 
       //! Predicts the dependent variable for a set of arguments.
       template<typename Arguments>
-      Type predict(Arguments&& args) const;
+      Type predict(const Arguments& args) const;
 
     private:
+      dlib::matrix<Type> m_transformation;
+
       template<typename ScalarView>
       static dlib::matrix<Type> compute_transformation_vector(
-        ScalarView&& trial);
-      dlib::matrix<Type> m_transformation;
+        const ScalarView& trial);
   };
 
   template<typename T>
   template<typename ScalarView>
-  void LinearRegression<T>::learn(ScalarView&& view) {
-    m_transformation = compute_transformation_vector(std::forward<ScalarView>(
-      view));
+  void LinearRegression<T>::learn(const ScalarView& view) {
+    m_transformation = compute_transformation_vector(view);
   }
 
   template<typename T>
   template<typename Arguments>
-  typename LinearRegression<T>::Type LinearRegression<T>::predict(Arguments&&
-      args) const {
+  typename LinearRegression<T>::Type LinearRegression<T>::predict(const
+      Arguments& args) const {
     auto x = dlib::matrix<Type, 1>(args.size() + 1);
     x(0, 0) = static_cast<Type>(1.);
     std::copy(args.begin(), args.end(), x.begin() + 1);
@@ -53,7 +53,8 @@ namespace Rover {
   template<typename T>
   template<typename ScalarView>
   dlib::matrix<typename LinearRegression<T>::Type> 
-      LinearRegression<T>::compute_transformation_vector(ScalarView&& view) {
+      LinearRegression<T>::compute_transformation_vector(const ScalarView&
+      view) {
     auto x = dlib::matrix<Type>(view.size(), view[0].m_arguments.size() + 1);
     auto y = dlib::matrix<Type>(view.size(), 1);
     for(auto i = std::size_t(0); i < view.size(); ++i) {
