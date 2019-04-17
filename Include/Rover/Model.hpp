@@ -37,7 +37,7 @@ namespace {
   template<typename C, typename V, typename B>
   constexpr std::enable_if_t<std::is_same_v<V, B>> apply_basis(C& c,
       const V& v, const B& b) {
-    c = v / b;
+    c = static_cast<C>(v / b);
   }
 }
 
@@ -93,7 +93,7 @@ namespace Rover {
       ScalarSample sample_cast(const Sample& sample) const;
       ScalarArguments arguments_cast(const Arguments& sample) const;
       ScalarResult result_cast(const Result& value) const;
-      auto result_cast(ScalarResult value) const;
+      auto retrieve_result(ScalarResult value) const;
   };
 
   template<typename A, typename T>
@@ -112,7 +112,7 @@ namespace Rover {
       const {
     auto arguments = arguments_cast(args);
     auto value = m_algorithm.predict(arguments);
-    auto result = result_cast(value);
+    auto result = retrieve_result(value);
     return result;
   }
 
@@ -175,11 +175,11 @@ namespace Rover {
   template<typename A, typename T>
   typename Model<A, T>::ScalarResult Model<A, T>::result_cast(
       const Result& value) const {
-    return value / m_basis.m_result;
+    return static_cast<ScalarResult>(value / m_basis.m_result);
   }
 
   template<typename A, typename T>
-  auto Model<A, T>::result_cast(ScalarResult value) const {
+  auto Model<A, T>::retrieve_result(ScalarResult value) const {
     return m_basis.m_result * value;
   }
 }
