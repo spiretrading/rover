@@ -6,6 +6,7 @@
 #include "ListTrial.hpp"
 #include "Range.hpp"
 #include "Sample.hpp"
+#include "TrialView.hpp"
 
 using namespace pybind11;
 using namespace Rover;
@@ -18,4 +19,5 @@ PYBIND11_MODULE(rover, module) {
   export_lift(module);
   export_sample(module);
   export_list_trial(module);
+  export_trial_view(module);
 }
