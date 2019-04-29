@@ -227,7 +227,7 @@ namespace Rover {
   template<typename S>
   typename const TrialView<S>::Sample*
       TrialView<S>::ConstIterator::operator ->() const {
-    return &(*m_getter)(m_offset);
+    return std::addressof((*m_getter)(m_offset));
   }
 
   template<typename S>
