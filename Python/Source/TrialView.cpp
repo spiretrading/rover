@@ -11,7 +11,7 @@ void Rover::export_trial_view(module& module) {
 
   class_<TrialView<PythonSample>>(module, "TrialView")
     .def(init<const ListTrial<PythonSample>&>())
-    .def(init([](Details::NativeTrialProxy& proxy) {
+    .def(init([](const Details::NativeTrialProxy& proxy) {
        return TrialView<PythonSample>(proxy);
      }), keep_alive<2, 1>())
     .def("__getitem__", &TrialView<PythonSample>::operator [])
