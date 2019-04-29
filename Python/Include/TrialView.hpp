@@ -1,5 +1,6 @@
 #ifndef ROVER_PYTHON_TRIAL_VIEW_HPP
 #define ROVER_PYTHON_TRIAL_VIEW_HPP
+#include <functional>
 #include <string_view>
 #include <type_traits>
 #include <pybind11/pybind11.h>
@@ -8,6 +9,59 @@
 #include "Sample.hpp"
 
 namespace Rover {
+  namespace Details {
+    class NativeTrialProxy {
+      public:
+        using Sample = PythonSample;
+    
+        NativeTrialProxy(const pybind11::object& t)
+          : m_size(t.attr("__len__")().cast<std::size_t>()),
+            m_get([t](std::size_t index) {
+              auto sample = t.attr("__getitem__")(index);
+              auto result = SampleConverter::get_instance().cast(sample);
+              return result;
+            }) {}
+    
+        std::size_t size() const {
+          return m_size;
+        }
+    
+        const Sample& operator [](std::size_t index) {
+          m_sample = m_get(index);
+          return m_sample;
+        }
+    
+      private:
+        std::size_t m_size;
+        std::function<Sample (std::size_t)> m_get;
+        Sample m_sample;
+    };
+
+    template<typename S>
+    class PythonTrialProxy {
+      public:
+        using Sample = S;
+        
+        PythonTrialProxy(const TrialView<PythonSample>& t)
+          : m_size(t.size()),
+            m_view(t) {}
+
+        std::size_t size() const {
+          return m_size;
+        }
+
+        const Sample& operator [](std::size_t index) {
+          auto python_sample = m_view[index];
+          m_sample = sample_cast<Sample>(python_sample);
+          return m_sample;
+        }
+
+      private:
+        std::size_t m_size;
+        TrialView<PythonSample> m_view;
+        Sample m_sample;
+    };
+  }
 
   //! Exports the TrialView for PythonSample.
   /*!
@@ -26,18 +80,28 @@ namespace Rover {
   template<typename S>
   void export_trial_view(pybind11::module& module, std::string_view
       type_name) {
+    auto proxy_name = std::string("_PythonTrialProxy").append(type_name);
+    pybind11::class_<Details::PythonTrialProxy<S>>(module, proxy_name.c_str())
+      .def(pybind11::init([](TrialView<PythonSample>& v) {
+         return Details::PythonTrialProxy<S>(v);
+       }), pybind11::keep_alive<2, 1>());
+    pybind11::implicitly_convertible<TrialView<PythonSample>,
+      Details::PythonTrialProxy<S>>();
+
     auto name = std::string("TrialView").append(type_name);
     pybind11::class_<TrialView<S>>(module, name.c_str())
       .def(pybind11::init<const ListTrial<S>&>())
+      .def(pybind11::init([](Details::PythonTrialProxy<S>& p) {
+         return TrialView<S>(p);
+       }), pybind11::keep_alive<2, 1>())
       .def("__getitem__", &TrialView<S>::operator [])
       .def("__iter__", [](const TrialView<S>& v) {
          return pybind11::make_iterator(v.begin(), v.end());
        })
       .def("__len__", &TrialView<S>::size);
-    if constexpr(!std::is_same_v<S, PythonSample>) {
-      pybind11::implicitly_convertible<TrialView<S>, TrialView<PythonSample>>();
-      pybind11::implicitly_convertible<TrialView<PythonSample>, TrialView<S>>();
-    }
+    pybind11::implicitly_convertible<TrialView<S>, Details::NativeTrialProxy>();
+    pybind11::implicitly_convertible<TrialView<S>, TrialView<PythonSample>>();
+    pybind11::implicitly_convertible<TrialView<PythonSample>, TrialView<S>>();
   }
 }
 
