@@ -18,6 +18,9 @@ PYBIND11_MODULE(rover, module) {
   export_range(module);
   export_lift(module);
   export_sample(module);
+  export_sample<float, float, float>(module, "Float");
   export_list_trial(module);
+  export_list_trial<Sample<float, float, float>>(module, "Float");
   export_trial_view(module);
+  export_trial_view<Sample<float, float, float>>(module, "Float");
 }

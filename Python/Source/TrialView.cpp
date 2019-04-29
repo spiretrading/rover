@@ -8,7 +8,6 @@ void Rover::export_trial_view(module& module) {
     .def(init([](const object& obj) {
        return Details::NativeTrialProxy(obj);
      }), keep_alive<2, 1>());
-
   class_<TrialView<PythonSample>>(module, "TrialView")
     .def(init<const ListTrial<PythonSample>&>())
     .def(init([](const Details::NativeTrialProxy& proxy) {
