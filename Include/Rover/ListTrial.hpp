@@ -1,6 +1,7 @@
 #ifndef ROVER_LIST_TRIAL_HPP
 #define ROVER_LIST_TRIAL_HPP
 #include <vector>
+#include "Rover/TrialIterator.hpp"
 
 namespace Rover {
 
@@ -16,7 +17,7 @@ namespace Rover {
       using Sample = S;
 
       //! The type of the constant iterator.
-      using ConstIterator = typename std::vector<Sample>::const_iterator;
+      using Iterator = typename TrialIterator<ListTrial>;
   
       //! Increases the capacity of the underlying array.
       void reserve(std::size_t capacity);
@@ -32,10 +33,10 @@ namespace Rover {
       void insert(Begin b, End e);
   
       //! Returns a constant iterator to the first sample
-      ConstIterator begin() const;
+      Iterator begin() const;
 
       //! Returns a constant iterator to the past-the-end sample
-      ConstIterator end() const;
+      Iterator end() const;
 
       //! Number of samples in this trial.
       std::size_t size() const;
@@ -68,17 +69,17 @@ namespace Rover {
   template<typename S>
   template<typename Begin, typename End>
   void ListTrial<S>::insert(Begin begin, End end) {
-    m_samples.insert(m_samples.end(), begin, end);
+    std::copy(begin, end, std::back_inserter(m_samples));
   }
 
   template<typename S>
-  typename ListTrial<S>::ConstIterator ListTrial<S>::begin() const {
-    return m_samples.begin();
+  typename ListTrial<S>::Iterator ListTrial<S>::begin() const {
+    return Iterator(*this, 0);
   }
 
   template<typename S>
-  typename ListTrial<S>::ConstIterator ListTrial<S>::end() const {
-    return m_samples.end();
+  typename ListTrial<S>::Iterator ListTrial<S>::end() const {
+    return Iterator(*this, size());
   }
 
   template<typename S>
