@@ -10,16 +10,15 @@ namespace Rover {
   template<typename, typename = void>
   class TrialIterator;
 
-  //! Type traits to check whether a Trial returns Samples by copy.
-  template<typename T>
-  inline constexpr bool returns_sample_by_copy_v = std::is_same_v<decltype(
-    std::declval<T>()[std::declval<std::size_t>()]), typename T::Sample>;
-
   //! Type traits to check whether a Trial returns Samples by reference.
   template<typename T>
-  inline constexpr bool returns_sample_by_reference_v = std::is_same_v<
-    decltype(std::declval<T>()[std::declval<std::size_t>()]), typename const
-    T::Sample&>;
+  inline constexpr bool returns_sample_by_reference_v = std::is_reference_v<
+    decltype(std::declval<T>()[std::declval<std::size_t>()])>;
+
+  //! Type traits to check whether a Trial returns Samples by copy.
+  template<typename T>
+  inline constexpr bool returns_sample_by_copy_v =
+    !returns_sample_by_reference_v<T>;
 
   //! Iterator over a Trial that returns Samples by copy.
   /*
