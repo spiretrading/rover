@@ -33,8 +33,6 @@ namespace Rover {
   class TrialIterator<T, std::enable_if_t<returns_sample_by_copy_v<T>>> {
     public:
 
-      using iterator_category = std::input_iterator_tag;
-
       //! The type of the trial.
       using Trial = T;
 
@@ -350,16 +348,15 @@ namespace Rover {
   typename const TrialIterator<T, std::enable_if_t<returns_sample_by_copy_v<
       T>>>::Sample& TrialIterator<T, std::enable_if_t<returns_sample_by_copy_v<
       T>>>::operator *() {
-    m_sample = (*m_trial)[m_offset];
-    return m_sample;
+    return (*this)[0];
   }
 
   template<typename T>
   typename const TrialIterator<T, std::enable_if_t<returns_sample_by_copy_v<
       T>>>::Sample* TrialIterator<T, std::enable_if_t<returns_sample_by_copy_v<
       T>>>::operator ->() {
-    m_sample = (*m_trial)[m_offset];
-    return std::addressof(m_sample);
+    m_sample.emplace((*m_trial)[m_offset]);
+    return std::addressof((*this)[0]);
   }
 
   template<typename T>

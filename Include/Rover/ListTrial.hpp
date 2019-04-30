@@ -17,7 +17,7 @@ namespace Rover {
       using Sample = S;
 
       //! The type of the constant iterator.
-      using Iterator = typename TrialIterator<ListTrial>;
+      using Iterator = TrialIterator<ListTrial>;
   
       //! Increases the capacity of the underlying array.
       void reserve(std::size_t capacity);
