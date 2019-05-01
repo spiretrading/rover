@@ -1,9 +1,12 @@
 #ifndef ROVER_PYTHON_SAMPLE_HPP
 #define ROVER_PYTHON_SAMPLE_HPP
+#include <functional>
+#include <optional>
 #include <string_view>
 #include <tuple>
 #include <utility>
 #include <pybind11/pybind11.h>
+#include "Rover/Noncopyable.hpp"
 
 namespace Rover {
 
@@ -45,7 +48,9 @@ namespace Rover {
 
   //! Returns the number of elements in a Python tuple.
   std::size_t arguments_size(const pybind11::tuple& tuple);
+}
 
+namespace Rover {
 namespace Details {
   template<typename T, std::size_t... I>
   T cast_arguments(const pybind11::tuple& t, std::index_sequence<I...>) {
@@ -59,6 +64,50 @@ namespace Details {
       std::make_index_sequence<std::tuple_size_v<typename S::Arguments>>()) };
     return result;
   }
+
+  class SampleConverter : private Noncopyable {
+    public:
+      static SampleConverter& get_instance() {
+        static auto converter = SampleConverter();
+        return converter;
+      }
+
+      PythonSample cast(const pybind11::object& sample) const {
+        auto result = m_caster(sample);
+        return *result;
+      }
+
+      template<typename S>
+      void register_sample() {
+        m_caster = [caster = std::move(m_caster)](
+            const pybind11::object& object) -> std::optional<PythonSample> {
+          auto value = caster(object);
+          if(value) {
+            return value;
+          }
+          try {
+            auto sample = object.template cast<S>();
+            auto result = PythonSample{
+              pybind11::cast(sample.m_result),
+              std::apply([](auto&&... args) {
+                return pybind11::make_tuple(std::move(args)...);
+              }, std::move(sample.m_arguments))
+            };
+            return result;
+          } catch(const pybind11::cast_error&) {
+            return std::nullopt;
+          }
+        };
+      }
+
+    private:
+      std::function<std::optional<PythonSample>(const pybind11::object&)> m_caster;
+
+      SampleConverter()
+        : m_caster([](const pybind11::object&) -> std::optional<PythonSample> {
+            return std::nullopt;
+          }) {}
+  };
 }
 
   //! Exports a Sample for Python objects.
@@ -83,13 +132,14 @@ namespace Details {
     pybind11::class_<Sample<R, P...>>(module, name.c_str())
       .def(pybind11::init<>())
       .def(pybind11::init<typename Sample<R, P...>::Result,
-         typename Sample<R, P...>::Parameters>())
+         typename Sample<R, P...>::Arguments>())
       .def(pybind11::init(
          [](const PythonSample& s) {
            return Details::sample_cast<Sample<R, P...>>(s);
          }))
       .def_readwrite("result", &Sample<R, P...>::m_result)
       .def_readwrite("arguments", &Sample<R, P...>::m_arguments);
+    Details::SampleConverter::get_instance().register_sample<Sample<R, P...>>();
     pybind11::implicitly_convertible<Sample<R, P...>, PythonSample>();
     pybind11::implicitly_convertible<PythonSample, Sample<R, P...>>();
   }

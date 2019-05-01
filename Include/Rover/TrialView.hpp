@@ -36,10 +36,10 @@ namespace Rover {
       const Sample& operator [](std::size_t index) const;
 
     private:
-      using GetPtr = std::function<const Sample* (std::size_t)>;
+      using SampleGetter = std::function<const Sample& (std::size_t)>;
 
       std::size_t m_size;
-      GetPtr m_get_ptr;
+      SampleGetter m_getter;
   };
 
   template<typename Trial>
@@ -49,8 +49,9 @@ namespace Rover {
   template<typename Trial>
   TrialView<T>::TrialView(const Trial& t)
     : m_size(t.size()),
-      m_get_ptr([begin = t.begin()] (std::size_t offset) {
-        return &(*(begin + offset));
+      m_getter([begin = t.begin()](std::size_t offset) mutable -> const
+          Sample& {
+        return begin[offset];
       }) {}
 
   template<typename T>
@@ -71,7 +72,7 @@ namespace Rover {
   template<typename T>
   typename const TrialView<T>::Sample& TrialView<T>::operator [](std::size_t
       index) const {
-    return *m_get_ptr(index);
+    return m_getter(index);
   }
 }
 

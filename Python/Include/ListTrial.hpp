@@ -38,8 +38,6 @@ namespace Rover {
          return pybind11::make_iterator(t.begin(), t.end());
        })
       .def("__len__", &ListTrial<S>::size);
-    pybind11::implicitly_convertible<ListTrial<S>, ListTrial<PythonSample>>();
-    pybind11::implicitly_convertible<ListTrial<PythonSample>, ListTrial<S>>();
   }
 }
 
