@@ -51,14 +51,14 @@ namespace Details {
       using Iterator = TrialIterator<PythonTrialProxy>;
       
       PythonTrialProxy(const TrialView<PythonSample>& t)
-        : m_view(t) {}
+        : m_view(&t) {}
 
       std::size_t size() const {
-        return m_view.size();
+        return m_view->size();
       }
 
       Sample operator [](std::size_t index) const {
-        auto python_sample = m_view[index];
+        auto python_sample = (*m_view)[index];
         auto result = sample_cast<Sample>(python_sample);
         return result;
       }
@@ -72,7 +72,7 @@ namespace Details {
       }
 
     private:
-      const TrialView<PythonSample>& m_view;
+      const TrialView<PythonSample>* m_view;
   };
 }
 
