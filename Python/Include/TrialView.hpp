@@ -5,6 +5,7 @@
 #include <type_traits>
 #include <pybind11/pybind11.h>
 #include "Rover/ListTrial.hpp"
+#include <Rover/TrialIterator.hpp>
 #include "Rover/TrialView.hpp"
 #include "Sample.hpp"
 
@@ -14,72 +15,40 @@ namespace Rover {
       public:
         using Sample = PythonSample;
         using SampleGetter = std::function<Sample (std::size_t)>;
-
-        class ConstIterator {
-          public:
-            const Sample& operator [](std::ptrdiff_t offset) {
-              m_sample = m_getter(m_offset + offset);
-              return m_sample;
-            }
-
-          private:
-            friend class NativeTrialProxy;
-
-            const SampleGetter& m_getter;
-            std::size_t m_offset;
-            Sample m_sample;
-
-            ConstIterator(const SampleGetter& getter, std::size_t offset)
-              : m_getter(getter),
-                m_offset(offset) {}
-        };
+        using Iterator = TrialIterator<NativeTrialProxy>;
     
-        NativeTrialProxy(const pybind11::object& t)
-          : m_size(t.attr("__len__")().cast<std::size_t>()),
-            m_getter([t](std::size_t index) {
-              auto sample = t.attr("__getitem__")(index);
-              auto result = SampleConverter::get_instance().cast(sample);
-              return result;
-            }) {}
+        NativeTrialProxy(const pybind11::object& view)
+          : m_view(view),
+            m_size(m_view.attr("__len__")().cast<std::size_t>()) {}
     
         std::size_t size() const {
           return m_size;
         }
     
-        ConstIterator begin() const {
-          return ConstIterator(m_getter, 0);
+        Sample operator [](std::size_t index) const {
+          auto sample = m_view.attr("__getitem__")(index);
+          auto result = SampleConverter::get_instance().cast(sample);
+          return result;
+        }
+
+        Iterator begin() const {
+          return Iterator(*this, 0);
+        }
+
+        Iterator end() const {
+          return Iterator(*this, size());
         }
     
       private:
+        pybind11::object m_view;
         std::size_t m_size;
-        SampleGetter m_getter;
     };
 
     template<typename S>
     class PythonTrialProxy {
       public:
         using Sample = S;
-
-        class ConstIterator {
-          public:
-            const Sample& operator [](std::ptrdiff_t offset) {
-              auto python_sample = m_view[m_offset + offset];
-              m_sample = sample_cast<Sample>(python_sample);
-              return m_sample;
-            }
-
-          private:
-            friend class PythonTrialProxy;
-
-            const TrialView<PythonSample>& m_view;
-            std::size_t m_offset;
-            Sample m_sample;
-
-            ConstIterator(const TrialView<PythonSample>& view, std::size_t
-                offset)
-              : m_view(view),
-                m_offset(offset) {}
-        };
+        using Iterator = TrialIterator<PythonTrialProxy>;
         
         PythonTrialProxy(const TrialView<PythonSample>& t)
           : m_view(t) {}
@@ -88,13 +57,22 @@ namespace Rover {
           return m_view.size();
         }
 
-        ConstIterator begin() const {
-          return ConstIterator(m_view, 0);
+        Sample operator [](std::size_t index) const {
+          auto python_sample = m_view[index];
+          auto result = sample_cast<Sample>(python_sample);
+          return result;
+        }
+
+        Iterator begin() const {
+          return Iterator(*this, 0);
+        }
+
+        Iterator end() const {
+          return Iterator(*this, size());
         }
 
       private:
         const TrialView<PythonSample>& m_view;
-        Sample m_sample;
     };
   }
 
@@ -122,7 +100,6 @@ namespace Rover {
        }), pybind11::keep_alive<2, 1>());
     pybind11::implicitly_convertible<TrialView<PythonSample>,
       Details::PythonTrialProxy<S>>();
-
     auto name = std::string("TrialView").append(type_name);
     pybind11::class_<TrialView<S>>(module, name.c_str())
       .def(pybind11::init<const ListTrial<S>&>())
