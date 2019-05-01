@@ -363,7 +363,7 @@ namespace Rover {
       T>>>::Sample& TrialIterator<T, std::enable_if_t<returns_sample_by_copy_v<
       T>>>::operator [](std::ptrdiff_t offset) {
     m_sample = (*m_trial)[m_offset + offset];
-    return m_sample;
+    return *m_sample;
   }
 
   template<typename T>
