@@ -10,71 +10,71 @@
 #include "Sample.hpp"
 
 namespace Rover {
-  namespace Details {
-    class NativeTrialProxy {
-      public:
-        using Sample = PythonSample;
-        using SampleGetter = std::function<Sample (std::size_t)>;
-        using Iterator = TrialIterator<NativeTrialProxy>;
-    
-        NativeTrialProxy(const pybind11::object& view)
-          : m_view(view),
-            m_size(m_view.attr("__len__")().cast<std::size_t>()) {}
-    
-        std::size_t size() const {
-          return m_size;
-        }
-    
-        Sample operator [](std::size_t index) const {
-          auto sample = m_view.attr("__getitem__")(index);
-          auto result = SampleConverter::get_instance().cast(sample);
-          return result;
-        }
+namespace Details {
+  class NativeTrialProxy {
+    public:
+      using Sample = PythonSample;
+      using SampleGetter = std::function<Sample (std::size_t)>;
+      using Iterator = TrialIterator<NativeTrialProxy>;
+  
+      NativeTrialProxy(const pybind11::object& view)
+        : m_view(view),
+          m_size(m_view.attr("__len__")().cast<std::size_t>()) {}
+  
+      std::size_t size() const {
+        return m_size;
+      }
+  
+      Sample operator [](std::size_t index) const {
+        auto sample = m_view.attr("__getitem__")(index);
+        auto result = SampleConverter::get_instance().cast(sample);
+        return result;
+      }
 
-        Iterator begin() const {
-          return Iterator(*this, 0);
-        }
+      Iterator begin() const {
+        return Iterator(*this, 0);
+      }
 
-        Iterator end() const {
-          return Iterator(*this, size());
-        }
-    
-      private:
-        pybind11::object m_view;
-        std::size_t m_size;
-    };
+      Iterator end() const {
+        return Iterator(*this, size());
+      }
+  
+    private:
+      pybind11::object m_view;
+      std::size_t m_size;
+  };
 
-    template<typename S>
-    class PythonTrialProxy {
-      public:
-        using Sample = S;
-        using Iterator = TrialIterator<PythonTrialProxy>;
-        
-        PythonTrialProxy(const TrialView<PythonSample>& t)
-          : m_view(t) {}
+  template<typename S>
+  class PythonTrialProxy {
+    public:
+      using Sample = S;
+      using Iterator = TrialIterator<PythonTrialProxy>;
+      
+      PythonTrialProxy(const TrialView<PythonSample>& t)
+        : m_view(t) {}
 
-        std::size_t size() const {
-          return m_view.size();
-        }
+      std::size_t size() const {
+        return m_view.size();
+      }
 
-        Sample operator [](std::size_t index) const {
-          auto python_sample = m_view[index];
-          auto result = sample_cast<Sample>(python_sample);
-          return result;
-        }
+      Sample operator [](std::size_t index) const {
+        auto python_sample = m_view[index];
+        auto result = sample_cast<Sample>(python_sample);
+        return result;
+      }
 
-        Iterator begin() const {
-          return Iterator(*this, 0);
-        }
+      Iterator begin() const {
+        return Iterator(*this, 0);
+      }
 
-        Iterator end() const {
-          return Iterator(*this, size());
-        }
+      Iterator end() const {
+        return Iterator(*this, size());
+      }
 
-      private:
-        const TrialView<PythonSample>& m_view;
-    };
-  }
+    private:
+      const TrialView<PythonSample>& m_view;
+  };
+}
 
   //! Exports the TrialView for PythonSample.
   /*!
