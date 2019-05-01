@@ -68,7 +68,7 @@ namespace Details {
   class SampleConverter : private Noncopyable {
     public:
       static SampleConverter& get_instance() {
-        static SampleConverter converter;
+        static auto converter = SampleConverter();
         return converter;
       }
 
