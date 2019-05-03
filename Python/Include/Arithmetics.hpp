@@ -15,6 +15,9 @@ namespace Rover::Details {
 
   const pybind11::module& import_operator();
 
+  pybind11::object apply_operator(const char* operator_name, const
+    pybind11::object& lhs, const pybind11::object& rhs);
+
   template<typename T1, typename T2>
   struct OperatorApplicator;
 
@@ -23,7 +26,7 @@ namespace Rover::Details {
     pybind11::object operator()(const char* operator_name, const T& lhs,
         const pybind11::object& rhs) {
       auto lhs_object = pybind11::cast(lhs);
-      return import_operator().attr(operator_name)(lhs_object, rhs);
+      return apply_operator(operator_name, lhs_object, rhs);
     }
   };
 
@@ -32,7 +35,7 @@ namespace Rover::Details {
     pybind11::object operator()(const char* operator_name, const
         pybind11::object& lhs, const T& rhs) {
       auto rhs_object = pybind11::cast(rhs);
-      return import_operator().attr(operator_name)(lhs, rhs_object);
+      return apply_operator(operator_name, lhs, rhs_object);
     }
   };
 
@@ -40,7 +43,7 @@ namespace Rover::Details {
   struct OperatorApplicator<pybind11::object, pybind11::object> {
     pybind11::object operator()(const char* operator_name, const
         pybind11::object& lhs, const pybind11::object& rhs) {
-      return import_operator().attr(operator_name)(lhs, rhs);
+      return apply_operator(operator_name, lhs, rhs);
     }
   };
 }
