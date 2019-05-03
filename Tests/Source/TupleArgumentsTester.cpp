@@ -38,13 +38,17 @@ namespace {
 TEST_CASE("test_tuple_arguments_size", "[TupleArguments]") {
   SECTION("Empty tuple.") {
     auto sample = Sample<int>{ 1, {} };
-    static_assert(arguments_size(sample.m_arguments) == 0);
-    REQUIRE(arguments_size(sample.m_arguments) == 0);
+    static_assert(ArgumentVisitor<Sample<int>::Arguments>::size(
+      sample.m_arguments) == 0);
+    REQUIRE(ArgumentVisitor<Sample<int>::Arguments>::size(sample.m_arguments) ==
+      0);
   }
   SECTION("Non-empty tuple.") {
     auto sample = Sample<int, double, char>{ 1, { 2., 'a' } };
-    static_assert(arguments_size(sample.m_arguments) == 2);
-    REQUIRE(arguments_size(sample.m_arguments) == 2);
+    static_assert(ArgumentVisitor<Sample<int, double, char>::Arguments>::size(
+      sample.m_arguments) == 2);
+    REQUIRE(ArgumentVisitor<Sample<int, double, char>::Arguments>::size(
+      sample.m_arguments) == 2);
   }
 }
 
@@ -52,15 +56,18 @@ TEST_CASE("test_tuple_arguments_visit", "[TupleArguments]") {
   SECTION("Empty tuple.") {
     auto i = 0;
     auto sample = Sample<int>{ 1, {} };
-    visit_arguments([&](const auto& value, auto index) {
+    ArgumentVisitor<Sample<int>::Arguments>::visit([&](const auto& value,
+        auto index) {
       ++i;
     }, sample.m_arguments);
     REQUIRE(i == 0);
   }
   SECTION("Download to vector.") {
+    using SampleType = Sample<int, int, int, int>;
     auto v = std::vector<int>(3);
-    auto sample = Sample<int, int, int, int>{ 1, { 5, 3, 2 } };
-    visit_arguments([&](const auto& value, auto index) {
+    auto sample = SampleType{ 1, { 5, 3, 2 } };
+    ArgumentVisitor<SampleType::Arguments>::visit([&](const auto& value,
+        auto index) {
       v[index] = value;
     }, sample.m_arguments);
     REQUIRE(v.size() == 3);
@@ -69,10 +76,12 @@ TEST_CASE("test_tuple_arguments_visit", "[TupleArguments]") {
     REQUIRE(v[2] == 2);
   }
   SECTION("Download to vector incompatible types.") {
+    using SampleType = Sample<int, IntWrapper<0>, IntWrapper<1>, IntWrapper<2>>;
     auto v = std::vector<int>(3);
-    auto sample = Sample<int, IntWrapper<0>, IntWrapper<1>, IntWrapper<2>>{ 
-      1, { IntWrapper<0>(5), IntWrapper<1>(3), IntWrapper<2>(2) } };
-    visit_arguments([&](const auto& value, auto index) {
+    auto sample = SampleType{ 1, { IntWrapper<0>(5), IntWrapper<1>(3),
+      IntWrapper<2>(2) } };
+    ArgumentVisitor<SampleType::Arguments>::visit([&](const auto& value,
+        auto index) {
       v[index] = static_cast<int>(value);
     }, sample.m_arguments);
     REQUIRE(v.size() == 3);
@@ -81,13 +90,16 @@ TEST_CASE("test_tuple_arguments_visit", "[TupleArguments]") {
     REQUIRE(v[2] == 2);
   }
   SECTION("Sum two samples up.") {
-    auto s1 = Sample<int, int, int, int>{ 1, { 5, 3, 2 } };
-    auto s2 = Sample<int, int, int, int>{ 10, { 11, 12, 6 } };
-    auto s3 = Sample<int, int, int, int>();
-    visit_arguments([&](auto& result, auto k) {
-      visit_arguments([&](const auto& lhs, auto i) {
+    using SampleType = Sample<int, int, int, int>;
+    auto s1 = SampleType{ 1, { 5, 3, 2 } };
+    auto s2 = SampleType{ 10, { 11, 12, 6 } };
+    auto s3 = SampleType();
+    ArgumentVisitor<SampleType::Arguments>::visit([&](auto& result, auto k) {
+      ArgumentVisitor<SampleType::Arguments>::visit([&](const auto& lhs,
+          auto i) {
         if(k == i) {
-          visit_arguments([&](const auto& rhs, auto j) {
+          ArgumentVisitor<SampleType::Arguments>::visit([&](const auto& rhs,
+              auto j) {
             if(i == j) {
               result = lhs + rhs;
             }
@@ -100,15 +112,18 @@ TEST_CASE("test_tuple_arguments_visit", "[TupleArguments]") {
     REQUIRE(std::get<2>(s3.m_arguments) == 8);
   }
   SECTION("Sum two samples up incompatible types.") {
-    auto s1 = Sample<int, IntWrapper<0>, IntWrapper<1>, IntWrapper<2>>{
-      1, { IntWrapper<0>(5), IntWrapper<1>(3), IntWrapper<2>(2) } };
-    auto s2 = Sample<int, IntWrapper<0>, IntWrapper<1>, IntWrapper<2>>{
-      10, { IntWrapper<0>(11), IntWrapper<1>(12), IntWrapper<2>(6) } };
-    auto s3 = Sample<int, IntWrapper<0>, IntWrapper<1>, IntWrapper<2>>();
-    visit_arguments([&](auto& result, auto k) {
-      visit_arguments([&](const auto& lhs, auto i) {
+    using SampleType = Sample<int, IntWrapper<0>, IntWrapper<1>, IntWrapper<2>>;
+    auto s1 = SampleType{ 1, { IntWrapper<0>(5), IntWrapper<1>(3),
+      IntWrapper<2>(2) } };
+    auto s2 = SampleType{ 10, { IntWrapper<0>(11), IntWrapper<1>(12),
+      IntWrapper<2>(6) } };
+    auto s3 = SampleType();
+    ArgumentVisitor<SampleType::Arguments>::visit([&](auto& result, auto k) {
+      ArgumentVisitor<SampleType::Arguments>::visit([&](const auto& lhs,
+          auto i) {
         if(k == i) {
-          visit_arguments([&](const auto& rhs, auto j) {
+          ArgumentVisitor<SampleType::Arguments>::visit([&](const auto& rhs,
+              auto j) {
             if(i == j) {
               sum(result, lhs, rhs);
             }

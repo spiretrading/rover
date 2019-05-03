@@ -344,14 +344,14 @@ namespace Rover {
   }
 
   template<typename T>
-  typename const TrialIterator<T, std::enable_if_t<returns_sample_by_copy_v<
+  const typename TrialIterator<T, std::enable_if_t<returns_sample_by_copy_v<
       T>>>::Sample& TrialIterator<T, std::enable_if_t<returns_sample_by_copy_v<
       T>>>::operator *() {
     return (*this)[0];
   }
 
   template<typename T>
-  typename const TrialIterator<T, std::enable_if_t<returns_sample_by_copy_v<
+  const typename TrialIterator<T, std::enable_if_t<returns_sample_by_copy_v<
       T>>>::Sample* TrialIterator<T, std::enable_if_t<returns_sample_by_copy_v<
       T>>>::operator ->() {
     m_sample.emplace((*m_trial)[m_offset]);
@@ -359,7 +359,7 @@ namespace Rover {
   }
 
   template<typename T>
-  typename const TrialIterator<T, std::enable_if_t<returns_sample_by_copy_v<
+  const typename TrialIterator<T, std::enable_if_t<returns_sample_by_copy_v<
       T>>>::Sample& TrialIterator<T, std::enable_if_t<returns_sample_by_copy_v<
       T>>>::operator [](std::ptrdiff_t offset) {
     m_sample = (*m_trial)[m_offset + offset];
@@ -484,14 +484,14 @@ namespace Rover {
   }
 
   template<typename T>
-  typename const TrialIterator<T, std::enable_if_t<
+  const typename TrialIterator<T, std::enable_if_t<
       returns_sample_by_reference_v<T>>>::Sample& TrialIterator<T,
       std::enable_if_t<returns_sample_by_reference_v<T>>>::operator *() const {
     return (*m_trial)[m_offset];
   }
 
   template<typename T>
-  typename const TrialIterator<T, std::enable_if_t<
+  const typename TrialIterator<T, std::enable_if_t<
       returns_sample_by_reference_v<T>>>::Sample* TrialIterator<T,
       std::enable_if_t<returns_sample_by_reference_v<T>>>::operator ->()
       const {
@@ -499,7 +499,7 @@ namespace Rover {
   }
 
   template<typename T>
-  typename const TrialIterator<T, std::enable_if_t<
+  const typename TrialIterator<T, std::enable_if_t<
       returns_sample_by_reference_v<T>>>::Sample& TrialIterator<T,
       std::enable_if_t<returns_sample_by_reference_v<T>>>::operator [](
       std::ptrdiff_t offset) const {

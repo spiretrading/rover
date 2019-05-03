@@ -114,13 +114,13 @@ namespace Rover {
   }
 
   template<typename G>
-  typename const ScalarView<G>::Sample&
+  const typename ScalarView<G>::Sample&
       ScalarView<G>::ConstIterator::operator *() const {
     return *m_sample;
   }
 
   template<typename G>
-  typename const ScalarView<G>::Sample*
+  const typename ScalarView<G>::Sample*
       ScalarView<G>::ConstIterator::operator ->() const {
     return std::addressof(m_sample);
   }

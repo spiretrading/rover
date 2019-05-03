@@ -14,7 +14,7 @@ TEST_CASE("test_simple_linear_regression", "[LinearRegression]") {
         return ScalarSample<double>{ 2., { 0. } };
       }
     }, 2);
-    auto a = LinearRegression();
+    auto a = LinearRegression<>();
     a.learn(view);
     REQUIRE(a.predict(Arguments{ -10. }) == Approx(-18.));
     REQUIRE(a.predict(Arguments{ 0.5 }) == Approx(3.));
@@ -30,7 +30,7 @@ TEST_CASE("test_simple_linear_regression", "[LinearRegression]") {
         return ScalarSample<double>{ 8., { 3. } };
       }
     }, 3);
-    auto a = LinearRegression();
+    auto a = LinearRegression<>();
     a.learn(view);
     REQUIRE(a.predict(Arguments{ -10. }) == Approx(-18.));
     REQUIRE(a.predict(Arguments{ 0.5 }) == Approx(3.));
@@ -46,7 +46,7 @@ TEST_CASE("test_simple_linear_regression", "[LinearRegression]") {
         return ScalarSample<double>{ 5., { 2. } };
       }
     }, 3);
-    auto a = LinearRegression();
+    auto a = LinearRegression<>();
     a.learn(view);
     REQUIRE(a.predict(Arguments{ -10. }) == Approx(4.));
     REQUIRE(a.predict(Arguments{ -1. }) == Approx(4.));
@@ -67,7 +67,7 @@ TEST_CASE("test_multivariable_linear_regression", "[LinearRegression]") {
         return ScalarSample<double>{ 16., { 4., 4. } };
       }
     }, 3);
-    auto a = LinearRegression();
+    auto a = LinearRegression<>();
     a.learn(view);
     REQUIRE(a.predict(Arguments{ 0., 0. }) == Approx(-8. / 3));
     REQUIRE(a.predict(Arguments{ 1., 0. }) == Approx(4. / 3));
@@ -86,7 +86,7 @@ TEST_CASE("test_multivariable_linear_regression", "[LinearRegression]") {
         return ScalarSample<double>{ 20. / 3, { 2., 2. } };
       }
     }, 4);
-    auto a = LinearRegression();
+    auto a = LinearRegression<>();
     a.learn(view);
     REQUIRE(a.predict(Arguments{ 0., 0. }) == Approx(-8. / 3));
     REQUIRE(a.predict(Arguments{ 1., 0. }) == Approx(4. / 3));
@@ -105,7 +105,7 @@ TEST_CASE("test_multivariable_linear_regression", "[LinearRegression]") {
         return ScalarSample<double>{ -2., { -1., 2. } };
       }
     }, 4);
-    auto a = LinearRegression();
+    auto a = LinearRegression<>();
     a.learn(view);
     REQUIRE(a.predict(Arguments{ 1., 0. }) == Approx(-5.5104));
     REQUIRE(a.predict(Arguments{ 0., 0. }) == Approx(-6.4302));

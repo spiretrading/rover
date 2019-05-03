@@ -5,7 +5,8 @@
 #include <random>
 #include <type_traits>
 #include <vector>
-#include "ScalarView.hpp"
+#include "Rover/Sample.hpp"
+#include "Rover/ScalarView.hpp"
 
 namespace {
   template<typename R, typename X, typename Y>
@@ -82,15 +83,15 @@ namespace Rover {
       auto operator ()(const Arguments& args) const;
 
     private:
-      using ScalarSample = ScalarSample<ComputationType>;
-      using ScalarArguments = typename ScalarSample::Arguments;
-      using ScalarResult = typename ScalarSample::Result;
+      using ScalarSampleType = ScalarSample<ComputationType>;
+      using ScalarArguments = typename ScalarSampleType::Arguments;
+      using ScalarResult = typename ScalarSampleType::Result;
 
       Sample m_basis;
       Algorithm m_algorithm;
 
       static Sample compute_basis(const Trial& trial);
-      ScalarSample sample_cast(const Sample& sample) const;
+      ScalarSampleType sample_cast(const Sample& sample) const;
       ScalarArguments arguments_cast(const Arguments& sample) const;
       ScalarResult result_cast(const Result& value) const;
       auto retrieve_result(ScalarResult value) const;
@@ -122,15 +123,15 @@ namespace Rover {
     auto generator = std::mt19937(std::random_device()());
     std::iota(order.begin(), order.end(), std::size_t(0));
     auto basis = trial[0];
-    visit_arguments([&](auto& result, auto i) {
+    ArgumentVisitor<Arguments>::visit([&](auto& result, auto i) {
       std::shuffle(order.begin(), order.end(), generator);
       const auto& first_arguments = trial[order[0]].m_arguments;
-      visit_arguments([&](const auto& lhs, auto j) {
+      ArgumentVisitor<Arguments>::visit([&](const auto& lhs, auto j) {
         if(i == j) {
           auto to_break = false;
           for(auto l = std::size_t(1); l < order.size() && !to_break; ++l) {
             const auto& second_arguments = trial[order[l]].m_arguments;
-            visit_arguments([&](const auto& rhs, auto k) {
+            ArgumentVisitor<Arguments>::visit([&](const auto& rhs, auto k) {
               if(j == k && solve_basis(result, lhs, rhs)) {
                 to_break = true;
               }
@@ -151,7 +152,7 @@ namespace Rover {
   }
   
   template<typename A, typename T>
-  typename Model<A, T>::ScalarSample Model<A, T>::sample_cast(
+  typename Model<A, T>::ScalarSampleType Model<A, T>::sample_cast(
       const Sample& sample) const {
     auto arguments = arguments_cast(sample.m_arguments);
     auto result = result_cast(sample.m_result);
@@ -161,9 +162,10 @@ namespace Rover {
   template<typename A, typename T>
   typename Model<A, T>::ScalarArguments Model<A, T>::arguments_cast(
       const Arguments& arguments) const {
-    auto result = std::vector<ComputationType>(arguments_size(arguments));
-    visit_arguments([&](const auto& arg, auto i) {
-      visit_arguments([&](const auto& identity, auto j) {
+    auto result = std::vector<ComputationType>(ArgumentVisitor<Arguments>::size(
+      arguments));
+    ArgumentVisitor<Arguments>::visit([&](const auto& arg, auto i) {
+      ArgumentVisitor<Arguments>::visit([&](const auto& identity, auto j) {
         if(i == j) {
           apply_basis(result[i], arg, identity);
         }
