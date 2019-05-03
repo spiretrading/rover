@@ -115,7 +115,7 @@ namespace pybind11 {
   template<typename T1, typename T2>
   std::enable_if_t<Rover::Details::contain_objects_v<T1, T2>, object>
       operator /(const T1& lhs, const T2& rhs) {
-    return Rover::Details::OperatorApplicator<T1, T2>()("__floordiv__", lhs,
+    return Rover::Details::OperatorApplicator<T1, T2>()("__truediv__", lhs,
       rhs);
   }
 
