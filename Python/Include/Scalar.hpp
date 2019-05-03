@@ -67,7 +67,7 @@ namespace Rover {
       PythonScalar() = default;
 
       //! Constructs a PythonScalar from a Python object.
-      PythonScalar(const pybind11::object& obj);
+      explicit PythonScalar(const pybind11::object& obj);
 
       //! Constructs a PythonScalar from an instance of the scalar.
       PythonScalar(T value);
