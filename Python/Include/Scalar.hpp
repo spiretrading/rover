@@ -149,17 +149,18 @@ namespace Rover {
   PythonScalar<T>::operator T&() {
     return m_value;
   }
-
-  template<typename T>
-  PythonScalar<T> abs(PythonScalar<T> scalar) {
-    return ::abs(static_cast<T>(scalar));
-  }
 }
 
 namespace pybind11 {
   template<typename T>
   object cast(const Rover::PythonScalar<T>& scalar) {
     return cast(static_cast<T>(scalar));
+  }
+
+  template<typename T>
+  Rover::PythonScalar<T> abs(Rover::PythonScalar<T> scalar) {
+    using namespace std;
+    return abs(static_cast<T>(scalar));
   }
 }
 
