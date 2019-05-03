@@ -1,5 +1,6 @@
 #ifndef ROVER_PYTHON_SCALAR_HPP
 #define ROVER_PYTHON_SCALAR_HPP
+#include <memory>
 #include <type_traits>
 #include <dlib/algs.h>
 #include <pybind11/pybind11.h>
@@ -103,7 +104,7 @@ namespace Rover {
 
   template<typename T>
   PythonScalarPointer<T>::operator T*() const {
-    return &(m_ptr->m_value);
+    return std::addressof(m_ptr->m_value);
   }
 
   template<typename T>
@@ -118,7 +119,7 @@ namespace Rover {
 
   template<typename T>
   PythonScalarConstPointer<T>::operator const T*() const {
-    return &(m_ptr->m_value);
+    return std::addressof(m_ptr->m_value);
   }
 
   template<typename T>
