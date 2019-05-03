@@ -1,5 +1,6 @@
 #ifndef ROVER_PYTHON_SCALAR_HPP
 #define ROVER_PYTHON_SCALAR_HPP
+#include <cmath>
 #include <memory>
 #include <type_traits>
 #include <dlib/algs.h>
@@ -151,18 +152,20 @@ namespace Rover {
   PythonScalar<T>::operator T&() {
     return m_value;
   }
+
+namespace Details {
+  template<typename T>
+  Rover::PythonScalar<T> abs(Rover::PythonScalar<T> scalar) {
+    using namespace std;
+    return abs(static_cast<T>(scalar));
+  }
+}
 }
 
 namespace pybind11 {
   template<typename T>
   object cast(const Rover::PythonScalar<T>& scalar) {
     return cast(static_cast<T>(scalar));
-  }
-
-  template<typename T>
-  Rover::PythonScalar<T> abs(Rover::PythonScalar<T> scalar) {
-    using namespace std;
-    return abs(static_cast<T>(scalar));
   }
 }
 
