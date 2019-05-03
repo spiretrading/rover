@@ -36,7 +36,7 @@ namespace Rover {
       \param tuple Python tuple of the arguments.
     */
     template<typename Func>
-    void visit(Func&& func, Arguments& tuple) {
+    static void visit(Func&& func, Arguments& tuple) {
       for(auto i = std::size_t(0); i < tuple.size(); ++i) {
         func(tuple[i], i);
       }
@@ -48,14 +48,14 @@ namespace Rover {
       \param tuple Python tuple of the arguments.
     */
     template<typename Func>
-    void visit(Func&& func, const Arguments& tuple) {
+    static void visit(Func&& func, const Arguments& tuple) {
       for(auto i = std::size_t(0); i < tuple.size(); ++i) {
         func(tuple[i], i);
       }
     }
 
     //! Returns the number of elements in a Python tuple.
-    std::size_t size(const Arguments& tuple);
+    static std::size_t size(const Arguments& tuple);
   };
 }
 
