@@ -88,7 +88,6 @@ namespace Rover {
     private:
       friend PythonScalarPointer<T>;
       friend PythonScalarConstPointer<T>;
-      template<typename T> friend PythonScalar<T> abs(PythonScalar<T>);
 
       T m_value;
   };
@@ -152,8 +151,7 @@ namespace Rover {
 
   template<typename T>
   PythonScalar<T> abs(PythonScalar<T> scalar) {
-    ::abs(scalar.m_value);
-    return std::move(scalar);
+    return ::abs(static_cast<T>(scalar));
   }
 }
 
