@@ -20,9 +20,6 @@ namespace Rover {
   class PythonScalarPointer {
     public:
 
-      //! Constructs the object using a raw PythonScalar<T> pointer.
-      PythonScalarPointer(PythonScalar<T>* ptr);
-
       //! Converts the pointer to PythonScalar<T>*.
       operator PythonScalar<T>*() const;
 
@@ -30,7 +27,11 @@ namespace Rover {
       operator T*() const;
 
     private:
+      friend PythonScalar<T>;
+
       PythonScalar<T>* m_ptr;
+
+      explicit PythonScalarPointer(PythonScalar<T>* ptr);
   };
 
   //! Constant pointer type for PythonScalar convertible to both const T* and
@@ -42,9 +43,6 @@ namespace Rover {
   class PythonScalarConstPointer {
     public:
 
-      //! Constructs the object using a raw PythonScalar<T> constant pointer.
-      PythonScalarConstPointer(const PythonScalar<T>* ptr);
-
       //! Converts the pointer to const PythonScalar<T>*.
       operator const PythonScalar<T>*() const;
 
@@ -52,7 +50,11 @@ namespace Rover {
       operator const T*() const;
 
     private:
+      friend PythonScalar<T>;
+
       const PythonScalar<T>* m_ptr;
+
+      explicit PythonScalarConstPointer(const PythonScalar<T>* ptr);
   };
 
   //! Adapts a scalar type to pybind11::object by providing the one-way
@@ -132,12 +134,12 @@ namespace Rover {
 
   template<typename T>
   PythonScalarPointer<T> PythonScalar<T>::operator &() {
-    return this;
+    return PythonScalarPointer<T>(this);
   }
 
   template<typename T>
   PythonScalarConstPointer<T> PythonScalar<T>::operator &() const {
-    return this;
+    return PythonScalarConstPointer<T>(this);
   }
 
   template<typename T>
