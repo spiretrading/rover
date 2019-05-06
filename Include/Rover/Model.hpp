@@ -83,15 +83,15 @@ namespace Rover {
       auto operator ()(const Arguments& args) const;
 
     private:
-      using ScalarSampleType = ScalarSample<ComputationType>;
-      using ScalarArguments = typename ScalarSampleType::Arguments;
-      using ScalarResult = typename ScalarSampleType::Result;
+      using ScalarSample = Rover::ScalarSample<ComputationType>;
+      using ScalarArguments = typename ScalarSample::Arguments;
+      using ScalarResult = typename ScalarSample::Result;
 
       Sample m_basis;
       Algorithm m_algorithm;
 
       static Sample compute_basis(const Trial& trial);
-      ScalarSampleType sample_cast(const Sample& sample) const;
+      ScalarSample sample_cast(const Sample& sample) const;
       ScalarArguments arguments_cast(const Arguments& sample) const;
       ScalarResult result_cast(const Result& value) const;
       auto retrieve_result(ScalarResult value) const;
@@ -152,7 +152,7 @@ namespace Rover {
   }
   
   template<typename A, typename T>
-  typename Model<A, T>::ScalarSampleType Model<A, T>::sample_cast(
+  typename Model<A, T>::ScalarSample Model<A, T>::sample_cast(
       const Sample& sample) const {
     auto arguments = arguments_cast(sample.m_arguments);
     auto result = result_cast(sample.m_result);
