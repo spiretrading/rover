@@ -70,7 +70,7 @@ namespace Rover {
   }
 
   template<typename T>
-  typename const TrialView<T>::Sample& TrialView<T>::operator [](std::size_t
+  const typename TrialView<T>::Sample& TrialView<T>::operator [](std::size_t
       index) const {
     return m_getter(index);
   }

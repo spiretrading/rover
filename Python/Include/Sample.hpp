@@ -7,6 +7,7 @@
 #include <utility>
 #include <pybind11/pybind11.h>
 #include "Rover/Noncopyable.hpp"
+#include "Rover/Sample.hpp"
 
 namespace Rover {
 
@@ -22,32 +23,40 @@ namespace Rover {
     Arguments m_arguments;
   };
 
-  //! Applies a function to every element of a Python tuple.
-  /*!
-    \param func Function taking a tuple element and its index as arguments.
-    \param tuple Python tuple of the arguments.
-  */
-  template<typename Func>
-  void visit_arguments(Func&& func, pybind11::tuple& tuple) {
-    for(auto i = std::size_t(0); i < tuple.size(); ++i) {
-      func(tuple[i], i);
-    }
-  }
+  //! Exposes visitor and size functionality for PythonSample arguments.
+  template<>
+  struct ArgumentVisitor<PythonSample::Arguments> {
 
-  //! Applies a function to every element of a Python tuple.
-  /*!
-    \param func Function taking a tuple element and its index as arguments.
-    \param tuple Python tuple of the arguments.
-  */
-  template<typename Func>
-  void visit_arguments(Func&& func, const pybind11::tuple& tuple) {
-    for(auto i = std::size_t(0); i < tuple.size(); ++i) {
-      func(tuple[i], i);
-    }
-  }
+    //! The type of the arguments.
+    using Arguments = PythonSample::Arguments;
 
-  //! Returns the number of elements in a Python tuple.
-  std::size_t arguments_size(const pybind11::tuple& tuple);
+    //! Applies a function to every element of a Python tuple.
+    /*!
+      \param func Function taking a tuple element and its index as arguments.
+      \param tuple Python tuple of the arguments.
+    */
+    template<typename Func>
+    static void visit(Func&& func, Arguments& tuple) {
+      for(auto i = std::size_t(0); i < tuple.size(); ++i) {
+        func(tuple[i], i);
+      }
+    }
+
+    //! Applies a function to every element of a Python tuple.
+    /*!
+      \param func Function taking a tuple element and its index as arguments.
+      \param tuple Python tuple of the arguments.
+    */
+    template<typename Func>
+    static void visit(Func&& func, const Arguments& tuple) {
+      for(auto i = std::size_t(0); i < tuple.size(); ++i) {
+        func(tuple[i], i);
+      }
+    }
+
+    //! Returns the number of elements in a Python tuple.
+    static std::size_t size(const Arguments& tuple);
+  };
 }
 
 namespace Rover {

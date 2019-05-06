@@ -27,34 +27,90 @@ namespace Rover {
 
   //! Applies a function to every element of a tuple.
   /*!
-    \param func Function taking a tuple element and its index as arguments.
-    \param tuple Tuple of the arguments.
+    \param func Function taking an argument and its index as arguments.
+    \param args Tuple of the arguments.
   */
-  template<typename Func, typename... A>
-  void visit_arguments(Func&& func, std::tuple<A...>& tuple) {
-    std::apply([&](auto&&... args) {
-      auto i = std::size_t(0);
-      (func(args, i++), ...);
-    }, tuple);
-  }
+  template<typename Arguments, typename Func>
+  void visit_arguments(Func&& func, Arguments& args);
 
-  //! Applies a function to every element of a tuple.
+  //! Applies a function to every argument.
   /*!
-    \param func Function taking a tuple element and its index as arguments.
-    \param tuple Tuple of the arguments.
+    \param func Function taking an argument and its index as arguments.
+    \param args Tuple of the arguments.
   */
-  template<typename Func, typename... A>
-  void visit_arguments(Func&& func, const std::tuple<A...>& tuple) {
+  template<typename Arguments, typename Func>
+  void visit_arguments(Func&& func, const Arguments& args);
+
+  //! Returns the number of the arguments.
+  template<typename Arguments>
+  constexpr std::size_t arguments_size(const Arguments& args);
+
+  //! Exposes visitor and size functionality for generic Sample arguments.
+  /*
+    \tparam A The type of the arguments.
+  */
+  template<typename A>
+  struct ArgumentVisitor {
+
+    //! The type of the arguments. 
+    using Arguments = A;
+
+    //! Applies a function to every element of a tuple.
+    /*!
+      \param func Function taking a tuple element and its index as arguments.
+      \param args Tuple of the arguments.
+    */
+    template<typename Func>
+    static void visit(Func&& func, Arguments& tuple);
+
+    //! Applies a function to every element of a tuple.
+    /*!
+      \param func Function taking a tuple element and its index as arguments.
+      \param tuple Tuple of the arguments.
+    */
+    template<typename Func>
+    static void visit(Func&& func, const Arguments& tuple);
+
+    //! Returns the number of elements in a tuple.
+    static constexpr std::size_t size(const Arguments& tuple);
+  };
+
+  template<typename Arguments, typename Func>
+  void visit_arguments(Func&& func, Arguments& args) {
+    return ArgumentVisitor<Arguments>::visit(std::forward<Func>(func), args);
+  }
+
+  template<typename Arguments, typename Func>
+  void visit_arguments(Func&& func, const Arguments& args) {
+    return ArgumentVisitor<Arguments>::visit(std::forward<Func>(func), args);
+  }
+
+  template<typename Arguments>
+  constexpr std::size_t arguments_size(const Arguments& args) {
+    return ArgumentVisitor<Arguments>::size(args);
+  }
+
+  template<typename A>
+  template<typename Func>
+  void ArgumentVisitor<A>::visit(Func&& func, Arguments& tuple) {
     std::apply([&](auto&&... args) {
       auto i = std::size_t(0);
       (func(args, i++), ...);
     }, tuple);
   }
 
-  //! Returns the number of elements in a tuple.
-  template<typename... A>
-  constexpr std::size_t arguments_size(const std::tuple<A...>& tuple) {
-    return std::tuple_size_v<std::tuple<A...>>;
+  template<typename A>
+  template<typename Func>
+  void ArgumentVisitor<A>::visit(Func&& func, const Arguments& tuple) {
+    std::apply([&](auto&&... args) {
+      auto i = std::size_t(0);
+      (func(args, i++), ...);
+    }, tuple);
+  }
+
+  template<typename A>
+  constexpr std::size_t ArgumentVisitor<A>::size(const Arguments& tuple) {
+    return std::tuple_size_v<Arguments>;
   }
 }
 

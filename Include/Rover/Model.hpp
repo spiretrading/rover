@@ -5,7 +5,8 @@
 #include <random>
 #include <type_traits>
 #include <vector>
-#include "ScalarView.hpp"
+#include "Rover/Sample.hpp"
+#include "Rover/ScalarView.hpp"
 
 namespace {
   template<typename R, typename X, typename Y>
@@ -82,7 +83,7 @@ namespace Rover {
       auto operator ()(const Arguments& args) const;
 
     private:
-      using ScalarSample = ScalarSample<ComputationType>;
+      using ScalarSample = Rover::ScalarSample<ComputationType>;
       using ScalarArguments = typename ScalarSample::Arguments;
       using ScalarResult = typename ScalarSample::Result;
 

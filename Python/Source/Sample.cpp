@@ -3,7 +3,8 @@
 using namespace pybind11;
 using namespace Rover;
 
-std::size_t Rover::arguments_size(const pybind11::tuple& tuple) {
+std::size_t Rover::ArgumentVisitor<PythonSample::Arguments>::size(const
+    Arguments& tuple) {
   return tuple.size();
 }
 

@@ -58,7 +58,7 @@ namespace Rover {
     auto x = dlib::matrix<Type>(view.size(), view[0].m_arguments.size() + 1);
     auto y = dlib::matrix<Type>(view.size(), 1);
     for(auto i = std::size_t(0); i < view.size(); ++i) {
-      auto& sample = view[i];
+      auto sample = view[i];
       x(i, 0) = static_cast<Type>(1.);
       std::copy(sample.m_arguments.begin(), sample.m_arguments.end(), x.begin()
         + i * x.nc() + 1);
