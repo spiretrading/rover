@@ -25,6 +25,26 @@ namespace Rover {
     Arguments m_arguments;
   };
 
+  //! Applies a function to every element of a tuple.
+  /*!
+    \param func Function taking an argument and its index as arguments.
+    \param args Tuple of the arguments.
+  */
+  template<typename Arguments, typename Func>
+  void visit_arguments(Func&& func, Arguments& args);
+
+  //! Applies a function to every argument.
+  /*!
+    \param func Function taking an argument and its index as arguments.
+    \param args Tuple of the arguments.
+  */
+  template<typename Arguments, typename Func>
+  void visit_arguments(Func&& func, const Arguments& args);
+
+  //! Returns the number of the arguments.
+  template<typename Arguments>
+  constexpr std::size_t arguments_size(const Arguments& args);
+
   //! Exposes visitor and size functionality for generic Sample arguments.
   /*
     \tparam A The type of the arguments.
@@ -54,6 +74,21 @@ namespace Rover {
     //! Returns the number of elements in a tuple.
     static constexpr std::size_t size(const Arguments& tuple);
   };
+
+  template<typename Arguments, typename Func>
+  void visit_arguments(Func&& func, Arguments& args) {
+    return ArgumentVisitor<Arguments>::visit(std::forward<Func>(func), args);
+  }
+
+  template<typename Arguments, typename Func>
+  void visit_arguments(Func&& func, const Arguments& args) {
+    return ArgumentVisitor<Arguments>::visit(std::forward<Func>(func), args);
+  }
+
+  template<typename Arguments>
+  constexpr std::size_t arguments_size(const Arguments& args) {
+    return ArgumentVisitor<Arguments>::size(args);
+  }
 
   template<typename A>
   template<typename Func>

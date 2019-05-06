@@ -123,15 +123,15 @@ namespace Rover {
     auto generator = std::mt19937(std::random_device()());
     std::iota(order.begin(), order.end(), std::size_t(0));
     auto basis = trial[0];
-    ArgumentVisitor<Arguments>::visit([&](auto& result, auto i) {
+    visit_arguments([&](auto& result, auto i) {
       std::shuffle(order.begin(), order.end(), generator);
       const auto& first_arguments = trial[order[0]].m_arguments;
-      ArgumentVisitor<Arguments>::visit([&](const auto& lhs, auto j) {
+      visit_arguments([&](const auto& lhs, auto j) {
         if(i == j) {
           auto to_break = false;
           for(auto l = std::size_t(1); l < order.size() && !to_break; ++l) {
             const auto& second_arguments = trial[order[l]].m_arguments;
-            ArgumentVisitor<Arguments>::visit([&](const auto& rhs, auto k) {
+            visit_arguments([&](const auto& rhs, auto k) {
               if(j == k && solve_basis(result, lhs, rhs)) {
                 to_break = true;
               }
@@ -162,10 +162,9 @@ namespace Rover {
   template<typename A, typename T>
   typename Model<A, T>::ScalarArguments Model<A, T>::arguments_cast(
       const Arguments& arguments) const {
-    auto result = std::vector<ComputationType>(ArgumentVisitor<Arguments>::size(
-      arguments));
-    ArgumentVisitor<Arguments>::visit([&](const auto& arg, auto i) {
-      ArgumentVisitor<Arguments>::visit([&](const auto& identity, auto j) {
+    auto result = std::vector<ComputationType>(arguments_size(arguments));
+    visit_arguments([&](const auto& arg, auto i) {
+      visit_arguments([&](const auto& identity, auto j) {
         if(i == j) {
           apply_basis(result[i], arg, identity);
         }
