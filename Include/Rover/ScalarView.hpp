@@ -54,6 +54,16 @@ namespace Rover {
       template<typename GetFwd>
       ScalarView(GetFwd&& get, std::size_t size);
 
+      //! Constructs a ScalarView using another ScalarView parameterized with a
+      //! different getter function but returning the same Sample type.
+      /*!
+        \param view ScalarView returning the same Sample type.
+      */
+      template<typename OtherScalarView, std::enable_if_t<
+        !std::is_convertible_v<std::decay_t<OtherScalarView>, ScalarView>>* =
+        nullptr>
+      ScalarView(OtherScalarView&& view);
+
       //! Returns an input iterator to the beginning of the trial.
       Iterator begin() const;
 
@@ -67,8 +77,8 @@ namespace Rover {
       std::size_t size() const;
 
     private:
-      Get m_get;
       std::size_t m_size;
+      Get m_get;
   };
 
   template<typename G>
@@ -77,8 +87,17 @@ namespace Rover {
   template<typename G>
   template<typename GetFwd>
   ScalarView<G>::ScalarView(GetFwd&& get, std::size_t size)
-    : m_get(std::forward<GetFwd>(get)),
-      m_size(size) {}
+    : m_size(size),
+      m_get(std::forward<GetFwd>(get)) {}
+
+  template<typename G>
+  template<typename OtherScalarView, std::enable_if_t<
+    !std::is_convertible_v<std::decay_t<OtherScalarView>, ScalarView<G>>>*>
+  ScalarView<G>::ScalarView(OtherScalarView&& view)
+    : m_size(view.size()),
+      m_get([view = std::forward<OtherScalarView>(view)](std::size_t index) {
+        return view[index];
+      }) {}
 
   template<typename G>
   typename ScalarView<G>::Iterator ScalarView<G>::begin() const {
