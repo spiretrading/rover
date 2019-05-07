@@ -25,12 +25,14 @@ namespace Rover {
       type_name) {
     using ComputationType = T;
     using ScalarSampleType = ScalarSample<ComputationType>;
-    pybind11::class_<ScalarSampleType>(module, "ScalarSample")
+    auto scalar_sample_name = std::string("ScalarSample").append(type_name);
+    pybind11::class_<ScalarSampleType>(module, scalar_sample_name.c_str())
       .def_readwrite("result", &ScalarSampleType::m_result)
       .def_readwrite("arguments", &ScalarSampleType::m_arguments);
     using GetterType = std::function<ScalarSampleType(std::size_t)>;
     using ScalarViewType = ScalarView<GetterType>;
-    pybind11::class_<ScalarViewType>(module, "ScalarView")
+    auto scalar_view_name = std::string("ScalarView").append(type_name);
+    pybind11::class_<ScalarViewType>(module, scalar_view_name.c_str())
       .def("__getitem__", &ScalarViewType::operator [])
       .def("__iter__", [](const ScalarViewType& t) {
          return pybind11::make_iterator(t.begin(), t.end());
