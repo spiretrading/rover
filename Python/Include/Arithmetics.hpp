@@ -1,8 +1,8 @@
 #ifndef ROVER_PYTHON_ARITHMETICS_HPP
 #define ROVER_PYTHON_ARITHMETICS_HPP
 #include <type_traits>
-#include <pybind11/pybind11.h>
 #include <dlib/algs.h>
+#include <pybind11/pybind11.h>
 
 namespace Rover::Details {
   template<typename... Args>
