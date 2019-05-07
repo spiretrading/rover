@@ -38,7 +38,7 @@ namespace Rover {
     template<typename Func>
     static void visit(Func&& func, Arguments& tuple) {
       for(auto i = std::size_t(0); i < tuple.size(); ++i) {
-        func(tuple[i], i);
+        func(pybind11::object(tuple[i]), i);
       }
     }
 
@@ -50,7 +50,7 @@ namespace Rover {
     template<typename Func>
     static void visit(Func&& func, const Arguments& tuple) {
       for(auto i = std::size_t(0); i < tuple.size(); ++i) {
-        func(tuple[i], i);
+        func(pybind11::object(tuple[i]), i);
       }
     }
 

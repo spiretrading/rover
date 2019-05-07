@@ -1,6 +1,7 @@
 #ifndef ROVER_PYTHON_ARITHMETICS_HPP
 #define ROVER_PYTHON_ARITHMETICS_HPP
 #include <type_traits>
+#include <dlib/algs.h>
 #include <pybind11/pybind11.h>
 
 namespace Rover::Details {
@@ -124,6 +125,14 @@ namespace pybind11 {
       operator %(const T1& lhs, const T2& rhs) {
     return Rover::Details::OperatorApplicator<T1, T2>()("__mod__", lhs, rhs);
   }
+}
+
+namespace dlib {
+  template<>
+  class is_same_type<pybind11::object, double> : std::true_type {};
+
+  template<>
+  class is_same_type<double, pybind11::object> : std::true_type {};
 }
 
 #endif
