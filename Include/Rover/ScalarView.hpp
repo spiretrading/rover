@@ -34,10 +34,11 @@ namespace Rover {
     public:
 
       //! The type of a function returning adapted samples by index.
-      using Get = G;
+      using SampleGetter = G;
 
       //! Type used by the algorithm.
-      using Type = typename std::invoke_result_t<Get, std::size_t>::Result;
+      using Type = typename std::invoke_result_t<SampleGetter,
+        std::size_t>::Result;
 
       //! The type representing a sample.
       using Sample = ScalarSample<Type>;
@@ -51,8 +52,8 @@ namespace Rover {
                    sample.
         \param size The total number of samples.
       */
-      template<typename GetFwd>
-      ScalarView(GetFwd&& get, std::size_t size);
+      template<typename SampleGetterFwd>
+      ScalarView(SampleGetterFwd&& get, std::size_t size);
 
       //! Constructs a ScalarView using another ScalarView parameterized with a
       //! different getter function but returning the same Sample type.
@@ -78,17 +79,17 @@ namespace Rover {
 
     private:
       std::size_t m_size;
-      Get m_get;
+      SampleGetter m_getter;
   };
 
   template<typename G>
   ScalarView(G&&, std::size_t) -> ScalarView<std::decay_t<G>>;
 
   template<typename G>
-  template<typename GetFwd>
-  ScalarView<G>::ScalarView(GetFwd&& get, std::size_t size)
+  template<typename SampleGetterFwd>
+  ScalarView<G>::ScalarView(SampleGetterFwd&& getter, std::size_t size)
     : m_size(size),
-      m_get(std::forward<GetFwd>(get)) {}
+      m_getter(std::forward<SampleGetterFwd>(getter)) {}
 
   template<typename G>
   template<typename OtherScalarView, std::enable_if_t<
@@ -112,7 +113,7 @@ namespace Rover {
   template<typename G>
   typename ScalarView<G>::Sample ScalarView<G>::operator [](
       std::size_t i) const {
-    return m_get(i);
+    return m_getter(i);
   }
 
   template<typename G>
