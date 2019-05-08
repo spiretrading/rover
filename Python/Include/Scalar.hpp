@@ -67,6 +67,9 @@ namespace Rover {
   class PythonScalar {
     public:
 
+      //! The type of the scalar.
+      using Type = T;
+
       //! Constructs an uninitialized PythonScalar.
       PythonScalar() = default;
 
@@ -74,26 +77,26 @@ namespace Rover {
       explicit PythonScalar(const pybind11::object& obj);
 
       //! Constructs a PythonScalar from an instance of the scalar.
-      PythonScalar(T value);
+      PythonScalar(Type value);
 
       //! Converts the PythonScalar to the type of the scalar.
-      operator T() const;
+      operator Type() const;
 
       //! Converts the PythonScalar to a reference to the scalar.
-      operator T&();
+      operator Type&();
 
       //! Produces a PythonScalarPointer corresponding to the PythonScalar.
-      PythonScalarPointer<T> operator &();
+      PythonScalarPointer<Type> operator &();
 
       //! Produces a PythonScalarConstPointer corresponding to the
       //! PythonScalar.
-      PythonScalarConstPointer<T> operator &() const;
+      PythonScalarConstPointer<Type> operator &() const;
 
     private:
-      friend PythonScalarPointer<T>;
-      friend PythonScalarConstPointer<T>;
+      friend PythonScalarPointer<Type>;
+      friend PythonScalarConstPointer<Type>;
 
-      T m_value;
+      Type m_value;
   };
 
   template<typename T>
@@ -130,7 +133,7 @@ namespace Rover {
     : m_value(obj.template cast<T>()) {}
 
   template<typename T>
-  PythonScalar<T>::PythonScalar(T value)
+  PythonScalar<T>::PythonScalar(Type value)
     : m_value(std::move(value)) {}
 
   template<typename T>

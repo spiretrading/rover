@@ -7,6 +7,7 @@
 #include "ListTrial.hpp"
 #include "Range.hpp"
 #include "Sample.hpp"
+#include "ScalarView.hpp"
 #include "TrialView.hpp"
 
 using namespace pybind11;
@@ -21,5 +22,6 @@ PYBIND11_MODULE(rover, module) {
   export_sample(module);
   export_list_trial(module);
   export_trial_view(module);
+  export_scalar_view(module);
   export_linear_regression_model(module);
 }
