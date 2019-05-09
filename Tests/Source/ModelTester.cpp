@@ -18,8 +18,8 @@ namespace {
     using Arguments = typename Sample::Arguments;
 
     template<typename ScalarView>
-    void learn(ScalarView&& reader) {
-      for(const auto& sample : reader) {
+    void learn(const ScalarView& reader) {
+      for(auto& sample : reader) {
         m_data.push_back(sample);
       }
       if(m_data.empty()) {
@@ -37,7 +37,7 @@ namespace {
       };
       auto candidate1 = std::optional<Candidate>();
       auto candidate2 = std::optional<Candidate>();
-      for(const auto& sample : m_data) {
+      for(auto& sample : m_data) {
         auto distance = calculate_squared_distance(sample.m_arguments,
           arguments);
         if(!candidate1) {
@@ -61,8 +61,8 @@ namespace {
       m_min_values = m_data[0].m_arguments;
       m_max_values = m_data[0].m_arguments;
       for(auto i = std::size_t(0); i < m_data[0].m_arguments.size(); ++i) {
-        auto[min_it, max_it] = std::minmax_element(m_data.begin(),
-          m_data.end(), [&](const auto& lhs, const auto& rhs) {
+        auto [min_it, max_it] = std::minmax_element(m_data.begin(),
+            m_data.end(), [&](const auto& lhs, const auto& rhs) {
           return lhs.m_arguments[i] < rhs.m_arguments[i];
         });
         m_min_values[i] = min_it->m_arguments[i];
@@ -88,7 +88,7 @@ namespace {
     }
 
     static double calculate_squared_distance(const Arguments& lhs,
-      const Arguments& rhs) {
+        const Arguments& rhs) {
       auto result = 0.;
       for(auto i = std::size_t(0); i < lhs.size(); ++i) {
         result += (lhs[i] - rhs[i]) * (lhs[i] - rhs[i]);
