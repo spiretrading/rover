@@ -111,6 +111,7 @@ namespace Details {
          return pybind11::make_iterator(v.begin(), v.end());
        })
       .def("__len__", &TrialView<S>::size);
+    pybind11::implicitly_convertible<ListTrial<S>, TrialView<S>>();
     pybind11::implicitly_convertible<TrialView<S>, Details::NativeTrialProxy>();
     pybind11::implicitly_convertible<TrialView<S>, TrialView<PythonSample>>();
     pybind11::implicitly_convertible<TrialView<PythonSample>, TrialView<S>>();
