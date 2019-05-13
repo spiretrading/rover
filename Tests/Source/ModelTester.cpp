@@ -12,95 +12,95 @@ using namespace std::chrono_literals;
 
 namespace {
   class TestAlgorithm {
-  public:
-    using Type = double;
-    using Sample = ScalarSample<double>;
-    using Arguments = typename Sample::Arguments;
-
-    template<typename ScalarView>
-    void learn(const ScalarView& reader) {
-      for(auto& sample : reader) {
-        m_data.push_back(sample);
-      }
-      if(m_data.empty()) {
-        return;
-      }
-      compute_norm();
-      normalize_data();
-    }
-
-    double predict(Arguments arguments) const {
-      normalize_arguments(arguments);
-      struct Candidate {
-        double distance;
-        double result;
-      };
-      auto candidate1 = std::optional<Candidate>();
-      auto candidate2 = std::optional<Candidate>();
-      for(auto& sample : m_data) {
-        auto distance = calculate_squared_distance(sample.m_arguments,
-          arguments);
-        if(!candidate1) {
-          candidate1 = { distance, sample.m_result };
-        } else if(distance < candidate1->distance) {
-          candidate2 = candidate1;
-          candidate1 = { distance, sample.m_result };
-        } else if(!candidate2 || distance < candidate2->distance) {
-          candidate2 = { distance, sample.m_result };
+    public:
+      using Type = double;
+      using Sample = ScalarSample<double>;
+      using Arguments = typename Sample::Arguments;
+    
+      template<typename ScalarView>
+      void learn(const ScalarView& reader) {
+        for(auto& sample : reader) {
+          m_data.push_back(sample);
         }
+        if(m_data.empty()) {
+          return;
+        }
+        compute_norm();
+        normalize_data();
       }
-      if(!candidate2) {
-        return candidate1->result;
-      } else {
-        return (candidate1->result + candidate2->result) / 2.;
-      }
-    }
-
-  private:
-    void compute_norm() {
-      m_min_values = m_data[0].m_arguments;
-      m_max_values = m_data[0].m_arguments;
-      for(auto i = std::size_t(0); i < m_data[0].m_arguments.size(); ++i) {
-        auto [min_it, max_it] = std::minmax_element(m_data.begin(),
-            m_data.end(), [&](const auto& lhs, const auto& rhs) {
-          return lhs.m_arguments[i] < rhs.m_arguments[i];
-        });
-        m_min_values[i] = min_it->m_arguments[i];
-        m_max_values[i] = max_it->m_arguments[i];
-      }
-    }
-
-    void normalize_data() {
-      for(auto& sample : m_data) {
-        normalize_arguments(sample.m_arguments);
-      }
-    }
-
-    void normalize_arguments(Arguments& arguments) const {
-      for(auto i = std::size_t(0); i < m_min_values.size(); ++i) {
-        if(m_min_values[i] == m_max_values[i]) {
-          arguments[i] = 0.;
+    
+      double predict(Arguments arguments) const {
+        normalize_arguments(arguments);
+        struct Candidate {
+          double distance;
+          double result;
+        };
+        auto candidate1 = std::optional<Candidate>();
+        auto candidate2 = std::optional<Candidate>();
+        for(auto& sample : m_data) {
+          auto distance = calculate_squared_distance(sample.m_arguments,
+            arguments);
+          if(!candidate1) {
+            candidate1 = { distance, sample.m_result };
+          } else if(distance < candidate1->distance) {
+            candidate2 = candidate1;
+            candidate1 = { distance, sample.m_result };
+          } else if(!candidate2 || distance < candidate2->distance) {
+            candidate2 = { distance, sample.m_result };
+          }
+        }
+        if(!candidate2) {
+          return candidate1->result;
         } else {
-          arguments[i] -= m_min_values[i];
-          arguments[i] /= m_max_values[i] - m_min_values[i];
+          return (candidate1->result + candidate2->result) / 2.;
         }
       }
-    }
+    
+    private:
+      std::vector<Sample> m_data;
+      Arguments m_min_values;
+      Arguments m_max_values;
 
-    static double calculate_squared_distance(const Arguments& lhs,
-        const Arguments& rhs) {
-      auto result = 0.;
-      for(auto i = std::size_t(0); i < lhs.size(); ++i) {
-        result += (lhs[i] - rhs[i]) * (lhs[i] - rhs[i]);
+      void compute_norm() {
+        m_min_values = m_data[0].m_arguments;
+        m_max_values = m_data[0].m_arguments;
+        for(auto i = std::size_t(0); i < m_data[0].m_arguments.size(); ++i) {
+          auto [min_it, max_it] = std::minmax_element(m_data.begin(),
+              m_data.end(), [&](const auto& lhs, const auto& rhs) {
+            return lhs.m_arguments[i] < rhs.m_arguments[i];
+          });
+          m_min_values[i] = min_it->m_arguments[i];
+          m_max_values[i] = max_it->m_arguments[i];
+        }
       }
-      return result;
-    }
-
-    std::vector<Sample> m_data;
-    Arguments m_min_values;
-    Arguments m_max_values;
+    
+      void normalize_data() {
+        for(auto& sample : m_data) {
+          normalize_arguments(sample.m_arguments);
+        }
+      }
+    
+      void normalize_arguments(Arguments& arguments) const {
+        for(auto i = std::size_t(0); i < m_min_values.size(); ++i) {
+          if(m_min_values[i] == m_max_values[i]) {
+            arguments[i] = 0.;
+          } else {
+            arguments[i] -= m_min_values[i];
+            arguments[i] /= m_max_values[i] - m_min_values[i];
+          }
+        }
+      }
+    
+      static double calculate_squared_distance(const Arguments& lhs,
+          const Arguments& rhs) {
+        auto result = 0.;
+        for(auto i = std::size_t(0); i < lhs.size(); ++i) {
+          result += (lhs[i] - rhs[i]) * (lhs[i] - rhs[i]);
+        }
+        return result;
+      }
   };
-  
+
   template<int>
   class DoubleWrapper {
     public:
