@@ -18,4 +18,6 @@ void Rover::export_trial_view(module& module) {
        return make_iterator(v.begin(), v.end());
      })
     .def("__len__", &TrialView<PythonSample>::size);
+  pybind11::implicitly_convertible<ListTrial<PythonSample>, TrialView<
+    PythonSample>>();
 }

@@ -181,7 +181,7 @@ namespace Rover {
 
   template<typename A, typename T>
   auto Model<A, T>::retrieve_result(ScalarResult value) const {
-    return m_basis.m_result * value;
+    return value * m_basis.m_result;
   }
 }
 

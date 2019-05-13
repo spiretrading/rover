@@ -16,10 +16,10 @@ namespace {
       using Type = double;
       using Sample = ScalarSample<double>;
       using Arguments = typename Sample::Arguments;
-
+    
       template<typename ScalarView>
-      void learn(ScalarView&& reader) {
-        for(const auto& sample : reader) {
+      void learn(const ScalarView& reader) {
+        for(auto& sample : reader) {
           m_data.push_back(sample);
         }
         if(m_data.empty()) {
@@ -28,7 +28,7 @@ namespace {
         compute_norm();
         normalize_data();
       }
-
+    
       double predict(Arguments arguments) const {
         normalize_arguments(arguments);
         struct Candidate {
@@ -37,7 +37,7 @@ namespace {
         };
         auto candidate1 = std::optional<Candidate>();
         auto candidate2 = std::optional<Candidate>();
-        for(const auto& sample : m_data) {
+        for(auto& sample : m_data) {
           auto distance = calculate_squared_distance(sample.m_arguments,
             arguments);
           if(!candidate1) {
@@ -55,8 +55,12 @@ namespace {
           return (candidate1->result + candidate2->result) / 2.;
         }
       }
-
+    
     private:
+      std::vector<Sample> m_data;
+      Arguments m_min_values;
+      Arguments m_max_values;
+
       void compute_norm() {
         m_min_values = m_data[0].m_arguments;
         m_max_values = m_data[0].m_arguments;
@@ -69,13 +73,13 @@ namespace {
           m_max_values[i] = max_it->m_arguments[i];
         }
       }
-
+    
       void normalize_data() {
         for(auto& sample : m_data) {
           normalize_arguments(sample.m_arguments);
         }
       }
-
+    
       void normalize_arguments(Arguments& arguments) const {
         for(auto i = std::size_t(0); i < m_min_values.size(); ++i) {
           if(m_min_values[i] == m_max_values[i]) {
@@ -86,7 +90,7 @@ namespace {
           }
         }
       }
-
+    
       static double calculate_squared_distance(const Arguments& lhs,
           const Arguments& rhs) {
         auto result = 0.;
@@ -95,10 +99,6 @@ namespace {
         }
         return result;
       }
-
-      std::vector<Sample> m_data;
-      Arguments m_min_values;
-      Arguments m_max_values;
   };
 
   template<int>
@@ -109,11 +109,6 @@ namespace {
 
       explicit operator double() const {
         return m_value;
-      }
-
-      DoubleWrapper& operator *=(double multiplier) {
-        m_value *= multiplier;
-        return *this;
       }
 
       DoubleWrapper operator *(double multiplier) const {
@@ -148,6 +143,11 @@ namespace {
     private:
       double m_value;
   };
+
+  template<int I>
+  DoubleWrapper<I> operator *(double scalar, DoubleWrapper<I> value) {
+    return scalar * static_cast<double>(value);
+  }
 
   using TestSample = Sample<DoubleWrapper<0>, DoubleWrapper<1>,
     DoubleWrapper<2>>;
