@@ -8,6 +8,15 @@ std::size_t Rover::ArgumentVisitor<PythonSample::Arguments>::size(const
   return tuple.size();
 }
 
+std::ostream& Rover::operator <<(std::ostream& stream, const PythonSample&
+    sample) {
+  stream << sample.m_result.attr("__str__").cast<std::string>();
+  for(auto& arg : sample.m_arguments) {
+    stream << ',' << arg.attr("__str__").cast<std::string>();
+  }
+  return stream;
+}
+
 void Rover::export_sample(module& module) {
   class_<PythonSample>(module, "Sample")
     .def(init<>())

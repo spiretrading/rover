@@ -1,6 +1,7 @@
 #ifndef ROVER_PYTHON_SAMPLE_HPP
 #define ROVER_PYTHON_SAMPLE_HPP
 #include <functional>
+#include <iostream>
 #include <optional>
 #include <string_view>
 #include <tuple>
@@ -57,6 +58,9 @@ namespace Rover {
     //! Returns the number of elements in a Python tuple.
     static std::size_t size(const Arguments& tuple);
   };
+
+  //! Serialized a PythonSample in the comma-separated format.
+  std::ostream& operator <<(std::ostream& stream, const PythonSample& sample);
 }
 
 namespace Rover {
