@@ -1,3 +1,4 @@
+#include <sstream>
 #include <catch.hpp>
 #include "Rover/Sample.hpp"
 
@@ -119,5 +120,55 @@ TEST_CASE("test_tuple_arguments_visit", "[TupleArguments]") {
     REQUIRE(static_cast<int>(std::get<0>(s3.m_arguments)) == 16);
     REQUIRE(static_cast<int>(std::get<1>(s3.m_arguments)) == 15);
     REQUIRE(static_cast<int>(std::get<2>(s3.m_arguments)) == 8);
+  }
+}
+
+TEST_CASE("test_tuple_arguments_serialization", "[TupleArguments]") {
+  SECTION("No arguments.") {
+    auto sample = Sample<int>{ 1, {} };
+    std::ostringstream stream;
+    stream << sample;
+    REQUIRE(stream.str() == "1");
+  }
+  SECTION("One argument.") {
+    auto sample = Sample<int, int>{ 1, { 10 } };
+    std::ostringstream stream;
+    stream << sample;
+    REQUIRE(stream.str() == "1,10");
+  }
+  SECTION("Many arguments.") {
+    auto sample = Sample<int, int, int, int>{ 1, { 10, 20, 30 } };
+    std::ostringstream stream;
+    stream << sample;
+    REQUIRE(stream.str() == "1,10,20,30");
+  }
+}
+
+TEST_CASE("test_tuple_arguments_deserialization", "[TupleArguments]") {
+  SECTION("No arguments.") {
+    auto sample = Sample<int>{ 1, {} };
+    std::ostringstream output_stream;
+    output_stream << sample;
+    std::istringstream input_stream(output_stream.str());
+    auto result = Sample<int>();
+    input_stream >> result;
+    REQUIRE(sample.m_result == result.m_result);
+  }
+  SECTION("One argument.") {
+    auto sample = Sample<int, int>{ 1, { 10 } };
+    std::ostringstream output_stream;
+    output_stream << sample;
+    std::istringstream input_stream(output_stream.str());
+    auto result = Sample<int, int>();
+    input_stream >> result;
+    REQUIRE(sample.m_result == result.m_result);
+    REQUIRE(std::get<0>(sample.m_arguments) == std::get<0>(
+      result.m_arguments));
+  }
+  SECTION("Many arguments.") {
+    auto sample = Sample<int, int, int, int>{ 1, { 10, 20, 30 } };
+    std::ostringstream stream;
+    stream << sample;
+    REQUIRE(stream.str() == "1,10,20,30");
   }
 }
