@@ -1,5 +1,6 @@
 #ifndef ROVER_SAMPLE_HPP
 #define ROVER_SAMPLE_HPP
+#include <iostream>
 #include <tuple>
 
 namespace Rover {
@@ -45,6 +46,15 @@ namespace Rover {
   template<typename Arguments>
   constexpr std::size_t arguments_size(const Arguments& args);
 
+  //! Serializes a Sample in the comma-separated format.
+  template<typename R, typename... A>
+  std::ostream& operator <<(std::ostream& stream, const Sample<R, A...>&
+    sample);
+
+  //! De-serialized a Sample from the comma-separated format.
+  template<typename R, typename... A>
+  std::istream& operator >>(std::istream& stream, Sample<R, A...>& sample);
+
   //! Exposes visitor and size functionality for generic Sample arguments.
   /*
     \tparam A The type of the arguments.
@@ -88,6 +98,41 @@ namespace Rover {
   template<typename Arguments>
   constexpr std::size_t arguments_size(const Arguments& args) {
     return ArgumentVisitor<Arguments>::size(args);
+  }
+  
+  template<typename R, typename... A>
+  std::ostream& operator <<(std::ostream& stream, const Sample<R, A...>&
+      sample) {
+    stream << '(' << sample.m_result;
+    std::apply([&](const auto&... arg) {
+      ((stream << ", " << arg), ...);
+    }, sample.m_arguments);
+    stream << ')';
+    return stream;
+  }
+
+  template<typename R, typename... A>
+  std::istream& operator >>(std::istream& stream, Sample<R, A...>& sample) {
+    auto result = Sample<R, A...>();
+    auto parameter_reader = [&](auto& destination, int characters_to_ignore) {
+      if(!stream.good()) {
+        return;
+      }
+      stream.ignore(characters_to_ignore);
+      if(!stream.good()) {
+        return;
+      }
+      stream >> destination;
+    };
+    parameter_reader(result.m_result, 1);
+    std::apply([&](auto&... arg) {
+      (parameter_reader(arg, 2), ...);
+    }, result.m_arguments);
+    if(stream.good()) {
+      stream.ignore(1);
+      sample = std::move(result);
+    }
+    return stream;
   }
 
   template<typename A>

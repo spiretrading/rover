@@ -1,3 +1,4 @@
+#include <sstream>
 #include <catch.hpp>
 #include "Rover/Sample.hpp"
 
@@ -119,5 +120,97 @@ TEST_CASE("test_tuple_arguments_visit", "[TupleArguments]") {
     REQUIRE(static_cast<int>(std::get<0>(s3.m_arguments)) == 16);
     REQUIRE(static_cast<int>(std::get<1>(s3.m_arguments)) == 15);
     REQUIRE(static_cast<int>(std::get<2>(s3.m_arguments)) == 8);
+  }
+}
+
+TEST_CASE("test_tuple_arguments_serialization", "[TupleArguments]") {
+  SECTION("No arguments.") {
+    auto sample = Sample<int>{ 1, {} };
+    std::ostringstream stream;
+    stream << sample;
+    REQUIRE(stream.str() == "(1)");
+  }
+  SECTION("One argument.") {
+    auto sample = Sample<int, int>{ 1, { 10 } };
+    std::ostringstream stream;
+    stream << sample;
+    REQUIRE(stream.str() == "(1, 10)");
+  }
+  SECTION("Many arguments.") {
+    auto sample = Sample<int, int, int, int>{ 1, { 10, 20, 30 } };
+    std::ostringstream stream;
+    stream << sample;
+    REQUIRE(stream.str() == "(1, 10, 20, 30)");
+  }
+}
+
+TEST_CASE("test_tuple_arguments_deserialization", "[TupleArguments]") {
+  SECTION("No arguments.") {
+    auto sample = Sample<int>{ 1, {} };
+    auto output_stream = std::ostringstream();
+    output_stream << sample;
+    auto input_stream = std::istringstream(output_stream.str());
+    auto result = Sample<int>();
+    input_stream >> result;
+    REQUIRE(sample.m_result == result.m_result);
+  }
+  SECTION("One argument.") {
+    auto sample = Sample<int, int>{ 1, { 10 } };
+    auto output_stream = std::ostringstream();
+    output_stream << sample;
+    auto input_stream = std::istringstream(output_stream.str());
+    auto result = Sample<int, int>();
+    input_stream >> result;
+    REQUIRE(sample.m_result == result.m_result);
+    REQUIRE(std::get<0>(sample.m_arguments) == std::get<0>(
+      result.m_arguments));
+  }
+  SECTION("Many arguments.") {
+    auto sample = Sample<int, int, int, int>{ 1, { 10, 20, 30 } };
+    auto output_stream = std::ostringstream();
+    output_stream << sample;
+    auto input_stream = std::istringstream(output_stream.str());
+    auto result = Sample<int, int, int, int>();
+    input_stream >> result;
+    REQUIRE(sample.m_result == result.m_result);
+    REQUIRE(std::get<0>(sample.m_arguments) == std::get<0>(
+      result.m_arguments));
+    REQUIRE(std::get<1>(sample.m_arguments) == std::get<1>(
+      result.m_arguments));
+    REQUIRE(std::get<2>(sample.m_arguments) == std::get<2>(
+      result.m_arguments));
+  }
+  SECTION("Invalid string.") {
+    auto sample = Sample<int, int, int, int>{ 1, { 10, 20, 30 } };
+    auto check_sample = [&] {
+      REQUIRE(sample.m_result == 1);
+      REQUIRE(std::get<0>(sample.m_arguments) == 10);
+      REQUIRE(std::get<1>(sample.m_arguments) == 20);
+      REQUIRE(std::get<2>(sample.m_arguments) == 30);
+    };
+    {
+      auto stream = std::istringstream("");
+      stream >> sample;
+      REQUIRE(!stream.good());
+      check_sample();
+    }
+    {
+      auto stream = std::istringstream("()");
+      stream >> sample;
+      REQUIRE(!stream.good());
+      check_sample();
+    }
+    {
+      auto stream = std::istringstream("(5, 40, 80)");
+      stream >> sample;
+      REQUIRE(!stream.good());
+      check_sample();
+    }
+    {
+      auto stream = std::istringstream("(5, abc, 80, 60)");
+      stream >> sample;
+      REQUIRE(!stream.good());
+      check_sample();
+    }
   }
 }
