@@ -13,7 +13,7 @@ namespace Rover {
     implicitly_convertible<PythonPick, Box<object>>();
   }
 
-  PythonPick::PythonPick(Box<std::size_t> choice, args generators)
+  PythonPick::PythonPick(Box<int> choice, args generators)
     : m_choice(std::move(choice)),
       m_generators([&] {
         auto result = std::vector<Box<object>>();
@@ -25,7 +25,7 @@ namespace Rover {
       }()) {}
 
   PythonPick::PythonPick(object choice, args generators)
-    : PythonPick(python_autobox<std::size_t, object>(std::move(choice)),
+    : PythonPick(python_autobox<int, object>(std::move(choice)),
         std::move(generators)) {}
 
   PythonPick::Type PythonPick::generate(Evaluator& evaluator) {

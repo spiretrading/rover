@@ -13,8 +13,8 @@ namespace {
       using Type = object;
 
       PythonRandomPick(args generators)
-        : m_pick(Box<std::size_t>(Range<std::size_t, std::size_t>(0,
-            generators.size() - 1)), std::move(generators)) {}
+        : m_pick(Box<int>(Range(0, static_cast<int>(generators.size()) - 1)),
+            std::move(generators)) {}
 
       Type generate(Evaluator& evaluator) {
         return m_pick.generate(evaluator);

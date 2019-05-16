@@ -63,8 +63,8 @@ namespace Rover {
 namespace Details {
   template<typename T>
   struct ByIndexEvaluator {
-    template<std::size_t I = 0>
-    static auto evaluate(T& tuple, Evaluator& evaluator, std::size_t index) {
+    template<int I = 0>
+    static auto evaluate(T& tuple, Evaluator& evaluator, int index) {
       if(I == index) {
         return evaluator.evaluate(std::get<I>(tuple));
       } else {
@@ -74,7 +74,7 @@ namespace Details {
 
     template<>
     static auto evaluate<std::tuple_size_v<T>>(T& tuple, Evaluator& evaluator,
-        std::size_t index) {
+        int index) {
       return evaluator.evaluate(std::get<0>(tuple));
     }
   };

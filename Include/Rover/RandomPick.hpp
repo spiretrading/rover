@@ -14,7 +14,7 @@ namespace Rover {
   template<typename... G>
   class RandomPick {
     private:
-      using PickType = Pick<Range<std::size_t, std::size_t>, G...>;
+      using PickType = Pick<Range<int, int>, G...>;
 
     public:
 
@@ -41,7 +41,7 @@ namespace Rover {
   template<typename... G>
   template<typename... GeneratorsFwd>
   RandomPick<G...>::RandomPick(GeneratorsFwd&&... generators)
-    : m_pick(Range<std::size_t, std::size_t>(0, sizeof...(generators) - 1),
+    : m_pick(Range(0, static_cast<int>(sizeof...(generators) - 1)),
         std::forward<GeneratorsFwd>(generators)...) {}
 
   template<typename... G>

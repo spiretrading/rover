@@ -25,7 +25,7 @@ namespace Rover {
         \param choice The choice generator.
         \param generators One or more generators evaluating to the same type.
       */
-      PythonPick(Box<std::size_t> choice, pybind11::args generators);
+      PythonPick(Box<int> choice, pybind11::args generators);
 
       //! Constructs Pick.
       /*!
@@ -38,7 +38,7 @@ namespace Rover {
       Type generate(Evaluator& evaluator);
 
     private:
-      Box<std::size_t> m_choice;
+      Box<int> m_choice;
       std::vector<Box<pybind11::object>> m_generators;
   };  
 }
