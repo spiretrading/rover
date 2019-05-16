@@ -29,10 +29,14 @@ namespace Rover {
       /*!
         \param choice Function returning the index of the next generator to
                       evaluate.
-        \param generators One or more generators evaluating to the same type.
+        \param generator Mandatory first generator.
+        \param generators Optional additional generators evaluating to the same
+                          type.
       */
-      template<typename ChoiceFwd, typename... GeneratorsFwd>
-      explicit Pick(ChoiceFwd&& choice, GeneratorsFwd&&... generators);
+      template<typename ChoiceFwd, typename GeneratorFwd, typename...
+        GeneratorsFwd>
+      Pick(ChoiceFwd&& choice, GeneratorFwd&& generator, GeneratorsFwd&&...
+        generators);
 
       //! Evaluates the generator.
       Type generate(Evaluator& evaluator);
@@ -42,15 +46,19 @@ namespace Rover {
       Generators m_generators;
   };
 
-  template<typename ChoiceFwd, typename... GeneratorsFwd>
-  Pick(ChoiceFwd&&, GeneratorsFwd&&...) -> Pick<std::decay_t<ChoiceFwd>,
-    std::decay_t<GeneratorsFwd>...>;
+  template<typename ChoiceFwd, typename GeneratorFwd, typename...
+    GeneratorsFwd>
+  Pick(ChoiceFwd&&, GeneratorFwd&&, GeneratorsFwd&&...) -> Pick<std::decay_t<
+    ChoiceFwd>, std::decay_t<GeneratorFwd>, std::decay_t<GeneratorsFwd>...>;
 
   template<typename C, typename... G>
-  template<typename ChoiceFwd, typename... GeneratorsFwd>
-  Pick<C, G...>::Pick(ChoiceFwd&& choice, GeneratorsFwd&&... generators)
+  template<typename ChoiceFwd, typename GeneratorFwd, typename...
+    GeneratorsFwd>
+  Pick<C, G...>::Pick(ChoiceFwd&& choice, GeneratorFwd&& generator,
+      GeneratorsFwd&&... generators)
     : m_choice(std::forward<ChoiceFwd>(choice)),
-      m_generators(std::forward<GeneratorsFwd>(generators)...) {}
+      m_generators(std::forward<GeneratorFwd>(generator), std::forward<
+        GeneratorsFwd>(generators)...) {}
 
 namespace Details {
   template<typename T>
