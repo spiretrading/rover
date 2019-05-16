@@ -147,18 +147,18 @@ TEST_CASE("test_tuple_arguments_serialization", "[TupleArguments]") {
 TEST_CASE("test_tuple_arguments_deserialization", "[TupleArguments]") {
   SECTION("No arguments.") {
     auto sample = Sample<int>{ 1, {} };
-    std::ostringstream output_stream;
+    auto output_stream = std::ostringstream();
     output_stream << sample;
-    std::istringstream input_stream(output_stream.str());
+    auto input_stream = std::istringstream(output_stream.str());
     auto result = Sample<int>();
     input_stream >> result;
     REQUIRE(sample.m_result == result.m_result);
   }
   SECTION("One argument.") {
     auto sample = Sample<int, int>{ 1, { 10 } };
-    std::ostringstream output_stream;
+    auto output_stream = std::ostringstream();
     output_stream << sample;
-    std::istringstream input_stream(output_stream.str());
+    auto input_stream = std::istringstream(output_stream.str());
     auto result = Sample<int, int>();
     input_stream >> result;
     REQUIRE(sample.m_result == result.m_result);
