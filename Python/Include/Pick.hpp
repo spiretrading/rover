@@ -32,7 +32,7 @@ namespace Rover {
       Type generate(Evaluator& evaluator);
 
     private:
-      pybind11::object m_choice;
+      Box<std::size_t> m_choice;
       std::vector<Box<pybind11::object>> m_generators;
   };  
 }

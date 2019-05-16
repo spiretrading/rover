@@ -7,17 +7,23 @@
 namespace Rover {
 
   //! An argument generator that evaluates to one of the arguments based on
-  //! the result of a choice function.
+  //! the result of a choice generator.
   /*!
-    \tparam C The type of the choice function.
+    \tparam C The type of the choice generator.
     \tparam G The types of the generators.
   */
   template<typename C, typename... G>
   class Pick {
     public:
 
+      //! The type of the choice generator.
+      using Choice = C;
+
+      //! The types of the generators.
+      using Generators = std::tuple<G...>;
+
       //! The type of generated values.
-      using Type = typename std::tuple_element_t<0, std::tuple<G...>>::Type;
+      using Type = typename std::common_type_t<typename G::Type...>;
 
       //! Constructs Pick.
       /*!
@@ -32,9 +38,6 @@ namespace Rover {
       Type generate(Evaluator& evaluator);
 
     private:
-      using Choice = C;
-      using Generators = std::tuple<G...>;
-
       Choice m_choice;
       Generators m_generators;
   };
@@ -47,8 +50,7 @@ namespace Rover {
   template<typename ChoiceFwd, typename... GeneratorsFwd>
   Pick<C, G...>::Pick(ChoiceFwd&& choice, GeneratorsFwd&&... generators)
     : m_choice(std::forward<ChoiceFwd>(choice)),
-      m_generators(std::make_tuple(std::forward<GeneratorsFwd>(
-        generators)...)) {}
+      m_generators(std::forward<GeneratorsFwd>(generators)...) {}
 
 namespace Details {
   template<typename T>
@@ -72,7 +74,7 @@ namespace Details {
 
   template<typename C, typename... G>
   typename Pick<C, G...>::Type Pick<C, G...>::generate(Evaluator& evaluator) {
-    auto index = m_choice();
+    auto index = evaluator.evaluate(m_choice);
     auto value = Details::ByIndexEvaluator<Generators>::evaluate(m_generators,
       evaluator, index);
     return value;

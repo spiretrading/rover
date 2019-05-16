@@ -14,15 +14,7 @@ namespace Rover {
   template<typename... G>
   class RandomPick {
     private:
-      class Choice {
-        public:
-          explicit Choice(std::size_t num_generators);
-          std::size_t operator ()();
-
-        private:
-          Range<std::size_t, std::size_t> m_range;
-      };
-      using PickType = Pick<Choice, G...>;
+      using PickType = Pick<Range<std::size_t, std::size_t>, G...>;
 
     public:
 
@@ -47,20 +39,10 @@ namespace Rover {
   RandomPick(GeneratorsFwd&&...) -> RandomPick<std::decay_t<GeneratorsFwd>...>;
 
   template<typename... G>
-  RandomPick<G...>::Choice::Choice(std::size_t num_generators)
-    : m_range(0, num_generators - 1) {}
-
-  template<typename... G>
-  std::size_t RandomPick<G...>::Choice::operator ()() {
-    auto evaluator = Evaluator();
-    return m_range.generate(evaluator);
-  }
-
-  template<typename... G>
   template<typename... GeneratorsFwd>
   RandomPick<G...>::RandomPick(GeneratorsFwd&&... generators)
-    : m_pick(Choice(sizeof...(generators)), std::forward<GeneratorsFwd>(
-        generators)...) {}
+    : m_pick(Range<std::size_t, std::size_t>(0, sizeof...(generators) - 1),
+        std::forward<GeneratorsFwd>(generators)...) {}
 
   template<typename... G>
   typename RandomPick<G...>::Type RandomPick<G...>::generate(Evaluator&
