@@ -22,8 +22,14 @@ namespace Rover {
 
       //! Constructs Pick.
       /*!
-        \param choice Function returning the index of the next generator to
-                      evaluate.
+        \param choice The choice generator.
+        \param generators One or more generators evaluating to the same type.
+      */
+      PythonPick(Box<std::size_t> choice, pybind11::args generators);
+
+      //! Constructs Pick.
+      /*!
+        \param choice The choice generator.
         \param generators One or more generators evaluating to the same type.
       */
       PythonPick(pybind11::object choice, pybind11::args generators);
