@@ -134,13 +134,13 @@ TEST_CASE("test_tuple_arguments_serialization", "[TupleArguments]") {
     auto sample = Sample<int, int>{ 1, { 10 } };
     std::ostringstream stream;
     stream << sample;
-    REQUIRE(stream.str() == "(1,10)");
+    REQUIRE(stream.str() == "(1, 10)");
   }
   SECTION("Many arguments.") {
     auto sample = Sample<int, int, int, int>{ 1, { 10, 20, 30 } };
     std::ostringstream stream;
     stream << sample;
-    REQUIRE(stream.str() == "(1,10,20,30)");
+    REQUIRE(stream.str() == "(1, 10, 20, 30)");
   }
 }
 
