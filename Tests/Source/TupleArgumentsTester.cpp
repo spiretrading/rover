@@ -128,19 +128,19 @@ TEST_CASE("test_tuple_arguments_serialization", "[TupleArguments]") {
     auto sample = Sample<int>{ 1, {} };
     std::ostringstream stream;
     stream << sample;
-    REQUIRE(stream.str() == "1");
+    REQUIRE(stream.str() == "(1)");
   }
   SECTION("One argument.") {
     auto sample = Sample<int, int>{ 1, { 10 } };
     std::ostringstream stream;
     stream << sample;
-    REQUIRE(stream.str() == "1,10");
+    REQUIRE(stream.str() == "(1,10)");
   }
   SECTION("Many arguments.") {
     auto sample = Sample<int, int, int, int>{ 1, { 10, 20, 30 } };
     std::ostringstream stream;
     stream << sample;
-    REQUIRE(stream.str() == "1,10,20,30");
+    REQUIRE(stream.str() == "(1,10,20,30)");
   }
 }
 
@@ -167,8 +167,17 @@ TEST_CASE("test_tuple_arguments_deserialization", "[TupleArguments]") {
   }
   SECTION("Many arguments.") {
     auto sample = Sample<int, int, int, int>{ 1, { 10, 20, 30 } };
-    std::ostringstream stream;
-    stream << sample;
-    REQUIRE(stream.str() == "1,10,20,30");
+    auto output_stream = std::ostringstream();
+    output_stream << sample;
+    auto input_stream = std::istringstream(output_stream.str());
+    auto result = Sample<int, int, int, int>();
+    input_stream >> result;
+    REQUIRE(sample.m_result == result.m_result);
+    REQUIRE(std::get<0>(sample.m_arguments) == std::get<0>(
+      result.m_arguments));
+    REQUIRE(std::get<1>(sample.m_arguments) == std::get<1>(
+      result.m_arguments));
+    REQUIRE(std::get<2>(sample.m_arguments) == std::get<2>(
+      result.m_arguments));
   }
 }

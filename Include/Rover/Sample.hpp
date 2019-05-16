@@ -103,19 +103,22 @@ namespace Rover {
   template<typename R, typename... A>
   std::ostream& operator <<(std::ostream& stream, const Sample<R, A...>&
       sample) {
-    stream << sample.m_result;
+    stream << '(' << sample.m_result;
     std::apply([&](const auto&... arg) {
       ((stream << ',' << arg), ...);
     }, sample.m_arguments);
+    stream << ')';
     return stream;
   }
 
   template<typename R, typename... A>
   std::istream& operator >>(std::istream& stream, Sample<R, A...>& sample) {
+    stream.ignore(1);
     stream >> sample.m_result;
     std::apply([&](auto&... arg) {
       ((stream.ignore(1), stream >> arg), ...);
     }, sample.m_arguments);
+    stream.ignore(1);
     return stream;
   }
 
