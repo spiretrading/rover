@@ -113,6 +113,7 @@ namespace Rover {
 
   template<typename R, typename... A>
   std::istream& operator >>(std::istream& stream, Sample<R, A...>& sample) {
+    auto result = Sample<R, A...>();
     auto parameter_reader = [&](auto& destination, int characters_to_ignore) {
       if(!stream.good()) {
         return;
@@ -123,12 +124,13 @@ namespace Rover {
       }
       stream >> destination;
     };
-    parameter_reader(sample.m_result, 1);
+    parameter_reader(result.m_result, 1);
     std::apply([&](auto&... arg) {
       (parameter_reader(arg, 2), ...);
-    }, sample.m_arguments);
+    }, result.m_arguments);
     if(stream.good()) {
       stream.ignore(1);
+      sample = std::move(result);
     }
     return stream;
   }
