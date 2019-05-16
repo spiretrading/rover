@@ -14,11 +14,13 @@ namespace Rover {
   template<typename... G>
   class RandomPick {
     private:
-      struct Choice {
-        explicit Choice(std::size_t num_generators);
-        std::size_t operator ()();
+      class Choice {
+        public:
+          explicit Choice(std::size_t num_generators);
+          std::size_t operator ()();
 
-        Range<std::size_t, std::size_t> m_range;
+        private:
+          Range<std::size_t, std::size_t> m_range;
       };
       using PickType = Pick<Choice, G...>;
 
