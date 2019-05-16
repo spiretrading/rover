@@ -180,4 +180,37 @@ TEST_CASE("test_tuple_arguments_deserialization", "[TupleArguments]") {
     REQUIRE(std::get<2>(sample.m_arguments) == std::get<2>(
       result.m_arguments));
   }
+  SECTION("Invalid string.") {
+    auto sample = Sample<int, int, int, int>{ 1, { 10, 20, 30 } };
+    auto check_sample = [&] {
+      REQUIRE(sample.m_result == 1);
+      REQUIRE(std::get<0>(sample.m_arguments) == 10);
+      REQUIRE(std::get<1>(sample.m_arguments) == 20);
+      REQUIRE(std::get<2>(sample.m_arguments) == 30);
+    };
+    {
+      auto stream = std::istringstream("");
+      stream >> sample;
+      REQUIRE(!stream.good());
+      check_sample();
+    }
+    {
+      auto stream = std::istringstream("()");
+      stream >> sample;
+      REQUIRE(!stream.good());
+      check_sample();
+    }
+    {
+      auto stream = std::istringstream("(5, 40, 80)");
+      stream >> sample;
+      REQUIRE(!stream.good());
+      check_sample();
+    }
+    {
+      auto stream = std::istringstream("(5, abc, 80, 60)");
+      stream >> sample;
+      REQUIRE(!stream.good());
+      check_sample();
+    }
+  }
 }
