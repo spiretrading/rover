@@ -130,6 +130,9 @@ namespace Rover {
       Evaluator& evaluator) {
     auto begin = evaluator.evaluate(m_begin);
     auto end = evaluator.evaluate(m_end);
+    if(begin == end) {
+      return begin;
+    }
     while(true) {
       auto value = calculate_random(begin, end);
       auto alt_value = calculate_random(begin, end);

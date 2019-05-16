@@ -6,6 +6,8 @@
 #include "LinearRegressionModel.hpp"
 #include "ListTrial.hpp"
 #include "Model.hpp"
+#include "Pick.hpp"
+#include "RandomPick.hpp"
 #include "Range.hpp"
 #include "Sample.hpp"
 #include "ScalarView.hpp"
@@ -26,4 +28,6 @@ PYBIND11_MODULE(rover, module) {
   export_scalar_view(module);
   export_linear_regression_model(module);
   export_model(module);
+  export_pick(module);
+  export_random_pick(module);
 }
