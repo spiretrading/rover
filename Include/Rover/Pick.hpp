@@ -23,7 +23,7 @@ namespace Rover {
       using Generators = std::tuple<G...>;
 
       //! The type of generated values.
-      using Type = typename std::common_type_t<typename G::Type...>;
+      using Type = std::common_type_t<typename G::Type...>;
 
       //! Constructs Pick.
       /*!
