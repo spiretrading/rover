@@ -18,8 +18,11 @@ namespace Rover::Details {
         : m_obj(std::move(obj)) {}
 
       Type generate(Evaluator& e) {
-        auto wrapper = std::shared_ptr<Evaluator>(&e, [](auto ptr) {});
-        return m_obj.attr("generate")(std::move(wrapper)).cast<Type>();
+        auto evaluator_ptr = std::shared_ptr<Evaluator>(&e, [](auto) {});
+        auto evaluator_handle = pybind11::cast(evaluator_ptr).release();
+        auto evaluator = pybind11::reinterpret_borrow<pybind11::object>(
+          evaluator_handle);
+        return m_obj.attr("generate")(std::move(evaluator)).cast<Type>();
       }
 
     private:
@@ -41,4 +44,3 @@ namespace Rover {
 }
 
 #endif
-
