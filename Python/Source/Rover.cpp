@@ -2,6 +2,7 @@
 #include "Box.hpp"
 #include "Constant.hpp"
 #include "Evaluator.hpp"
+#include "Generator.hpp"
 #include "Lift.hpp"
 #include "LinearRegressionModel.hpp"
 #include "ListTrial.hpp"
@@ -30,4 +31,5 @@ PYBIND11_MODULE(rover, module) {
   export_model(module);
   export_pick(module);
   export_random_pick(module);
+  export_generate(module);
 }
