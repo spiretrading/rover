@@ -126,59 +126,78 @@ TEST_CASE("test_tuple_arguments_visit", "[TupleArguments]") {
 TEST_CASE("test_tuple_arguments_serialization", "[TupleArguments]") {
   SECTION("No arguments.") {
     auto sample = Sample<int>{ 1, {} };
-    std::ostringstream stream;
+    auto stream = std::ostringstream();
     stream << sample;
-    REQUIRE(stream.str() == "(1)");
+    REQUIRE(stream.str() == "1");
   }
   SECTION("One argument.") {
     auto sample = Sample<int, int>{ 1, { 10 } };
-    std::ostringstream stream;
+    auto stream = std::ostringstream();
     stream << sample;
-    REQUIRE(stream.str() == "(1, 10)");
+    REQUIRE(stream.str() == "1,10");
   }
   SECTION("Many arguments.") {
     auto sample = Sample<int, int, int, int>{ 1, { 10, 20, 30 } };
-    std::ostringstream stream;
+    auto stream = std::ostringstream();
     stream << sample;
-    REQUIRE(stream.str() == "(1, 10, 20, 30)");
+    REQUIRE(stream.str() == "1,10,20,30");
+  }
+  SECTION("Quotation marks.") {
+    auto sample = Sample<std::string, int, std::string, int>{
+      "\"a\"b\"c", { 10, "\"", 30 } };
+    auto stream = std::ostringstream();
+    stream << sample;
+    REQUIRE(stream.str() == "\"\"\"a\"\"b\"\"c\",10,\"\"\"\",30");
+  }
+  SECTION("Commas.") {
+    auto sample = Sample<std::string, int, std::string, int>{
+      ",a,b,c", { 10, ",", 30 } };
+    auto stream = std::ostringstream();
+    stream << sample;
+    REQUIRE(stream.str() == "\",a,b,c\",10,\",\",30");
   }
 }
 
 TEST_CASE("test_tuple_arguments_deserialization", "[TupleArguments]") {
   SECTION("No arguments.") {
-    auto sample = Sample<int>{ 1, {} };
-    auto output_stream = std::ostringstream();
-    output_stream << sample;
-    auto input_stream = std::istringstream(output_stream.str());
-    auto result = Sample<int>();
-    input_stream >> result;
-    REQUIRE(sample.m_result == result.m_result);
+    auto sample = Sample<int>();
+    auto stream = std::istringstream("1");
+    stream >> sample;
+    REQUIRE(sample.m_result == 1);
   }
   SECTION("One argument.") {
-    auto sample = Sample<int, int>{ 1, { 10 } };
-    auto output_stream = std::ostringstream();
-    output_stream << sample;
-    auto input_stream = std::istringstream(output_stream.str());
-    auto result = Sample<int, int>();
-    input_stream >> result;
-    REQUIRE(sample.m_result == result.m_result);
-    REQUIRE(std::get<0>(sample.m_arguments) == std::get<0>(
-      result.m_arguments));
+    auto sample = Sample<int, int>();
+    auto stream = std::istringstream("1,10");
+    stream >> sample;
+    REQUIRE(sample.m_result == 1);
+    REQUIRE(std::get<0>(sample.m_arguments) == 10);
   }
   SECTION("Many arguments.") {
-    auto sample = Sample<int, int, int, int>{ 1, { 10, 20, 30 } };
-    auto output_stream = std::ostringstream();
-    output_stream << sample;
-    auto input_stream = std::istringstream(output_stream.str());
-    auto result = Sample<int, int, int, int>();
-    input_stream >> result;
-    REQUIRE(sample.m_result == result.m_result);
-    REQUIRE(std::get<0>(sample.m_arguments) == std::get<0>(
-      result.m_arguments));
-    REQUIRE(std::get<1>(sample.m_arguments) == std::get<1>(
-      result.m_arguments));
-    REQUIRE(std::get<2>(sample.m_arguments) == std::get<2>(
-      result.m_arguments));
+    auto sample = Sample<int, int, int, int>();
+    auto stream = std::istringstream("1,10,20,30");
+    stream >> sample;
+    REQUIRE(sample.m_result == 1);
+    REQUIRE(std::get<0>(sample.m_arguments) == 10);
+    REQUIRE(std::get<1>(sample.m_arguments) == 20);
+    REQUIRE(std::get<2>(sample.m_arguments) == 30);
+  }
+  SECTION("Quotation marks.") {
+    auto sample = Sample<std::string, int, std::string, int>();  
+    auto stream = std::istringstream("\"\"\"a\"\"b\"\"c\",10,\"\"\"\",30");
+    stream >> sample;
+    REQUIRE(sample.m_result == "\"a\"b\"c");
+    REQUIRE(std::get<0>(sample.m_arguments) == 10);
+    REQUIRE(std::get<1>(sample.m_arguments) == "\"");
+    REQUIRE(std::get<2>(sample.m_arguments) == 30);
+  }
+  SECTION("Commas.") {
+    auto sample = Sample<std::string, int, std::string, int>();
+    auto stream = std::istringstream("\",a,b,c\",10,\",\",30");
+    stream >> sample;
+    REQUIRE(sample.m_result == ",a,b,c");
+    REQUIRE(std::get<0>(sample.m_arguments) == 10);
+    REQUIRE(std::get<1>(sample.m_arguments) == ",");
+    REQUIRE(std::get<2>(sample.m_arguments) == 30);
   }
   SECTION("Invalid string.") {
     auto sample = Sample<int, int, int, int>{ 1, { 10, 20, 30 } };
@@ -195,21 +214,14 @@ TEST_CASE("test_tuple_arguments_deserialization", "[TupleArguments]") {
       check_sample();
     }
     {
-      auto stream = std::istringstream("()");
+      auto stream = std::istringstream("5,40,80");
       stream >> sample;
       REQUIRE(!stream.good());
       check_sample();
     }
     {
-      auto stream = std::istringstream("(5, 40, 80)");
+      auto stream = std::istringstream("5,abc,80,60");
       stream >> sample;
-      REQUIRE(!stream.good());
-      check_sample();
-    }
-    {
-      auto stream = std::istringstream("(5, abc, 80, 60)");
-      stream >> sample;
-      REQUIRE(!stream.good());
       check_sample();
     }
   }

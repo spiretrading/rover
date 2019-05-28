@@ -11,11 +11,11 @@ std::size_t Rover::ArgumentVisitor<PythonSample::Arguments>::size(const
 
 std::ostream& Rover::operator <<(std::ostream& stream, const PythonSample&
     sample) {
-  stream << '(' << str(sample.m_result).cast<std::string>();
+  put_next_csv_field(str(sample.m_result).cast<std::string>(), stream);
   for(auto& arg : sample.m_arguments) {
-    stream << ", " << str(arg).cast<std::string>();
+    stream << ',';
+    put_next_csv_field(str(arg).cast<std::string>(), stream);
   }
-  stream << ')';
   return stream;
 }
 
