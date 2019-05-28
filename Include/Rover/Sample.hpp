@@ -121,24 +121,22 @@ namespace Rover {
         return false;
       }
       while(true) {
-        auto next_character = static_cast<char>(stream.get());
-        if(!stream.good()) {
+        auto c = stream.get();
+        if(!std::istream::traits_type::not_eof(c)) {
           break;
         }
+        auto next_character = std::istream::traits_type::to_char_type(c);
         if(next_character == '"') {
-          if(!stream.good()) {
-            return false;
-          }
-          auto following_character = static_cast<char>(stream.peek());
-          if(!stream.good()) {
+          c = stream.get();
+          if(!std::istream::traits_type::not_eof(c)) {
             break;
           }
+          auto following_character = std::istream::traits_type::to_char_type(
+            c);
           if(following_character == '\0' || following_character == ',' ||
               following_character == '\n') {
-            stream.ignore();
             break;
           } else if(following_character == '"') {
-            stream.ignore();
             output_string_stream << '"';
           } else {
             return false;
@@ -149,9 +147,13 @@ namespace Rover {
       }
     } else {
       while(true) {
-        auto next_character = static_cast<char>(stream.get());
-        if(stream.good() && next_character != '\0' && next_character != ',' &&
-          next_character != '\n') {
+        auto c = stream.get();
+        if(!std::istream::traits_type::not_eof(c)) {
+          break;
+        }
+        auto next_character = std::istream::traits_type::to_char_type(c);
+        if(next_character != '\0' && next_character != ',' &&
+            next_character != '\n') {
           output_string_stream << next_character;
         }
         else {
