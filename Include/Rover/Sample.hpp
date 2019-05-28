@@ -48,11 +48,19 @@ namespace Rover {
   constexpr std::size_t arguments_size(const Arguments& args);
 
   //! Serializes a Sample in the comma-separated format.
+  /*!
+    \param stream The output stream.
+    \param sample The sample to serialize.
+  */
   template<typename R, typename... A>
   std::ostream& operator <<(std::ostream& stream, const Sample<R, A...>&
     sample);
 
-  //! De-serialized a Sample from the comma-separated format.
+  //! Deserializes a Sample from the comma-separated format.
+  /*!
+    \param stream The input stream.
+    \param result The resulting sample.
+  */
   template<typename R, typename... A>
   std::istream& operator >>(std::istream& stream, Sample<R, A...>& result);
 

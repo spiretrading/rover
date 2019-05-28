@@ -60,7 +60,11 @@ namespace Rover {
     static std::size_t size(const Arguments& tuple);
   };
 
-  //! Serialized a PythonSample in the comma-separated format.
+  //! Serializes a PythonSample in the comma-separated format.
+  /*!
+    \param stream The output stream.
+    \param sample The sample to serialize.
+  */
   std::ostream& operator <<(std::ostream& stream, const PythonSample& sample);
 }
 
