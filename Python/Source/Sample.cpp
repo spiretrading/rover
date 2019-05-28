@@ -1,4 +1,3 @@
-#include <sstream>
 #include "Sample.hpp"
 
 using namespace pybind11;

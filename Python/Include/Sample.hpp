@@ -3,6 +3,7 @@
 #include <functional>
 #include <iostream>
 #include <optional>
+#include <sstream>
 #include <string_view>
 #include <tuple>
 #include <utility>
@@ -151,7 +152,12 @@ namespace Details {
            return Details::sample_cast<Sample<R, P...>>(s);
          }))
       .def_readwrite("result", &Sample<R, P...>::m_result)
-      .def_readwrite("arguments", &Sample<R, P...>::m_arguments);
+      .def_readwrite("arguments", &Sample<R, P...>::m_arguments)
+      .def("__str__", [](const Sample<R, P...>& sample) {
+         auto stream = std::ostringstream();
+         stream << sample;
+         return stream.str();
+       });
     Details::SampleConverter::get_instance().register_sample<Sample<R, P...>>();
     pybind11::implicitly_convertible<Sample<R, P...>, PythonSample>();
     pybind11::implicitly_convertible<PythonSample, Sample<R, P...>>();
