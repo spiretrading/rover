@@ -1,8 +1,8 @@
 #include <sstream>
 #include <catch.hpp>
+#include "Rover/CsvParser.hpp"
 #include "Rover/ListTrial.hpp"
 #include "Rover/Sample.hpp"
-#include "Rover/TrialCodec.hpp"
 
 using namespace Rover;
 

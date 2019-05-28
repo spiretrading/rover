@@ -1,8 +1,8 @@
-#ifndef ROVER_PYTHON_TRIAL_CODEC_HPP
-#define ROVER_PYTHON_TRIAL_CODEC_HPP
+#ifndef ROVER_PYTHON_CSV_PARSER_HPP
+#define ROVER_PYTHON_CSV_PARSER_HPP
 #include <pybind11/iostream.h>
 #include <pybind11/pybind11.h>
-#include "Rover/TrialCodec.hpp"
+#include "Rover/CsvParser.hpp"
 #include "TrialView.hpp"
 
 namespace Rover {

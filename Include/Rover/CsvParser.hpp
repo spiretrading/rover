@@ -1,5 +1,5 @@
-#ifndef ROVER_TRIAL_CODEC_HPP
-#define ROVER_TRIAL_CODEC_HPP
+#ifndef ROVER_CSV_PARSER_HPP
+#define ROVER_CSV_PARSER_HPP
 #include <iostream>
 
 namespace Rover {
