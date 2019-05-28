@@ -12,6 +12,7 @@
 #include "Range.hpp"
 #include "Sample.hpp"
 #include "ScalarView.hpp"
+#include "TrialCodec.hpp"
 #include "TrialView.hpp"
 
 using namespace pybind11;
@@ -32,4 +33,6 @@ PYBIND11_MODULE(rover, module) {
   export_pick(module);
   export_random_pick(module);
   export_generate(module);
+  export_save_to_csv(module);
+  export_load_from_csv(module);
 }

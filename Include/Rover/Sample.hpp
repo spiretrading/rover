@@ -1,6 +1,7 @@
 #ifndef ROVER_SAMPLE_HPP
 #define ROVER_SAMPLE_HPP
 #include <iostream>
+#include <sstream>
 #include <tuple>
 
 namespace Rover {
@@ -47,13 +48,21 @@ namespace Rover {
   constexpr std::size_t arguments_size(const Arguments& args);
 
   //! Serializes a Sample in the comma-separated format.
+  /*!
+    \param stream The output stream.
+    \param sample The sample to serialize.
+  */
   template<typename R, typename... A>
   std::ostream& operator <<(std::ostream& stream, const Sample<R, A...>&
     sample);
 
-  //! De-serialized a Sample from the comma-separated format.
+  //! Deserializes a Sample from the comma-separated format.
+  /*!
+    \param stream The input stream.
+    \param result The resulting sample.
+  */
   template<typename R, typename... A>
-  std::istream& operator >>(std::istream& stream, Sample<R, A...>& sample);
+  std::istream& operator >>(std::istream& stream, Sample<R, A...>& result);
 
   //! Exposes visitor and size functionality for generic Sample arguments.
   /*
@@ -99,38 +108,123 @@ namespace Rover {
   constexpr std::size_t arguments_size(const Arguments& args) {
     return ArgumentVisitor<Arguments>::size(args);
   }
+
+  template<typename Argument>
+  bool get_next_cvs_field(std::istream& stream, Argument& result) {
+    if(!stream.good()) {
+      return false;
+    }
+    auto output_string_stream = std::ostringstream();
+    if(stream.peek() == '"') {
+      stream.ignore();
+      if(!stream.good()) {
+        return false;
+      }
+      while(true) {
+        auto c = stream.get();
+        if(!std::istream::traits_type::not_eof(c)) {
+          break;
+        }
+        auto next_character = std::istream::traits_type::to_char_type(c);
+        if(next_character == '"') {
+          c = stream.get();
+          if(!std::istream::traits_type::not_eof(c)) {
+            break;
+          }
+          auto following_character = std::istream::traits_type::to_char_type(
+            c);
+          if(following_character == '\0' || following_character == ',' ||
+              following_character == '\n') {
+            break;
+          } else if(following_character == '"') {
+            output_string_stream << '"';
+          } else {
+            return false;
+          }
+        } else {
+          output_string_stream << next_character;
+        }
+      }
+    } else {
+      while(true) {
+        auto c = stream.get();
+        if(!std::istream::traits_type::not_eof(c)) {
+          break;
+        }
+        auto next_character = std::istream::traits_type::to_char_type(c);
+        if(next_character != '\0' && next_character != ',' &&
+            next_character != '\n') {
+          output_string_stream << next_character;
+        }
+        else {
+          break;
+        }
+      }
+    }
+    if(stream || stream.eof()) {
+      auto input_string_stream = std::istringstream(
+        output_string_stream.str());
+      auto argument = Argument();
+      input_string_stream >> argument;
+      if(input_string_stream || input_string_stream.eof()) {
+        result = std::move(argument);
+        return true;
+      }
+    }
+    return false;
+  }
+
+  template<typename Argument>
+  void put_next_csv_field(const Argument& argument, std::ostream& stream) {
+    auto string_stream = std::ostringstream();
+    string_stream << argument;
+    auto field = string_stream.str();
+    if(std::find_if(field.begin(), field.end(), [](auto c) {
+         return c == ',' || c == '"' || c == '\n';
+       }) == field.end()) {
+      stream << field;
+      return;
+    }
+    stream.put('"');
+    for(auto c : field) {
+      if(c == '"') {
+        stream.put('"');
+      }
+      stream.put(c);
+    }
+    stream.put('"');
+  }
   
   template<typename R, typename... A>
   std::ostream& operator <<(std::ostream& stream, const Sample<R, A...>&
       sample) {
-    stream << '(' << sample.m_result;
-    std::apply([&](const auto&... arg) {
-      ((stream << ", " << arg), ...);
+    put_next_csv_field(sample.m_result, stream);
+    auto add_field = [&](const auto& arg) {
+      stream << ',';
+      put_next_csv_field(arg, stream);
+    };
+    std::apply([&](const auto&... args) {
+      (add_field(args), ...);
     }, sample.m_arguments);
-    stream << ')';
     return stream;
   }
 
   template<typename R, typename... A>
-  std::istream& operator >>(std::istream& stream, Sample<R, A...>& sample) {
-    auto result = Sample<R, A...>();
-    auto parameter_reader = [&](auto& destination, int characters_to_ignore) {
-      if(!stream.good()) {
-        return;
+  std::istream& operator >>(std::istream& stream, Sample<R, A...>& result) {
+    auto sample = Sample<R, A...>();
+    auto parameter_reader = [&](auto& parameter) {
+      if(stream.good()) {
+        return get_next_cvs_field(stream, parameter);
       }
-      stream.ignore(characters_to_ignore);
-      if(!stream.good()) {
-        return;
-      }
-      stream >> destination;
+      return false;
     };
-    parameter_reader(result.m_result, 1);
-    std::apply([&](auto&... arg) {
-      (parameter_reader(arg, 2), ...);
-    }, result.m_arguments);
-    if(stream.good()) {
-      stream.ignore(1);
-      sample = std::move(result);
+    parameter_reader(sample.m_result);
+    if(std::apply([&](auto&... arg) {
+         return (parameter_reader(arg) && ...);
+       }, sample.m_arguments)) {
+      if(stream || stream.eof()) {
+        result = std::move(sample);
+      }
     }
     return stream;
   }
