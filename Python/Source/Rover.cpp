@@ -1,6 +1,7 @@
 #include <pybind11/pybind11.h>
 #include "Box.hpp"
 #include "Constant.hpp"
+#include "CsvParser.hpp"
 #include "Evaluator.hpp"
 #include "Generator.hpp"
 #include "Lift.hpp"
@@ -12,7 +13,6 @@
 #include "Range.hpp"
 #include "Sample.hpp"
 #include "ScalarView.hpp"
-#include "TrialCodec.hpp"
 #include "TrialView.hpp"
 
 using namespace pybind11;
