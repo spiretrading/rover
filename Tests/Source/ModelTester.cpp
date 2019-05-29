@@ -140,6 +140,16 @@ namespace {
         return !(*this == other);
       }
 
+      bool operator <(DoubleWrapper other) const {
+        return m_value < other.m_value;
+      }
+
+      DoubleWrapper operator -() const {
+        auto copy = *this;
+        copy.m_value = -copy.m_value;
+        return copy;
+      }
+
     private:
       double m_value;
   };

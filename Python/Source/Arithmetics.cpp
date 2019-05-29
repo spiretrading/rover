@@ -17,14 +17,13 @@ namespace Rover::Details {
     static auto module = pybind11::module::import("operator");
     return module;
   }
-
-  pybind11::object apply_operator(const char* operator_name, const
-      pybind11::object& lhs, const pybind11::object& rhs) {
-    return import_operator().attr(operator_name)(lhs, rhs);
-  }
 }
 
 namespace pybind11 {
+  object operator -(const object& obj) {
+    return Rover::Details::apply_operator("__neg__", obj);
+  }
+
   object abs(const object& obj) {
     return import_builtins().attr("abs")(obj);
   }
