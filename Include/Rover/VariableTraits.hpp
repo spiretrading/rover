@@ -79,7 +79,6 @@ namespace Rover {
 
   template<typename S, typename V>
   constexpr bool ContinuousChecker<S, V>::check(const V&) {
-    std::cout << "Default check" << std::endl;
     return continuous<S, V>::value;
   }
 
