@@ -4,7 +4,6 @@
 
 namespace Rover {
 
-
   //! Checks whether a variable is continuous for modeling purposes for a given
   //! scalar type.
   /*!
