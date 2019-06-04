@@ -33,7 +33,7 @@ namespace Rover {
         \param category The category.
         \details O(N) complexity.
       */
-      std::optional<std::size_t> get_dimension(const Type& category) const;
+      std::optional<int> find_dimension(const Type& category) const;
 
     private:
       std::vector<Type> m_categories;
@@ -86,10 +86,10 @@ namespace Details{
         \param category The category.
         \details Amortized O(1) complexity.
       */
-      std::optional<std::size_t> get_dimension(const Type& category) const;
+      std::optional<int> find_dimension(const Type& category) const;
 
     private:
-      std::unordered_map<Type, std::size_t> m_map;
+      std::unordered_map<Type, int> m_map;
   };
 
   //! Maps categories of a categorical variable to different dimensions.
@@ -118,10 +118,10 @@ namespace Details{
         \param category The category.
         \details O(log N) complexity. 
       */
-      std::optional<std::size_t> get_dimension(const Type& category) const;
+      std::optional<int> find_dimension(const Type& category) const;
 
     private:
-      std::map<Type, std::size_t> m_map;
+      std::map<Type, int> m_map;
   };
 
   template<typename T, typename C>
@@ -133,7 +133,7 @@ namespace Details{
   }
 
   template<typename T, typename C>
-  std::optional<std::size_t> Factor<T, C>::get_dimension(const Type& category)
+  std::optional<int> Factor<T, C>::find_dimension(const Type& category)
       const {
     auto it = std::find(m_categories.begin(), m_categories.end(), category);
     if(it == m_categories.end()) {
@@ -150,8 +150,8 @@ namespace Details{
   }
 
   template<typename T>
-  std::optional<std::size_t> Factor<T, std::enable_if_t<Details::is_hashable_v<
-      T>>>::get_dimension(const Type& category) const {
+  std::optional<int> Factor<T, std::enable_if_t<Details::is_hashable_v<
+      T>>>::find_dimension(const Type& category) const {
     auto it = m_map.find(category);
     if(it == m_map.end()) {
       return std::nullopt;
@@ -171,9 +171,9 @@ namespace Details{
   }
 
   template<typename T>
-  std::optional<std::size_t> Factor<T, std::enable_if_t<
+  std::optional<int> Factor<T, std::enable_if_t<
       !Details::is_hashable_v<T> && Details::is_comparable_v<
-      T>>>::get_dimension(const Type& category) const {
+      T>>>::find_dimension(const Type& category) const {
     auto it = m_map.find(category);
     if(it == m_map.end()) {
       return std::nullopt;

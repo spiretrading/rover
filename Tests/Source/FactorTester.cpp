@@ -26,7 +26,7 @@ namespace {
     auto left_categories = sizeof...(categories);
     auto found = std::vector<bool>(left_categories, false);
     ([&](auto& category) {
-      auto dimension = factor.get_dimension(category);
+      auto dimension = factor.find_dimension(category);
       REQUIRE(dimension);
       if(!found[*dimension]) {
         --left_categories;
