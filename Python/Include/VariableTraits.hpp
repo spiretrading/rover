@@ -21,38 +21,28 @@ namespace Rover {
 
   template<typename S>
   bool ContinuousChecker<S, pybind11::object>::check(const pybind11::object&
-      obj) try {
-    {
-      auto val = obj + obj;
-    }
-    {
-      auto val = -obj;
-    }
-    {
-      auto val = obj == obj;
-    }
-    {
-      auto val = obj != obj;
-    }
-    {
-      auto val = obj < obj;
-    }
-    {
-      auto val = S() * obj;
-    }
+      obj) {
     try {
-      auto val = obj / obj;
-    } catch(pybind11::error_already_set& e) {
-      e.restore();
-      if(PyErr_ExceptionMatches(PyExc_ZeroDivisionError)) {
-        PyErr_Clear();
-      } else {
-        throw pybind11::error_already_set();
+      obj + obj;
+      -obj;
+      obj == obj;
+      obj != obj;
+      obj < obj;
+      S() * obj;
+      try {
+        obj / obj;
+      } catch(pybind11::error_already_set& e) {
+        e.restore();
+        if(PyErr_ExceptionMatches(PyExc_ZeroDivisionError)) {
+          PyErr_Clear();
+        } else {
+          throw pybind11::error_already_set();
+        }
       }
+      return true;
+    } catch(const pybind11::error_already_set&) {
+      return false;
     }
-    return true;
-  } catch(const pybind11::error_already_set&) {
-    return false;
   }
 }
 
