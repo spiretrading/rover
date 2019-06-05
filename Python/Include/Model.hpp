@@ -2,6 +2,7 @@
 #define ROVER_PYTHON_MODEL_HPP
 #include <string_view>
 #include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 #include "Rover/Model.hpp"
 #include "Arithmetics.hpp"
 #include "Scalar.hpp"
@@ -32,7 +33,8 @@ namespace Details {
 
       template<typename Arguments>
       Type predict(const Arguments& args) const {
-        auto value = m_impl.attr("predict")(args).template cast<ClientType>();
+        auto value = m_impl.attr("predict")(arguments_cast(
+          args)).template cast<ClientType>();
         auto result = static_cast<Type>(value);
         return result;
       }
@@ -40,12 +42,19 @@ namespace Details {
     private:
       pybind11::object m_impl;
 
+      static typename ScalarSample<ClientType>::Arguments arguments_cast(const
+          typename ScalarSample<Type>::Arguments& arguments) {
+        auto result = typename ScalarSample<ClientType>::Arguments();
+        std::copy(arguments.begin(), arguments.end(), std::back_inserter(
+          result));
+        return result;
+      }
+
       static ScalarSample<ClientType> sample_cast(const ScalarSample<Type>&
           sample) {
         auto result = ScalarSample<ClientType>();
         result.m_result = static_cast<ClientType>(sample.m_result);
-        std::copy(sample.m_arguments.begin(), sample.m_arguments.end(),
-          std::back_inserter(result.m_arguments));
+        result.m_arguments = arguments_cast(sample.m_arguments);
         return result;
       }
   };
