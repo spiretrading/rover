@@ -36,7 +36,7 @@ namespace Rover {
         if(PyErr_ExceptionMatches(PyExc_ZeroDivisionError)) {
           PyErr_Clear();
         } else {
-          throw pybind11::error_already_set();
+          return false;
         }
       }
       return true;
