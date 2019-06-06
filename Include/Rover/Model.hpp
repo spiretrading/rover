@@ -42,7 +42,6 @@ namespace Rover {
       auto operator ()(const Arguments& args) const;
 
     private:
-      //! The type of the basis.
       using Basis = Rover::Basis<Sample, ComputationType>;
       
       Basis m_basis;
