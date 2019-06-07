@@ -190,3 +190,35 @@ TEST_CASE("test_multivariable_linear_regression_model",
     REQUIRE(model({ 1., 1. }) == Approx(2.));
   }
 }
+
+TEST_CASE("test_categorical_linear_regression_model",
+    "[LinearRegressionModel]") {
+  SECTION("Categorical only.") {
+    using Sample = Rover::Sample<double, std::string>;
+    auto trial = ListTrial<Sample>();
+    trial.insert({ 7., { "A" } });
+    trial.insert({ 5., { "B" } });
+    trial.insert({ 3., { "C" } });
+    trial.insert({ 2., { "A" } });
+    trial.insert({ 9., { "B" } });
+    trial.insert({ 0., { "C" } });
+    auto model = Model<LinearRegression<double>, ListTrial<Sample>>(trial);
+    REQUIRE(model({ "A" }) == Approx(4.5));
+    REQUIRE(model({ "B" }) == Approx(7.));
+    REQUIRE(model({ "C" }) == Approx(1.5));
+  }
+  SECTION("Mixed.") {
+    using Sample = Rover::Sample<double, std::string, double>;
+    auto trial = ListTrial<Sample>();
+    trial.insert({ 7., { "A", 1. } });
+    trial.insert({ 5., { "B", 1. } });
+    trial.insert({ 3., { "C", 1. } });
+    trial.insert({ 8., { "A", 2. } });
+    trial.insert({ 6., { "B", 2. } });
+    trial.insert({ 4., { "C", 2. } });
+    auto model = Model<LinearRegression<double>, ListTrial<Sample>>(trial);
+    REQUIRE(model({ "A", 3. }) == Approx(9.));
+    REQUIRE(model({ "B", 3. }) == Approx(7.));
+    REQUIRE(model({ "C", 3. }) == Approx(5.));
+  }
+}

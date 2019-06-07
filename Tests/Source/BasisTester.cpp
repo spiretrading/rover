@@ -185,3 +185,91 @@ TEST_CASE("test_basis_negative_elements", "[Basis]") {
     }
   }
 }
+
+TEST_CASE("test_basis_categorical", "[Basis]") {
+  SECTION("One categorical only.") {
+    auto trial = ListTrial<Sample<double, std::string>>();
+    trial.insert({ 2., { "abc" } });
+    trial.insert({ 4., { "bcd" } });
+    for(auto i = 0; i < 100; ++i) {
+      auto basis = Basis<Sample<double, std::string>, double>(trial);
+      {
+        auto sample = basis.apply({ 1., { "abc" } });
+        REQUIRE(sample.m_arguments.size() == 1);
+        REQUIRE((sample.m_arguments[0] == 1. || sample.m_arguments[0]) == 0.);
+        auto arguments = basis.apply(Sample<double, std::string>::Arguments{
+          "abc" });
+        REQUIRE(sample.m_arguments == arguments);
+      }
+      {
+        auto sample = basis.apply({ 1., { "bcd" } });
+        REQUIRE(sample.m_arguments.size() == 1);
+        REQUIRE((sample.m_arguments[0] == 1. || sample.m_arguments[1] == 0.));
+        auto arguments = basis.apply(Sample<double, std::string>::Arguments{
+          "bcd" });
+        REQUIRE(sample.m_arguments == arguments);
+      }
+      {
+        auto sample = basis.apply({ 1., { "cde" } });
+        REQUIRE(sample.m_arguments.size() == 1);
+        REQUIRE(sample.m_arguments[0] == Approx(0.5));
+        auto arguments = basis.apply(Sample<double, std::string>::Arguments{
+          "cde" });
+        REQUIRE(sample.m_arguments == arguments);
+      }
+    }
+  }
+  SECTION("Mixed.") {
+    using Sample = Rover::Sample<double, std::string, double, std::string>;
+    auto trial = ListTrial<Sample>();
+    trial.insert({ 2., { "abc", 1., "abc" } });
+    trial.insert({ 4., { "bcd", 2., "qwe" } });
+    trial.insert({ 4., { "abc", 1., "zxc" } });
+    trial.insert({ 2., { "bcd", 2., "qwe" } });
+    for(auto i = 0; i < 100; ++i) {
+      auto basis = Basis<Sample, double>(trial);
+      {
+        auto sample = basis.apply({ 1., { "abc", 1., "abc" } });
+        REQUIRE(sample.m_arguments.size() == 4);
+        REQUIRE((sample.m_arguments[0] == 1. || sample.m_arguments[0] == 0.));
+        REQUIRE((sample.m_arguments[1] == Approx(1.) ||
+          sample.m_arguments[1] == Approx(0.5)));
+        REQUIRE(((sample.m_arguments[2] == 1. && sample.m_arguments[3] ==
+          0.) || (sample.m_arguments[2] == 0. && sample.m_arguments[3] ==
+          1.) || (sample.m_arguments[2] == 0. && sample.m_arguments[3] ==
+          0.)));
+      }
+      {
+        auto sample = basis.apply({ 1., { "bcd", 1., "zxc" } });
+        REQUIRE(sample.m_arguments.size() == 4);
+        REQUIRE((sample.m_arguments[0] == 1. || sample.m_arguments[0] == 0.));
+        REQUIRE((sample.m_arguments[1] == Approx(1.) ||
+          sample.m_arguments[1] == Approx(0.5)));
+        REQUIRE(((sample.m_arguments[2] == 1. && sample.m_arguments[3] ==
+          0.) || (sample.m_arguments[2] == 0. && sample.m_arguments[3] ==
+          1.) || (sample.m_arguments[2] == 0. && sample.m_arguments[3] ==
+          0.)));
+      }
+      {
+        auto sample = basis.apply({ 1., { "qwe", 1., "qwe" } });
+        REQUIRE(sample.m_arguments.size() == 4);
+        REQUIRE(sample.m_arguments[0] == Approx(0.5));
+        REQUIRE((sample.m_arguments[1] == Approx(1.) ||
+          sample.m_arguments[1] == Approx(0.5)));
+        REQUIRE(((sample.m_arguments[2] == 1. && sample.m_arguments[3] ==
+          0.) || (sample.m_arguments[2] == 0. && sample.m_arguments[3] ==
+          1.) || (sample.m_arguments[2] == 0. && sample.m_arguments[3] ==
+          0.)));
+      }
+      {
+        auto sample = basis.apply({ 1., { "abc", 1., "asd" } });
+        REQUIRE(sample.m_arguments.size() == 4);
+        REQUIRE((sample.m_arguments[0] == 1. || sample.m_arguments[0] == 0.));
+        REQUIRE((sample.m_arguments[1] == Approx(1.) ||
+          sample.m_arguments[1] == Approx(0.5)));
+        REQUIRE(sample.m_arguments[2] == Approx(1. / 3));
+        REQUIRE(sample.m_arguments[3] == Approx(1. / 3));
+      }
+    }
+  }
+}

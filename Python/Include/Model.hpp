@@ -5,7 +5,9 @@
 #include <pybind11/stl.h>
 #include "Rover/Model.hpp"
 #include "Arithmetics.hpp"
+#include "Basis.hpp"
 #include "Scalar.hpp"
+#include "VariableTraits.hpp"
 
 namespace Rover {
 namespace Details {

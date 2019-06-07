@@ -5,8 +5,10 @@
 #include "Rover/LinearRegression.hpp"
 #include "Rover/Model.hpp"
 #include "Arithmetics.hpp"
+#include "Basis.hpp"
 #include "Sample.hpp"
 #include "Scalar.hpp"
+#include "VariableTraits.hpp"
 
 namespace Rover {
 
