@@ -14,7 +14,6 @@ namespace Rover {
   template<>
   class BasisArguments<PythonSample::Arguments> {
     public:
-
       explicit BasisArguments(const PythonSample::Arguments& args)
           : m_arguments(args.size()) {
         for(auto i = std::size_t(0); i < args.size(); ++i) {

@@ -38,8 +38,7 @@ namespace Details {
       /*!
         \param args The original arguments.
       */
-      template<typename ArgumentsFwd>
-      explicit BasisArguments(ArgumentsFwd&& args);
+      explicit BasisArguments(const A& args);
 
       //! Makes the argument at a given index a value element and sets the
       //! value.
@@ -279,9 +278,8 @@ namespace Details {
 }
 
   template<typename A>
-  template<typename ArgumentsFwd>
-  BasisArguments<A>::BasisArguments(ArgumentsFwd&& args)
-    : m_arguments(std::forward<ArgumentsFwd>(args)) {}
+  BasisArguments<A>::BasisArguments(const A& args)
+    : m_arguments(args) {}
 
   template<typename A>
   template<typename T>
