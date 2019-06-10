@@ -35,9 +35,26 @@ namespace Rover {
       */
       std::optional<int> find_dimension(const Type& category) const;
 
+      //! Returns the number of registered categories.
+      std::size_t size() const;
+
     private:
       std::vector<Type> m_categories;
   };
+
+  //! Type trait to check whether a given type is factor.
+  /*!
+    \tparam T The type to check.
+  */
+  template<typename T>
+  struct is_factor;
+
+  //! Type trait to check whether a given type is factor.
+  /*!
+    \tparam T The type to check.
+  */
+  template<typename T>
+  inline constexpr bool is_factor_v = is_factor<T>::value;
 
 namespace Details{
   template<typename T, typename = void>
@@ -88,6 +105,9 @@ namespace Details{
       */
       std::optional<int> find_dimension(const Type& category) const;
 
+      //! Returns the number of registered categories.
+      std::size_t size() const;
+
     private:
       std::unordered_map<Type, int> m_map;
   };
@@ -120,6 +140,9 @@ namespace Details{
       */
       std::optional<int> find_dimension(const Type& category) const;
 
+      //! Returns the number of registered categories.
+      std::size_t size() const;
+
     private:
       std::map<Type, int> m_map;
   };
@@ -143,6 +166,11 @@ namespace Details{
     }
   }
 
+  template<typename T, typename C>
+  std::size_t Factor<T, C>::size() const {
+    return m_categories.size();
+  }
+
   template<typename T>
   void Factor<T, std::enable_if_t<Details::is_hashable_v<T>>>::add_category(
       const Type& category) {
@@ -158,6 +186,12 @@ namespace Details{
     } else {
       return it->second;
     }
+  }
+
+  template<typename T>
+  std::size_t Factor<T, std::enable_if_t<Details::is_hashable_v<
+      T>>>::size() const {
+    return m_map.size();
   }
 
   template<typename T>
@@ -181,6 +215,18 @@ namespace Details{
       return it->second;
     }
   }
+
+  template<typename T>
+  std::size_t Factor<T, std::enable_if_t<!Details::is_hashable_v<T> &&
+      Details::is_comparable_v<T>>>::size() const {
+    return m_map.size();
+  }
+
+  template<typename T>
+  struct is_factor : std::false_type {};
+
+  template<typename T>
+  struct is_factor<Factor<T>> : std::true_type {};
 }
 
 #endif
