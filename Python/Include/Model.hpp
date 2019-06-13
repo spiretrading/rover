@@ -46,9 +46,9 @@ namespace Details {
 
       static typename ScalarSample<ClientType>::Arguments arguments_cast(const
           typename ScalarSample<Type>::Arguments& arguments) {
-        auto result = typename ScalarSample<ClientType>::Arguments();
-        std::copy(arguments.begin(), arguments.end(), std::back_inserter(
-          result));
+        auto result = typename ScalarSample<ClientType>::Arguments(
+          arguments.size());
+        std::copy(arguments.begin(), arguments.end(), result.begin());
         return result;
       }
 
