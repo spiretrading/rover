@@ -38,6 +38,11 @@ namespace Rover {
   template<typename... GeneratorsFwd>
   RandomPick(GeneratorsFwd&&...) -> RandomPick<std::decay_t<GeneratorsFwd>...>;
 
+  //! GCC workaround.
+  template<typename GeneratorFwd, typename... GeneratorsFwd>
+  RandomPick(GeneratorFwd&&, GeneratorsFwd&&...) -> RandomPick<std::decay_t<
+    GeneratorFwd>, std::decay_t<GeneratorsFwd>...>;
+
   template<typename... G>
   template<typename... GeneratorsFwd>
   RandomPick<G...>::RandomPick(GeneratorsFwd&&... generators)
