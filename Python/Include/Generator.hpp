@@ -1,6 +1,7 @@
 #ifndef ROVER_PYTHON_GENERATOR_HPP
 #define ROVER_PYTHON_GENERATOR_HPP
 #include <pybind11/pybind11.h>
+#include "Rover/Generator.hpp"
 
 namespace Rover {
   
@@ -17,7 +18,9 @@ namespace Rover {
   */
   template<typename T>
   void export_generate(pybind11::module& module, const char* function_name) {
-    module.def(function_name, generate<T>);
+    module.def(function_name, [](T& generator) {
+      return generate<T>(generator);
+    });
   }
 }
 
