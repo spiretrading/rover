@@ -1,5 +1,6 @@
 #ifndef ROVER_SAMPLE_HPP
 #define ROVER_SAMPLE_HPP
+#include <algorithm>
 #include <iostream>
 #include <sstream>
 #include <tuple>
