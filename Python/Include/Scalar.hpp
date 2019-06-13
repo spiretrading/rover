@@ -174,10 +174,10 @@ namespace pybind11 {
 
 namespace dlib {
   template<typename T>
-  class is_same_type<T, Rover::PythonScalar<T>> : private std::true_type {};
+  struct is_same_type<T, Rover::PythonScalar<T>> : std::true_type {};
 
   template<typename T>
-  class is_same_type<Rover::PythonScalar<T>, T> : private std::true_type {};
+  struct is_same_type<Rover::PythonScalar<T>, T> : std::true_type {};
 }
 
 #endif

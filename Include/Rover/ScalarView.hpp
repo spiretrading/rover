@@ -96,7 +96,8 @@ namespace Rover {
     !std::is_convertible_v<std::decay_t<OtherScalarView>, ScalarView<G>>>*>
   ScalarView<G>::ScalarView(OtherScalarView&& view)
     : m_size(view.size()),
-      m_get([view = std::forward<OtherScalarView>(view)](std::size_t index) {
+      m_getter([view = std::forward<OtherScalarView>(view)](
+          std::size_t index) {
         return view[index];
       }) {}
 

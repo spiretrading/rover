@@ -61,20 +61,20 @@ namespace Rover {
         GeneratorsFwd>(generators)...) {}
 
 namespace Details {
-  template<typename T>
+  template<typename T, int I = std::tuple_size_v<T> - 1>
   struct ByIndexEvaluator {
-    template<int I = 0>
     static auto evaluate(T& tuple, Evaluator& evaluator, int index) {
       if(I == index) {
         return evaluator.evaluate(std::get<I>(tuple));
       } else {
-        return evaluate<I + 1>(tuple, evaluator, index);
+        return ByIndexEvaluator<T, I - 1>::evaluate(tuple, evaluator, index);
       }
     }
+  };
 
-    template<>
-    static auto evaluate<std::tuple_size_v<T>>(T& tuple, Evaluator& evaluator,
-        int index) {
+  template<typename T>
+  struct ByIndexEvaluator<T, 0> {
+    static auto evaluate(T& tuple, Evaluator& evaluator, int) {
       return evaluator.evaluate(std::get<0>(tuple));
     }
   };
