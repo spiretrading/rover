@@ -7,7 +7,7 @@ namespace {
   class ParameterWrapper {
     public:
       object get(object parser) {
-        return parser.call(m_str);
+        return parser(m_str);
       }
 
     private:
