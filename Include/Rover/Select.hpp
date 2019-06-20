@@ -10,7 +10,7 @@ namespace Rover {
 namespace Details {
   struct AnyIndex {
     template<typename T>
-    operator const T() const { return T(); }
+    operator const T() const;
   };
 
   template<typename T, typename = std::void_t<>>
@@ -105,7 +105,6 @@ namespace Details {
         \param container Array-like container defining value_type, begin,
                          and integer indexing.
         \param selector Generator evaluating to an index in the array.
-
       */
       Select(Container container, Selector selector);
 
@@ -153,7 +152,6 @@ namespace Details {
       /*!
         \param container Set-like container defining value_type, begin, and end.
         \param selector Generator evaluating to an index in the array.
-
       */
       Select(const Container& container, Selector selector);
 
@@ -201,7 +199,6 @@ namespace Details {
       /*!
         \param container Map-like container defining mapped_type, begin, and end.
         \param selector Generator evaluating to an index in the array.
-
       */
       Select(const Container& container, Selector selector);
 
