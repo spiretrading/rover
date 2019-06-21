@@ -42,17 +42,17 @@ namespace {
 
       static Container convert_container(Container& container,
           bool keep_dict) {
-        if(is_list(container)) {
-          return std::move(container);
-        } else if(is_set(container)) {
-          return list(container); 
-        } else if(is_dict(container)) {
+        if(is_dict(container)) {
           if(keep_dict) {
             return std::move(container);
           } else {
             auto view = container.attr("values")();
             return list(view);
           }
+        } else if(is_list(container)) {
+          return std::move(container);
+        } else if(is_set(container)) {
+          return list(container); 
         } else {
           throw std::runtime_error(
             "Container does not implement a list, set, or dict.");
