@@ -30,7 +30,7 @@ namespace {
       }
 
     private:
-      static Box<object> create_default_selector(object&& size) {
+      static Box<object> create_default_selector(const object& size) {
         auto begin = cast(0);
         auto end = size - 1;
         auto range = Details::PythonRange(std::move(begin), std::move(end),
