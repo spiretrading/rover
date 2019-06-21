@@ -14,11 +14,11 @@ namespace {
       using Type = object;
 
       explicit PythonSelect(Container container)
-        : m_container(convert_container(std::move(container), false)),
+        : m_container(convert_container(container, false)),
           m_selector(create_default_selector(m_container.attr("__len__")())) {}
 
       PythonSelect(Container container, Selector selector)
-        : m_container(convert_container(std::move(container), true)),
+        : m_container(convert_container(container, true)),
           m_selector(python_autobox<object>(std::move(selector))) {}
 
       Type generate(Evaluator& evaluator) {
