@@ -11,7 +11,7 @@
 namespace Rover::Details {
   struct TypeErasingPtr {
     template<typename Generator>
-    TypeErasingPtr(Generator* ptr)
+    explicit TypeErasingPtr(Generator* ptr)
       : m_ptr(ptr),
         m_type(typeid(Generator)) {}
     bool operator ==(const TypeErasingPtr& other) const {
@@ -52,8 +52,8 @@ namespace Rover {
         Details::TypeErasingPtr m_generator;
         std::unique_ptr<BaseEntry> m_entry;
 
-        template<typename Generator>
-        Evaluation(Generator& generator, std::unique_ptr<BaseEntry> entry);
+        inline Evaluation(Details::TypeErasingPtr generator,
+          std::unique_ptr<BaseEntry> entry);
       };
       std::vector<Evaluation> m_evaluations;
   };
@@ -63,10 +63,9 @@ namespace Rover {
   Evaluator::Entry<T>::Entry(U&& value)
     : m_value(std::forward<U>(value)) {}
 
-  template<typename Generator>
-  Evaluator::Evaluation::Evaluation(Generator& generator,
+  Evaluator::Evaluation::Evaluation(Details::TypeErasingPtr generator,
       std::unique_ptr<BaseEntry> entry)
-    : m_generator(&generator),
+    : m_generator(std::move(generator)),
       m_entry(std::move(entry)) {}
 
   template<typename Generator>
