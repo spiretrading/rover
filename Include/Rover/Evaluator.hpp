@@ -25,7 +25,7 @@ namespace Rover {
     private:
       struct BaseEvaluation {
         virtual ~BaseEvaluation() = default;
-        virtual bool is_equal(const std::type_index& type,
+        virtual bool is_same(const std::type_index& type,
           const void* address) = 0;
       };
       template<typename T>
@@ -44,8 +44,7 @@ namespace Rover {
 
         template<typename U>
         Evaluation(U&& value, const Generator& generator);
-        bool is_equal(const std::type_index& type,
-          const void* address) override;
+        bool is_same(const std::type_index& type, const void* address) override;
       };
       std::vector<std::unique_ptr<BaseEvaluation>> m_evaluations;
   };
@@ -68,9 +67,9 @@ namespace Rover {
         m_generator(&generator) {}
 
   template<typename T, typename G>
-  bool Evaluator::Evaluation<T, G>::is_equal(const std::type_index& type,
+  bool Evaluator::Evaluation<T, G>::is_same(const std::type_index& type,
       const void* address) {
-    return type == typeid(G) && is_same(*m_generator,
+    return type == typeid(Generator) && Rover::is_same(*m_generator,
       *static_cast<const Generator*>(address));
   }
 
@@ -79,7 +78,7 @@ namespace Rover {
     using Type = typename Generator::Type;
     auto i = std::find_if(m_evaluations.begin(), m_evaluations.end(),
       [&](const auto& evaluation) {
-        return evaluation->is_equal(typeid(Generator), &generator);
+        return evaluation->is_same(typeid(Generator), &generator);
       });
     if(i == m_evaluations.end()) {
       auto evaluation = std::make_unique<Evaluation<Type, Generator>>(
