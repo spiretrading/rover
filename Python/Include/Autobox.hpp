@@ -17,6 +17,10 @@ namespace Rover::Details {
       PythonBox(pybind11::object obj)
         : m_obj(std::move(obj)) {}
 
+      bool is_same(const PythonBox<T>& right) const {
+        return m_obj.is(right.m_obj);
+      }
+
       Type generate(Evaluator& e) {
         auto evaluator_ptr = std::shared_ptr<Evaluator>(&e, [](auto) {});
         auto evaluator_handle = pybind11::cast(evaluator_ptr).release();
@@ -33,6 +37,12 @@ namespace Rover::Details {
 }
 
 namespace Rover {
+  template<typename T>
+  bool is_same(const Details::PythonBox<T>& left,
+      const Details::PythonBox<T>& right) {
+    return left.is_same(right);
+  }
+
   template<typename T, typename ArgFwd>
   Box<T> python_autobox(ArgFwd&& arg) {
     if(Details::is_python_generator(arg)) {
