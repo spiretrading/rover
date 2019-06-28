@@ -95,6 +95,19 @@ namespace Rover {
     static constexpr std::size_t size(const Arguments& tuple);
   };
 
+namespace Details {
+  template<typename Argument>
+  void read_argument(std::istringstream& stream, Argument& argument) {
+    stream >> argument;
+  }
+
+  template<>
+  inline void read_argument<std::string>(std::istringstream& stream,
+      std::string& str) {
+    str = stream.str();
+  }
+}
+
   template<typename Arguments, typename Func>
   void visit_arguments(Func&& func, Arguments& args) {
     return ArgumentVisitor<Arguments>::visit(std::forward<Func>(func), args);
@@ -166,7 +179,7 @@ namespace Rover {
       auto input_string_stream = std::istringstream(
         output_string_stream.str());
       auto argument = Argument();
-      input_string_stream >> argument;
+      Details::read_argument(input_string_stream, argument);
       if(input_string_stream || input_string_stream.eof()) {
         result = std::move(argument);
         return true;
