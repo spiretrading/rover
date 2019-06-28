@@ -19,6 +19,7 @@ namespace {
 
   std::istream& operator >>(std::istream& stream, ParameterWrapper&
       wrapper) {
+    std::getline(stream, wrapper.m_str, '\0');
     stream >> wrapper.m_str;
     return stream;
   }
