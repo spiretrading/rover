@@ -156,6 +156,12 @@ TEST_CASE("test_tuple_arguments_serialization", "[TupleArguments]") {
     stream << sample;
     REQUIRE(stream.str() == "\",a,b,c\",10,\",\",30");
   }
+  SECTION("Whitespaces.") {
+    auto sample = Sample<std::string, std::string>{ "abc abc", " qwe  qwe   " };
+    auto stream = std::ostringstream();
+    stream << sample;
+    REQUIRE(stream.str() == "abc abc, qwe  qwe   ");
+  }
 }
 
 TEST_CASE("test_tuple_arguments_deserialization", "[TupleArguments]") {
@@ -198,6 +204,13 @@ TEST_CASE("test_tuple_arguments_deserialization", "[TupleArguments]") {
     REQUIRE(std::get<0>(sample.m_arguments) == 10);
     REQUIRE(std::get<1>(sample.m_arguments) == ",");
     REQUIRE(std::get<2>(sample.m_arguments) == 30);
+  }
+  SECTION("Whitespaces.") {
+    auto sample = Sample<std::string, std::string>();
+    auto stream = std::istringstream("abc abc, qwe  qwe   ");
+    stream >> sample;
+    REQUIRE(sample.m_result == "abc abc");
+    REQUIRE(std::get<0>(sample.m_arguments) == " qwe  qwe   ");
   }
   SECTION("Invalid string.") {
     auto sample = Sample<int, int, int, int>{ 1, { 10, 20, 30 } };
