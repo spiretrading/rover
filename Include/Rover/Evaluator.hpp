@@ -8,20 +8,6 @@
 #include <utility>
 #include <vector>
 
-namespace Rover::Details {
-  struct TypeErasingPtr {
-    template<typename Generator>
-    TypeErasingPtr(Generator* ptr)
-      : m_ptr(ptr),
-        m_type(typeid(Generator)) {}
-    bool operator ==(const TypeErasingPtr& other) const {
-      return m_ptr == other.m_ptr && m_type == other.m_type;
-    }
-    const void* m_ptr;
-    std::type_index m_type;
-  };
-}
-
 namespace Rover {
 
   /** Encapsulates the state needed to evaluate a generator. */
@@ -37,52 +23,70 @@ namespace Rover {
       typename Generator::Type evaluate(Generator& generator);
 
     private:
-      struct BaseEntry {
-        virtual ~BaseEntry() = default;
+      struct BaseEvaluation {
+        virtual ~BaseEvaluation() = default;
+        virtual bool is_same(const std::type_index& type,
+          const void* address) = 0;
       };
       template<typename T>
-      struct Entry : BaseEntry {
+      struct ValueEvaluation : BaseEvaluation {
         using Type = T;
         Type m_value;
 
         template<typename U>
-        Entry(U&& value);
+        ValueEvaluation(U&& value);
       };
-      struct Evaluation {
-        Details::TypeErasingPtr m_generator;
-        std::unique_ptr<BaseEntry> m_entry;
+      template<typename T, typename G>
+      struct Evaluation : ValueEvaluation<T> {
+        using Type = typename ValueEvaluation<T>::Type;
+        using Generator = G;
+        const Generator* m_generator;
 
-        template<typename Generator>
-        Evaluation(Generator& generator, std::unique_ptr<BaseEntry> entry);
+        template<typename U>
+        Evaluation(U&& value, const Generator& generator);
+        bool is_same(const std::type_index& type, const void* address) override;
       };
-      std::vector<Evaluation> m_evaluations;
+      std::vector<std::unique_ptr<BaseEvaluation>> m_evaluations;
   };
+
+  //! Tests if two instances represent the same effective generator.
+  template<typename Generator>
+  bool is_same(const Generator& left, const Generator& right) {
+    return &left == &right;
+  }
 
   template<typename T>
   template<typename U>
-  Evaluator::Entry<T>::Entry(U&& value)
+  Evaluator::ValueEvaluation<T>::ValueEvaluation(U&& value)
     : m_value(std::forward<U>(value)) {}
 
-  template<typename Generator>
-  Evaluator::Evaluation::Evaluation(Generator& generator,
-      std::unique_ptr<BaseEntry> entry)
-    : m_generator(&generator),
-      m_entry(std::move(entry)) {}
+  template<typename T, typename G>
+  template<typename U>
+  Evaluator::Evaluation<T, G>::Evaluation(U&& value, const Generator& generator)
+      : ValueEvaluation(std::forward<U>(value)),
+        m_generator(&generator) {}
+
+  template<typename T, typename G>
+  bool Evaluator::Evaluation<T, G>::is_same(const std::type_index& type,
+      const void* address) {
+    return type == typeid(Generator) && Rover::is_same(*m_generator,
+      *static_cast<const Generator*>(address));
+  }
 
   template<typename Generator>
   typename Generator::Type Evaluator::evaluate(Generator& generator) {
     using Type = typename Generator::Type;
-    auto type_erasing_ptr = Details::TypeErasingPtr(&generator);
     auto i = std::find_if(m_evaluations.begin(), m_evaluations.end(),
-      [&](const auto& e) {
-        return type_erasing_ptr == e.m_generator;
+      [&](const auto& evaluation) {
+        return evaluation->is_same(typeid(Generator), &generator);
       });
     if(i == m_evaluations.end()) {
-      auto entry = std::make_unique<Entry<Type>>(generator.generate(*this));
-      m_evaluations.emplace_back(type_erasing_ptr, std::move(entry));
+      auto evaluation = std::make_unique<Evaluation<Type, Generator>>(
+        generator.generate(*this), generator);
+      m_evaluations.push_back(std::move(evaluation));
       i = m_evaluations.end() - 1;
     }
-    return static_cast<Entry<Type>&>(*i->m_entry).m_value;
+    return static_cast<ValueEvaluation<Type>&>(**i).m_value;
   }
 }
 
