@@ -63,7 +63,7 @@ namespace Rover {
   template<typename T, typename G>
   template<typename U>
   Evaluator::Evaluation<T, G>::Evaluation(U&& value, const Generator& generator)
-      : ValueEvaluation(std::forward<U>(value)),
+      : ValueEvaluation<T>(std::forward<U>(value)),
         m_generator(&generator) {}
 
   template<typename T, typename G>
