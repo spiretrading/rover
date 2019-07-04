@@ -4,9 +4,6 @@ root="$(pwd)"
 if [ ! -d "Catch2-2.6.1" ]; then
   git clone --branch v2.6.1 https://github.com/catchorg/Catch2.git Catch2-2.6.1
 fi
-if [ ! -d "pybind11-2.2.4" ]; then
-  git clone --branch v2.2.4 https://github.com/pybind/pybind11.git pybind11-2.2.4
-fi
 if [ ! -d "dlib-19.17" ]; then
   wget https://github.com/davisking/dlib/archive/v19.17.tar.gz -O dlib-v19.17.tar.gz --no-check-certificate
   tar -xzf dlib-v19.17.tar.gz
@@ -31,6 +28,9 @@ if [ ! -d "dlib-19.17" ]; then
   popd
   popd
   rm dlib-v19.17.tar.gz
+fi
+if [ ! -d "pybind11-2.2.4" ]; then
+  git clone --branch v2.2.4 https://github.com/pybind/pybind11.git pybind11-2.2.4
 fi
 if [ ! -d "Python-3.6.7" ]; then
   wget https://www.python.org/ftp/python/3.6.7/Python-3.6.7.tgz --no-check-certificate
