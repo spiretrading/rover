@@ -12,6 +12,8 @@ namespace Rover {
   /*!
     \tparam P The type of the predicate function.
     \tparam G The type of the generator.
+    \details Only supports isolated generators, i.e. generators with no
+             non-deterministic dependencies.
   */
   template<typename P, typename G>
   class Filter {
@@ -30,7 +32,7 @@ namespace Rover {
       /*!
         \param predicate The predicate function. The filter considered passed
                          when the function returns true.
-        \param generator The generator.
+        \param generator The isolated generator.
       */
       template<typename PredicateFwd, typename GeneratorFwd>
       Filter(PredicateFwd&& predicate, GeneratorFwd&& generator);
