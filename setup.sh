@@ -18,12 +18,12 @@ if [ ! -d "dlib-19.17" ]; then
   mkdir Debug
   pushd Debug
   cmake ../../dlib -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=../../Install/Debug -DENABLE_ASSERTS=OFF
-  cmake --build . --target install
+  cmake --build . --target install -- -j $cores
   popd
   mkdir Release
   pushd Release
   cmake ../../dlib -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=../../Install/Release -DENABLE_ASSERTS=OFF
-  cmake --build . --target install
+  cmake --build . --target install -- -j $cores
   popd
   popd
   popd
