@@ -1,5 +1,5 @@
 #include <sstream>
-#include <catch.hpp>
+#include <catch2/catch.hpp>
 #include "Rover/Sample.hpp"
 
 using namespace Rover;

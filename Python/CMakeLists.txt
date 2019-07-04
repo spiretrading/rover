@@ -1,6 +1,8 @@
+include_directories(${ROVER_INCLUDE_PATH}/../Python/Include)
 include_directories(SYSTEM ${PYBIND11_INCLUDE_PATH})
 include_directories(SYSTEM ${PYTHON_INCLUDE_PATH})
-file(GLOB header_files ${ROVER_INCLUDE_PATH}/../Python/Include/*.hpp)
+file(GLOB header_files
+  ${ROVER_INCLUDE_PATH}/../Python/Include/Rover/Python/*.hpp)
 file(GLOB source_files ${ROVER_INCLUDE_PATH}/../Python/Source/*.cpp)
 if(MSVC)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")

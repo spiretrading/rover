@@ -1,5 +1,5 @@
 #include <memory>
-#include <catch.hpp>
+#include <catch2/catch.hpp>
 #include "Rover/Box.hpp"
 #include "Rover/Constant.hpp"
 #include "Rover/Generator.hpp"

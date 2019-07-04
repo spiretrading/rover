@@ -1,4 +1,4 @@
-#include <catch.hpp>
+#include <catch2/catch.hpp>
 #include "Rover/LinearRegression.hpp"
 #include "Rover/ScalarView.hpp"
 

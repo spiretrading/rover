@@ -1,5 +1,5 @@
 #include <string>
-#include <catch.hpp>
+#include <catch2/catch.hpp>
 #include "Rover/Autobox.hpp"
 #include "Rover/Box.hpp"
 #include "Rover/Constant.hpp"

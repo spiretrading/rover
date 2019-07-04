@@ -30,6 +30,7 @@ if [ ! -d "dlib-19.17" ]; then
   popd
   popd
   popd
+  rm dlib-v19.17.tar.gz
 fi
 if [ ! -d "Python-3.6.7" ]; then
   wget https://www.python.org/ftp/python/3.6.7/Python-3.6.7.tgz --no-check-certificate

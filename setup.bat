@@ -39,5 +39,6 @@ IF NOT EXIST dlib-19.17 (
   cmake --build . --config Release --target install
   POPD
   POPD
+  DEL dlib-v19.17.zip
 )
 ENDLOCAL

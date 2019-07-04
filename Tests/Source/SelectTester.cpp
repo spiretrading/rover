@@ -1,7 +1,7 @@
 #include <map>
 #include <set>
 #include <vector>
-#include <catch.hpp>
+#include <catch2/catch.hpp>
 #include "Rover/Constant.hpp"
 #include "Rover/Evaluator.hpp"
 #include "Rover/Generator.hpp"
