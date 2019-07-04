@@ -8,5 +8,3 @@ set(CATCH2_INCLUDE_PATH
   "${PROJECT_BINARY_DIR}/Dependencies/Catch2-2.6.1/single_include")
 set(PYBIND11_INCLUDE_PATH
   "${PROJECT_BINARY_DIR}/Dependencies/pybind11-2.2.4/include")
-set(PYTHON_INCLUDE_PATH
-  "${PROJECT_BINARY_DIR}/Dependencies/Python-3.7.2/Include")
