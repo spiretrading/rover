@@ -3,6 +3,7 @@
 #include "Constant.hpp"
 #include "CsvParser.hpp"
 #include "Evaluator.hpp"
+#include "Filter.hpp"
 #include "Generator.hpp"
 #include "Lift.hpp"
 #include "LinearRegressionModel.hpp"
@@ -37,4 +38,5 @@ PYBIND11_MODULE(rover, module) {
   export_generate(module);
   export_save_to_csv(module);
   export_load_from_csv(module);
+  export_filter(module);
 }
