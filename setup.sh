@@ -31,4 +31,18 @@ if [ ! -d "dlib-19.17" ]; then
   popd
   popd
 fi
+if [ ! -d "Python-3.6.7" ]; then
+  wget https://www.python.org/ftp/python/3.6.7/Python-3.6.7.tgz --no-check-certificate
+  if [ -f Python-3.6.7.tgz ]; then
+    gzip -d -c Python-3.6.7.tgz | tar -xf -
+    pushd Python-3.6.7
+    export CFLAGS="-fPIC"
+    ./configure --prefix="$root/Python-3.6.7"
+    make -j $cores
+    make install
+    unset CFLAGS
+    popd
+    rm Python-3.6.7.tgz
+  fi
+fi
 popd
