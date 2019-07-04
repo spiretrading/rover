@@ -1,8 +1,8 @@
-#include "Autobox.hpp"
+#include "Rover/Python/Autobox.hpp"
 
-namespace Rover::Details {
-  bool is_python_generator(const pybind11::object& arg) {
-    return pybind11::hasattr(arg, "generate") &&
-      PyCallable_Check(arg.attr("generate").ptr());
-  }
+using namespace pybind11;
+
+bool Rover::Details::is_python_generator(const object& arg) {
+  return hasattr(arg, "generate") &&
+    PyCallable_Check(arg.attr("generate").ptr());
 }

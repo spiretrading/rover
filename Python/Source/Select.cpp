@@ -1,7 +1,7 @@
-#include "Arithmetics.hpp"
-#include "Autobox.hpp"
-#include "Range.hpp"
-#include "Select.hpp"
+#include "Rover/Python/Select.hpp"
+#include "Rover/Python/Arithmetics.hpp"
+#include "Rover/Python/Autobox.hpp"
+#include "Rover/Python/Range.hpp"
 
 using namespace Rover;
 using namespace pybind11;
@@ -84,7 +84,7 @@ namespace {
   };
 }
 
-void Rover::export_select(pybind11::module& module) {
+void Rover::export_select(module& module) {
   class_<PythonSelect>(module, "Select")
     .def(init<object>())
     .def(init<object, object>())

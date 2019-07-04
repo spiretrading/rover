@@ -1,5 +1,5 @@
-#include "ListTrial.hpp"
-#include "Sample.hpp"
+#include "Rover/Python/ListTrial.hpp"
+#include "Rover/Python/Sample.hpp"
 
 using namespace pybind11;
 using namespace Rover;

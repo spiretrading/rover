@@ -1,4 +1,4 @@
-#include "TrialView.hpp"
+#include "Rover/Python/TrialView.hpp"
 
 using namespace pybind11;
 using namespace Rover;
@@ -18,6 +18,5 @@ void Rover::export_trial_view(module& module) {
        return make_iterator(v.begin(), v.end());
      })
     .def("__len__", &TrialView<PythonSample>::size);
-  pybind11::implicitly_convertible<ListTrial<PythonSample>, TrialView<
-    PythonSample>>();
+  implicitly_convertible<ListTrial<PythonSample>, TrialView<PythonSample>>();
 }

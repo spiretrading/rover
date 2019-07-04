@@ -1,6 +1,6 @@
+#include "Rover/Python/Generator.hpp"
+#include "Rover/Python/Box.hpp"
 #include "Rover/Generator.hpp"
-#include "Box.hpp"
-#include "Generator.hpp"
 
 using namespace pybind11;
 using namespace Rover;

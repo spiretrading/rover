@@ -1,16 +1,17 @@
+#include "Rover/Python/Lift.hpp"
 #include <vector>
 #include <pybind11/functional.h>
-#include "Autobox.hpp"
-#include "Rover/Box.hpp"
-#include "Rover/Evaluator.hpp"
+#include "Rover/Python/Autobox.hpp"
+#include "Rover/Python/Box.hpp"
+#include "Rover/Python/Evaluator.hpp"
 
 using namespace pybind11;
+using namespace Rover;
 
 namespace {
-  using namespace Rover;
   using ArgsCont = std::vector<Box<object>>;
   using KwargsCont = std::vector<std::pair<handle, Box<object>>>;
-  
+
   template<typename Func>
   ArgsCont args_apply(Func&& func, tuple&& args) {
     auto result = ArgsCont();
@@ -76,12 +77,9 @@ namespace {
   };
 }
 
-namespace Rover {
-  void export_lift(pybind11::module& module) {
-    class_<PythonLift>(module, "Lift")
-      .def(init<object, args, kwargs>())
-      .def("generate", &PythonLift::generate);
-
-    implicitly_convertible<PythonLift, Box<object>>();
-  }
+void Rover::export_lift(module& module) {
+  class_<PythonLift>(module, "Lift")
+    .def(init<object, args, kwargs>())
+    .def("generate", &PythonLift::generate);
+  implicitly_convertible<PythonLift, Box<object>>();
 }
