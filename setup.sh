@@ -46,4 +46,3 @@ if [ ! -d "Python-3.6.7" ]; then
     rm Python-3.6.7.tgz
   fi
 fi
-popd
