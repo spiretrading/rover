@@ -1,6 +1,9 @@
+#include "Rover/Python/LinearRegressionModel.hpp"
 #include "Rover/TrialView.hpp"
-#include "LinearRegressionModel.hpp"
 
-void Rover::export_linear_regression_model(pybind11::module& module) {
+using namespace pybind11;
+using namespace Rover;
+
+void Rover::export_linear_regression_model(module& module) {
   export_linear_regression_model<TrialView<PythonSample>, double>(module, "");
 }

@@ -1,7 +1,7 @@
 #include <algorithm>
 #include <chrono>
 #include <optional>
-#include <catch.hpp>
+#include <catch2/catch.hpp>
 #include "Rover/ListTrial.hpp"
 #include "Rover/Model.hpp"
 #include "Rover/Sample.hpp"

@@ -37,7 +37,7 @@ namespace Rover {
          return FilterType([predicate = std::move(predicate)](
                const ValueType& value) {
              return predicate.attr("__call__")(
-               pybind11::cast(value)).cast<bool>();
+               pybind11::cast(value)).template cast<bool>();
            }, std::move(generator));
        }))
       .def("generate", &FilterType::generate);

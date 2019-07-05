@@ -1,14 +1,12 @@
-if(WIN32)
-  execute_process(COMMAND where python.exe OUTPUT_VARIABLE PYTHON_PATH
-    OUTPUT_STRIP_TRAILING_WHITESPACE)
-  set(PYTHON_INCLUDE_PATH "${PYTHON_PATH}/../include")
-  set(PYTHON_LIBRARY_PATH "${PYTHON_PATH}/../libs/python37.lib")
+include_directories(${ROVER_INCLUDE_PATH}/../Python/Include)
+include_directories(SYSTEM ${PYBIND11_INCLUDE_PATH})
+include_directories(SYSTEM ${PYTHON_INCLUDE_PATH})
+file(GLOB header_files
+  ${ROVER_INCLUDE_PATH}/../Python/Include/Rover/Python/*.hpp)
+file(GLOB source_files ${ROVER_INCLUDE_PATH}/../Python/Source/*.cpp)
+if(MSVC)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
 endif()
-include_directories(./Include)
-include_directories(./../Dependencies/pybind11-2.2.4/include)
-include_directories(${PYTHON_INCLUDE_PATH})
-file(GLOB header_files ./Include/*.hpp)
-file(GLOB source_files ./Source/*.cpp)
 add_library(python SHARED ${header_files} ${source_files})
 set_source_files_properties(${header_files} PROPERTIES HEADER_FILE_ONLY TRUE)
 set_target_properties(python PROPERTIES OUTPUT_NAME rover)
@@ -22,7 +20,13 @@ if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX OR
 endif()
 if(UNIX)
   set_target_properties(python PROPERTIES PREFIX "")
-  include_directories(/usr/include/python3.6)
 endif()
-target_link_libraries(python ${PYTHON_LIBRARY_PATH})
-target_link_libraries(python debug ${DLIB_LIB_DEBUG} optimized ${DLIB_LIB_OPTIMIZED})
+target_link_libraries(python
+  debug ${DLIB_LIBRARY_DEBUG_PATH}
+  optimized ${DLIB_LIBRARY_OPTIMIZED_PATH}
+  debug ${PYTHON_LIBRARY_DEBUG_PATH}
+  optimized ${PYTHON_LIBRARY_OPTIMIZED_PATH})
+install(TARGETS python CONFIGURATIONS Debug
+  DESTINATION ${LIB_INSTALL_DIRECTORY}/Debug)
+install(TARGETS python CONFIGURATIONS Release RelWithDebInfo
+  DESTINATION ${LIB_INSTALL_DIRECTORY}/Release)

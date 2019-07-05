@@ -1,4 +1,4 @@
-#include <catch.hpp>
+#include <catch2/catch.hpp>
 #include "Rover/Constant.hpp"
 #include "Rover/Filter.hpp"
 #include "Rover/Generator.hpp"

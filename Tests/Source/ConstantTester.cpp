@@ -1,5 +1,5 @@
 #include <string>
-#include <catch.hpp>
+#include <catch2/catch.hpp>
 #include "Rover/Constant.hpp"
 #include "Rover/Generator.hpp"
 #include "Rover/Noncopyable.hpp"
