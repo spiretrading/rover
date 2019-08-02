@@ -134,12 +134,14 @@ namespace Rover {
       return begin;
     }
     while(true) {
-      auto value = calculate_random(begin, end);
-      auto alt_value = calculate_random(begin, end);
+      auto value = calculate_random(begin, 2 * end);
+      auto alt_value = calculate_random(begin, 2 * end);
       if(value == begin && alt_value == begin) {
         continue;
-      } else if(value == begin || alt_value == begin) {
-        value = pick_random(begin, end);
+      } else if(alt_value == begin) {
+        value = end;
+      } else if(value >= end) {
+        continue;
       }
       auto result = round(evaluator, std::move(value));
       switch(m_interval) {

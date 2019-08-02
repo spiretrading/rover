@@ -55,6 +55,14 @@ TEST_CASE("test_int_range", "[Range]") {
       REQUIRE(result <= 9);
     }
   }
+
+  SECTION("Binary.") {
+    for(int i = 0; i < 100; ++i) {
+      auto range = Range(Constant(1), Constant(2));
+      auto result = generate(range);
+      REQUIRE((result == 1 || result == 2));
+    }
+  }
 }
 
 TEST_CASE("test_float_range", "[Range]") {
