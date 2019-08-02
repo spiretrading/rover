@@ -134,8 +134,8 @@ namespace Rover {
       return begin;
     }
     while(true) {
-      auto value = calculate_random(begin, 2 * end);
-      auto alt_value = calculate_random(begin, 2 * end);
+      auto value = calculate_random(begin, end + end);
+      auto alt_value = calculate_random(begin, end + end);
       if(value == begin && alt_value == begin) {
         continue;
       } else if(alt_value == begin) {
